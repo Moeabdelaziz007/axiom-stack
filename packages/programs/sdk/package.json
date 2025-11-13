@@ -1,0 +1,48 @@
+{
+  "name": "@axiom-id/sdk",
+  "version": "0.1.0",
+  "description": "Axiom ID SDK for creating and managing AI agent identities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "test": "jest",
+    "test:integration": "jest test/integration",
+    "examples:agent": "cd examples && npm run agent-example",
+    "examples:langchain": "cd examples && npm run langchain-example",
+    "examples:identity": "cd examples && npm run identity-example",
+    "examples:pohw": "cd examples && npm run pohw-example",
+    "examples:dynamic-staking": "cd examples && npm run dynamic-staking-example",
+    "examples:solana-agent-kit": "cd examples && npm run solana-agent-kit-example",
+    "examples:defi-agent": "cd ../examples/agents && npm run defi-agent",
+    "examples:content-agent": "cd ../examples/agents && npm run content-agent",
+    "examples:research-agent": "cd ../examples/agents && npm run research-agent"
+  },
+  "keywords": [
+    "axiom",
+    "solana",
+    "ai",
+    "identity",
+    "agent",
+    "solana-agent-kit",
+    "langchain"
+  ],
+  "author": "Axiom ID Team",
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.28.0",
+    "@solana/web3.js": "^1.78.0",
+    "@solana/spl-token": "^0.3.9"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^18.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  }
+}

@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: axiom-id-web-api
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run web-api
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+
+  - type: worker
+    name: axiom-id-discord-bot
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run bot-pinecone
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: DISCORD_BOT_TOKEN
+        sync: false

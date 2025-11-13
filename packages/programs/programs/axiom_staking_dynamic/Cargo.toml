@@ -1,0 +1,22 @@
+[package]
+name = "axiom_staking_dynamic"
+version = "0.1.0"
+description = "Axiom Staking program with dynamic APY based on PoHW reputation"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.28.0"
+anchor-spl = "0.28.0"
+solana-program = "~1.16.17"

@@ -1,0 +1,21 @@
+[package]
+name = "axiom_pohw"
+version = "0.1.0"
+description = "Axiom Proof-of-Human-Work program for recording human work attestations on Solana"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.28.0"
+solana-program = "~1.16.17"

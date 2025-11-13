@@ -1,0 +1,49 @@
+name: Axiom Assist Bot CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'packages/bots/axiom-assist-bot/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'packages/bots/axiom-assist-bot/**'
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: |
+        cd packages/bots/axiom-assist-bot
+        npm install
+
+    - name: Run tests
+      run: |
+        cd packages/bots/axiom-assist-bot
+        npm test
+
+    - name: Build
+      run: |
+        cd packages/bots/axiom-assist-bot
+        npm run build
+
+    - name: Lint
+      run: |
+        cd packages/bots/axiom-assist-bot
+        npm run lint
+
+    - name: Security audit
+      run: |
+        cd packages/bots/axiom-assist-bot
+        npm audit

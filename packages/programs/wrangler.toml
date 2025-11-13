@@ -1,0 +1,10 @@
+name = "axiom-id"
+
+[vars]
+NODE_VERSION = "20"
+
+[build]
+command = "npm run build"
+
+[pages]
+pages_build_output_dir = ".next"

@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Background colors */
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    
+    /* Brand colors (HSL format for Tailwind) */
+    --primary: 217 91% 60%;        /* Blue-500 equivalent */
+    --primary-hover: 217 91% 53%;  /* Blue-600 equivalent */
+    --secondary: 220 13% 18%;      /* Gray-800 equivalent */
+    --secondary-hover: 220 13% 13%; /* Gray-900 equivalent */
+    --accent: 239 84% 67%;         /* Indigo-400 for accents */
+    
+    /* Semantic colors */
+    --card-bg: 220 13% 9%;         /* Gray-900 */
+    --card-bg-hover: 220 13% 13%;  /* Slightly lighter on hover */
+    --border: 220 13% 18%;         /* Gray-800 */
+  }
+
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+  }
+}
+
+@layer utilities {
+  /* Custom utility classes for consistent theming */
+  .bg-primary {
+    background-color: hsl(var(--primary));
+  }
+  
+  .bg-primary-hover {
+    background-color: hsl(var(--primary-hover));
+  }
+  
+  .text-primary {
+    color: hsl(var(--primary));
+  }
+  
+  .bg-card {
+    background-color: hsl(var(--card-bg));
+  }
+  
+  .bg-card-hover {
+    background-color: hsl(var(--card-bg-hover));
+  }
+  
+  .border-card {
+    border-color: hsl(var(--border));
+  }
+  
+  /* Hover transitions */
+  .hover-primary:hover {
+    background-color: hsl(var(--primary-hover));
+  }
+  
+  .hover-card:hover {
+    background-color: hsl(var(--card-bg-hover));
+  }
+}

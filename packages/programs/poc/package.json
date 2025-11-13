@@ -1,0 +1,25 @@
+{
+  "name": "axiom-id-poc",
+  "version": "1.0.0",
+  "description": "Proof of Concept for Axiom ID integration with Google ADK",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest",
+    "dev": "nodemon index.js"
+  },
+  "keywords": ["axiom-id", "google-adk", "ai-agents", "solana"],
+  "author": "Axiom ID Team",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.78.0",
+    "@coral-xyz/anchor": "^0.28.0",
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "jest": "^29.6.1",
+    "nodemon": "^3.0.1"
+  }
+}

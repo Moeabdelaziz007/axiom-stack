@@ -1,0 +1,24 @@
+{
+  "name": "@axiom-id/tma",
+  "version": "0.1.0",
+  "description": "Axiom Chat Telegram Mini App for Train-to-Earn system",
+  "main": "axiom-tma.js",
+  "scripts": {
+    "start": "serve -s .",
+    "dev": "serve -s .",
+    "build": "echo 'No build step required for TMA'"
+  },
+  "keywords": [
+    "axiom",
+    "telegram",
+    "mini-app",
+    "train-to-earn",
+    "solana",
+    "ai"
+  ],
+  "author": "Axiom ID Team",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}

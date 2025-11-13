@@ -1,0 +1,20 @@
+{
+  "name": "axiom-stack",
+  "version": "1.0.0",
+  "description": "The Axiom Stack: A decentralized stack for the Autonomous Agent Economy",
+  "workspaces": [
+    "packages/*",
+    "packages/programs/programs/*",
+    "packages/sdks/*",
+    "packages/bots/*",
+    "packages/web/*"
+  ],
+  "scripts": {
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "lint": "lerna run lint"
+  },
+  "devDependencies": {
+    "lerna": "^6.0.0"
+  }
+}

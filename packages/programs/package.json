@@ -1,0 +1,57 @@
+{
+  "name": "@axiom-id/sdk",
+  "version": "1.0.0",
+  "description": "Decentralized Identity Layer for AI Agents - SDK for Axiom ID Protocol",
+  "keywords": [
+    "ai",
+    "identity",
+    "solana",
+    "blockchain",
+    "decentralized",
+    "agents",
+    "reputation",
+    "web3"
+  ],
+  "homepage": "https://github.com/your-org/axiom-id#readme",
+  "bugs": {
+    "url": "https://github.com/your-org/axiom-id/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/axiom-id.git"
+  },
+  "license": "Apache-2.0",
+  "author": "Axiom ID Team",
+  "main": "sdk/dist/index.js",
+  "types": "sdk/dist/index.d.ts",
+  "files": [
+    "sdk/dist/**/*"
+  ],
+  "private": false,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export:static": "next build && echo 'Static export completed in out directory'",
+    "build:sdk": "cd sdk && ./build.sh",
+    "test:sdk": "cd sdk && npm test"
+  },
+  "dependencies": {
+    "lucide-react": "^0.263.1",
+    "next": "^14.0.0",
+    "posthog-js": "^1.290.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.3.0",
+    "@coral-xyz/anchor": "^0.28.0",
+    "@solana/web3.js": "^1.78.0",
+    "@solana/spl-token": "^0.3.9"
+  },
+  "devDependencies": {
+    "@types/minimatch": "^5.1.2",
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.3",
+    "typescript": "^5.9.3"
+  }
+}

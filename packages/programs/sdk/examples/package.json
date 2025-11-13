@@ -1,0 +1,33 @@
+{
+  "name": "@axiom-id/sdk-examples",
+  "version": "0.1.0",
+  "description": "Examples for using the Axiom ID SDK with solana-agent-kit and LangChain",
+  "main": "index.js",
+  "scripts": {
+    "agent-example": "ts-node agent-example.ts",
+    "langchain-example": "ts-node langchain-example.ts",
+    "identity-example": "ts-node identity-example.ts",
+    "pohw-example": "ts-node pohw-example.ts",
+    "dynamic-staking-example": "ts-node dynamic-staking-example.ts",
+    "solana-agent-kit-example": "ts-node solana-agent-kit-example.ts"
+  },
+  "keywords": [
+    "axiom",
+    "solana",
+    "ai",
+    "identity",
+    "agent",
+    "langchain",
+    "solana-agent-kit"
+  ],
+  "author": "Axiom ID Team",
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.28.0",
+    "@solana/web3.js": "^1.78.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.1"
+  }
+}
