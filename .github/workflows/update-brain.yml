@@ -12,7 +12,6 @@ jobs:
   ingest-knowledge:
     runs-on: ubuntu-latest
     
-    # Set the default working directory for all steps
     defaults:
       run:
         working-directory: ./packages/bots/axiom-assist-bot
@@ -25,15 +24,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'packages/bots/axiom-assist-bot/package-lock.json'
 
-      - name: Force Clean Install (Fix Lockfile)
-        # Delete the corrupted lockfile and node_modules, then run fresh install
-        run: |
-          echo "Deleting corrupted package-lock.json and node_modules..."
-          rm -rf package-lock.json node_modules
-          echo "Running clean npm install to generate new package-lock.json..."
-          npm install --legacy-peer-deps
-          echo "Installation completed successfully!"
+      - name: Install Dependencies
+        # Use 'npm ci' which is faster and safer for CI
+        # This will now work because we are committing a healthy lockfile.
+        run: npm ci
 
       - name: Run Ingestion Script (Feed the Brain)
         run: node ingest.mjs
