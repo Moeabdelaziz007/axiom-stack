@@ -28,10 +28,10 @@
     "express": "^4.19.2",
     "fast-glob": "^3.3.3",
     "flat": "^6.0.1",
-    "langchain": "^0.2.20"
+    "langchain": "^0.2.20",
+    "whatwg-url": "^9.1.0"
   },
   "description": "🤖 The official AI Developer Advocate for the Axiom ID open-source project.",
-  "devDependencies": {},
   "keywords": [],
   "author": "",
   "license": "ISC"
