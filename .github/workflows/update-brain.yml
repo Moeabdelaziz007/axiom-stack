@@ -1,16 +1,24 @@
 name: Update Axiom Brain
 
 on:
+  workflow_dispatch: # يسمح لك بتشغيله يدوياً (الأهم)
   push:
     branches:
       - main
-  workflow_dispatch:
+    paths:
+      - 'packages/**' 
 
 jobs:
-  ingest:
+  ingest-knowledge:
     runs-on: ubuntu-latest
+    
+    # نحدد مجلد العمل الافتراضي لجميع الأوامر
+    defaults:
+      run:
+        working-directory: ./packages/bots/axiom-assist-bot
+
     steps:
-      - name: Checkout code
+      - name: Checkout Monorepo Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -18,17 +26,18 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Remove lockfile and install dependencies
+      - name: Force Clean Install (Fix Lockfile)
+        # --- هذا هو الإصلاح ---
+        # 1. نحذف ملف القفل التالف
+        # 2. نقوم بتثبيت نظيف من package.json
         run: |
-          cd packages/bots/axiom-assist-bot
           rm -f package-lock.json
-          npm install --legacy-peer-deps
+          npm install
 
-      - name: Run ingest script
-        run: |
-          cd packages/bots/axiom-assist-bot
-          node ingest.mjs
+      - name: Run Ingestion Script (Feed the Brain)
+        run: node ingest.mjs
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          PROJECT_PATH: ../../..
+          PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
+          PROJECT_PATH: ${{ github.workspace }}  # المسار الجذري للمستودع
