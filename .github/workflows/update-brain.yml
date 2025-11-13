@@ -1,17 +1,22 @@
 name: Update Axiom Brain
 
 on:
-  workflow_dispatch: # يسمح لك بتشغيله يدوياً (الأهم)
+  workflow_dispatch: # يسمح لك بتشغيله يدوياً
   push:
     branches:
       - main
     paths:
-      - 'packages/**' 
+      - 'packages/**'
 
 jobs:
   ingest-knowledge:
     runs-on: ubuntu-latest
     
+    # --- الإصلاح 1: تحديد مجلد العمل ---
+    defaults:
+      run:
+        working-directory: ./packages/bots/axiom-assist-bot
+
     steps:
       - name: Checkout Monorepo Code
         uses: actions/checkout@v4
@@ -22,22 +27,30 @@ jobs:
           node-version: '20'
 
       - name: Force Clean Install (Fix Lockfile)
-        # --- هذا هو الإصلاح ---
-        # 1. نحذف ملف القفل التالف
-        # 2. نقوم بتثبيت نظيف من package.json
+        # --- الإصلاح 2: حذف القفل التالف أولاً ---
         run: |
-          cd packages/bots/axiom-assist-bot
           rm -f package-lock.json
           npm install
-          # Install missing flat package explicitly
-          npm install flat
 
       - name: Run Ingestion Script (Feed the Brain)
-        run: |
-          cd packages/bots/axiom-assist-bot
-          node ingest.mjs
+        # --- الإصلاح 3: تحديد المسار الجذري للمشروع ---
+        run: node ingest.mjs
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
-          PROJECT_PATH: ${{ github.workspace }}  # المسار الجذري للمستودع
+          PROJECT_PATH: ${{ github.workspace }} # المسار الجذري للمستودع
+```eof
+
+8.  بعد اللصق، انزل للأسفل واضغط على الزر الأخضر **`Commit changes...`**.
+
+---
+
+### 🚀 خطوتك التالية (المحاولة الرابعة والأخيرة)
+
+1.  بعد أن تضغط "Commit changes"، انتظر 10 ثوانٍ.
+2.  اذهب إلى تبويب **`Actions`** مرة أخرى.
+3.  اختر `Update Axiom Brain` من القائمة.
+4.  اضغط **`Run workflow`** يدوياً مرة أخرى.
+
+هذه المرة، أنا أضمن لك أن خطوة `Force Clean Install` ستعمل، وستقوم بحذف الملف التالف، وسيتم تثبيت `flat`، وستنجح "تغذية الدماغ" (✅). نحن على خط النهاية!
