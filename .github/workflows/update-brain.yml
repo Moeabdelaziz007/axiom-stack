@@ -33,6 +33,8 @@ jobs:
           rm -f package-lock.json
           echo "Running clean npm install..."
           npm install
+          echo "Installing missing flat package explicitly..."
+          npm install flat
 
       - name: Run Ingestion Script (Feed the Brain)
         # --- FIX 3: Set correct PROJECT_PATH for the ingest script ---
