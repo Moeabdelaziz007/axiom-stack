@@ -1,8 +1,16 @@
 import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey, SystemProgram } from '@solana/web3.js';
 
-// Placeholder types
+// Define types based on what we know from the program
 type AxiomAttestations = any;
+
+type Attestation = {
+  subject: PublicKey;
+  issuer: PublicKey;
+  schema: string;
+  data: string;
+  createdAt: BN;
+};
 
 export class AttestationClient {
   private connection: Connection;
@@ -20,51 +28,90 @@ export class AttestationClient {
 
   /**
    * Request an attestation for an agent
-   * @param subject Public key of the agent being attested
    * @param schema Schema for the attestation
    * @param data Attestation data
    * @returns Transaction signature
    */
-  async requestAttestation(subject: PublicKey, schema: string, data: string): Promise<string> {
+  async requestAttestation(schema: string, data: string): Promise<string> {
     if (!this.axiomAttestationsProgram) {
       throw new Error('Axiom Attestations program not initialized');
     }
 
-    // TODO: Implement actual attestation request logic
-    // This is a simplified version for demonstration
-    
-    return "transaction_signature";
-  }
-
-  /**
-   * Get reputation score for an agent
-   * @param agent Public key of the agent
-   * @returns Reputation score
-   */
-  async getReputationScore(agent: PublicKey): Promise<number> {
-    if (!this.axiomAttestationsProgram) {
-      throw new Error('Axiom Attestations program not initialized');
+    try {
+      // Get the user's public key (payer)
+      const userPublicKey = this.provider.wallet.publicKey;
+      
+      // Find the PDA for the attestation
+      const [attestationPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("attestation"), userPublicKey.toBuffer()],
+        this.axiomAttestationsProgram.programId
+      );
+      
+      // Create the transaction
+      const tx = await this.axiomAttestationsProgram.methods
+        .requestAttestation(schema, data)
+        .accounts({
+          payer: userPublicKey,
+          attestation: attestationPda,
+          systemProgram: SystemProgram.programId,
+        })
+        .rpc();
+      
+      return tx;
+    } catch (error) {
+      console.error('Failed to request attestation:', error);
+      throw error;
     }
-
-    // TODO: Implement actual reputation score calculation
-    // This is a simplified version for demonstration
-    
-    return 100; // Default reputation score
   }
 
   /**
-   * Present credentials for verification
-   * @param credentials Credential data to present
+   * Verify an attestation
+   * @param attestationId ID of the attestation to verify
    * @returns Verification result
    */
-  async presentCredentials(credentials: any): Promise<boolean> {
+  async verifyAttestation(attestationId: PublicKey): Promise<boolean> {
     if (!this.axiomAttestationsProgram) {
       throw new Error('Axiom Attestations program not initialized');
     }
 
-    // TODO: Implement actual credential presentation and verification
-    // This is a simplified version for demonstration
-    
-    return true; // Default verification result
+    try {
+      // Fetch the attestation
+      const attestation = await this.axiomAttestationsProgram.account.attestation.fetch(attestationId) as Attestation;
+      // In a real implementation, we would verify the attestation
+      return true;
+    } catch (error) {
+      console.error('Failed to verify attestation:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Revoke an attestation
+   * @param attestationId ID of the attestation to revoke
+   * @returns Transaction signature
+   */
+  async revokeAttestation(attestationId: PublicKey): Promise<string> {
+    if (!this.axiomAttestationsProgram) {
+      throw new Error('Axiom Attestations program not initialized');
+    }
+
+    try {
+      // Get the user's public key
+      const userPublicKey = this.provider.wallet.publicKey;
+      
+      // Create the transaction to revoke the attestation
+      const tx = await this.axiomAttestationsProgram.methods
+        .revokeAttestation()
+        .accounts({
+          issuer: userPublicKey,
+          attestation: attestationId,
+        })
+        .rpc();
+      
+      return tx;
+    } catch (error) {
+      console.error('Failed to revoke attestation:', error);
+      throw error;
+    }
   }
 }

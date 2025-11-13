@@ -6,13 +6,22 @@ export type AxiomPoHW = any;
 export type AxiomAttestations = any;
 export type ZentixProtocol = any;
 
-// Identity types
-export interface IdentityAccount {
+// Identity types based on IDL
+export interface AgentMetadata {
+  did: string;
+  soulMint: string;
+  agentPda: string;
+  version: number;
+  bump: number;
+}
+
+export interface AxiomAiIdentity {
   authority: string;
   persona: string;
-  stakeAmount: number;
   reputation: number;
-  bump: number;
+  createdAt: number;
+  stakeAmount: number;
+  isSoulBound: boolean;
 }
 
 // Staking types

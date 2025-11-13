@@ -7,7 +7,7 @@ type AxiomId = any;
 type AxiomStaking = any;
 type AxiomPoHW = any;
 type AxiomAttestations = any;
-type ZentixProtocol = any;
+type AgentSoulFactory = any;
 
 // Import SDK modules
 import { IdentityClient } from './clients/identity';
@@ -15,6 +15,20 @@ import { StakingClient } from './clients/staking';
 import { PoHWClient } from './clients/pohw';
 import { AttestationClient } from './clients/attestations';
 import { ZentixClient } from './clients/zentix';
+
+// Program IDs
+export const PROGRAM_IDS = {
+  AXIOM_ID: new PublicKey("5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"),
+  AXIOM_STAKING: new PublicKey("3sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"),
+  AXIOM_ATTESTATIONS: new PublicKey("4sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"),
+  AXIOM_POHW: new PublicKey("9sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"),
+  AGENT_SOUL_FACTORY: new PublicKey("6sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"),
+  AXIOM_GOVERNANCE: new PublicKey("8sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"),
+  AXIOM_PAYMENTS: new PublicKey("7sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"),
+  AXIOM_SLASHING: new PublicKey("AsKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"),
+  AXIOM_TOKEN: new PublicKey("7sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"),
+  AXIOM_STAKING_DYNAMIC: new PublicKey("AsKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD")
+};
 
 export class AxiomStackSDK {
   private connection: Connection;
@@ -46,17 +60,31 @@ export class AxiomStackSDK {
    * @param programs Object containing all program instances
    */
   async initializePrograms(programs: {
-    axiomIdProgram: Program<AxiomId>,
-    axiomStakingProgram: Program<AxiomStaking>,
-    axiomPoHWProgram: Program<AxiomPoHW>,
-    axiomAttestationsProgram: Program<AxiomAttestations>,
-    zentixProgram: Program<ZentixProtocol>
+    axiomIdProgram?: Program<AxiomId>,
+    axiomStakingProgram?: Program<AxiomStaking>,
+    axiomPoHWProgram?: Program<AxiomPoHW>,
+    axiomAttestationsProgram?: Program<AxiomAttestations>,
+    agentSoulFactoryProgram?: Program<AgentSoulFactory>
   }) {
-    this.identity.initialize(programs.axiomIdProgram);
-    this.staking.initialize(programs.axiomStakingProgram);
-    this.pohw.initialize(programs.axiomPoHWProgram);
-    this.attestations.initialize(programs.axiomAttestationsProgram);
-    this.zentix.initialize(programs.zentixProgram);
+    if (programs.axiomIdProgram) {
+      this.identity.initialize(programs.axiomIdProgram);
+    }
+    
+    if (programs.axiomStakingProgram) {
+      this.staking.initialize(programs.axiomStakingProgram);
+    }
+    
+    if (programs.axiomPoHWProgram) {
+      this.pohw.initialize(programs.axiomPoHWProgram);
+    }
+    
+    if (programs.axiomAttestationsProgram) {
+      this.attestations.initialize(programs.axiomAttestationsProgram);
+    }
+    
+    if (programs.agentSoulFactoryProgram) {
+      // We would need to add this to the ZentixClient or create a separate client
+    }
   }
 }
 

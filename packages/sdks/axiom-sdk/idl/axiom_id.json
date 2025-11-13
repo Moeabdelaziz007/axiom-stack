@@ -1,0 +1,242 @@
+{
+  "version": "0.1.0",
+  "name": "axiom_id",
+  "instructions": [
+    {
+      "name": "initializeAgent",
+      "accounts": [
+        {
+          "name": "agentMetadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "agentPda",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "did",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "did",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "mintSoulToAgent",
+      "accounts": [
+        {
+          "name": "agentMetadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "agentPda",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "soulMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "createIdentity",
+      "accounts": [
+        {
+          "name": "identityAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "persona",
+          "type": "string"
+        },
+        {
+          "name": "stakeAmount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "getIdentity",
+      "accounts": [
+        {
+          "name": "identityAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "stakeTokens",
+      "accounts": [
+        {
+          "name": "identityAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakeTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "axiomTokenMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AgentMetadata",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "did",
+            "type": "publicKey"
+          },
+          {
+            "name": "soulMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "agentPda",
+            "type": "publicKey"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AxiomAiIdentity",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "persona",
+            "type": "string"
+          },
+          {
+            "name": "reputation",
+            "type": "u64"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "stakeAmount",
+            "type": "u64"
+          },
+          {
+            "name": "isSoulBound",
+            "type": "bool"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "SoulAlreadyMinted",
+      "msg": "Soul has already been minted for this agent"
+    },
+    {
+      "code": 6001,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
+    }
+  ],
+  "metadata": {
+    "address": "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
+  }
+}

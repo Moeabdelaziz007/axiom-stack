@@ -1,8 +1,14 @@
 import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
-import { Connection } from '@solana/web3.js';
+import { Connection, PublicKey, SystemProgram } from '@solana/web3.js';
 
-// Placeholder types
+// Define types based on what we know from the program
 type AxiomStaking = any;
+
+type StakeAccount = {
+  owner: PublicKey;
+  amount: BN;
+  createdAt: BN;
+};
 
 export class StakingClient {
   private connection: Connection;
@@ -19,7 +25,7 @@ export class StakingClient {
   }
 
   /**
-   * Stake tokens for an identity
+   * Stake tokens for an agent
    * @param amount Amount of tokens to stake
    * @returns Transaction signature
    */
@@ -28,14 +34,61 @@ export class StakingClient {
       throw new Error('Axiom Staking program not initialized');
     }
 
-    // TODO: Implement actual staking logic with proper account addresses
-    // This is a simplified version for demonstration
-    
-    return "transaction_signature";
+    try {
+      // Get the user's public key
+      const userPublicKey = this.provider.wallet.publicKey;
+      
+      // Find the PDA for the stake account
+      const [stakeAccountPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("stake"), userPublicKey.toBuffer()],
+        this.axiomStakingProgram.programId
+      );
+      
+      // Create the transaction
+      const tx = await this.axiomStakingProgram.methods
+        .stakeTokens(new BN(amount))
+        .accounts({
+          user: userPublicKey,
+          stakeAccount: stakeAccountPda,
+          tokenProgram: SystemProgram.programId,
+        })
+        .rpc();
+      
+      return tx;
+    } catch (error) {
+      console.error('Failed to stake tokens:', error);
+      throw error;
+    }
   }
 
   /**
-   * Unstake tokens
+   * Get staked amount for an agent
+   * @param agent Public key of the agent
+   * @returns Staked amount
+   */
+  async getStakedAmount(agent: PublicKey): Promise<number> {
+    if (!this.axiomStakingProgram) {
+      throw new Error('Axiom Staking program not initialized');
+    }
+
+    try {
+      // Find the PDA for the stake account
+      const [stakeAccountPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("stake"), agent.toBuffer()],
+        this.axiomStakingProgram.programId
+      );
+      
+      // Fetch the account data
+      const stakeAccount = await this.axiomStakingProgram.account.stakeAccount.fetch(stakeAccountPda) as StakeAccount;
+      return stakeAccount.amount.toNumber();
+    } catch (error) {
+      console.error('Failed to fetch staked amount:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Unstake tokens for an agent
    * @param amount Amount of tokens to unstake
    * @returns Transaction signature
    */
@@ -44,41 +97,30 @@ export class StakingClient {
       throw new Error('Axiom Staking program not initialized');
     }
 
-    // TODO: Implement actual unstaking logic with proper account addresses
-    // This is a simplified version for demonstration
-    
-    return "transaction_signature";
-  }
-
-  /**
-   * Claim rewards from staking
-   * @returns Transaction signature
-   */
-  async claimRewards(): Promise<string> {
-    if (!this.axiomStakingProgram) {
-      throw new Error('Axiom Staking program not initialized');
+    try {
+      // Get the user's public key
+      const userPublicKey = this.provider.wallet.publicKey;
+      
+      // Find the PDA for the stake account
+      const [stakeAccountPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("stake"), userPublicKey.toBuffer()],
+        this.axiomStakingProgram.programId
+      );
+      
+      // Create the transaction
+      const tx = await this.axiomStakingProgram.methods
+        .unstakeTokens(new BN(amount))
+        .accounts({
+          user: userPublicKey,
+          stakeAccount: stakeAccountPda,
+          tokenProgram: SystemProgram.programId,
+        })
+        .rpc();
+      
+      return tx;
+    } catch (error) {
+      console.error('Failed to unstake tokens:', error);
+      throw error;
     }
-
-    // TODO: Implement actual reward claiming logic with proper account addresses
-    // This is a simplified version for demonstration
-    
-    return "transaction_signature";
-  }
-
-  /**
-   * Stake with reputation for boosted rewards
-   * @param amount Amount of tokens to stake
-   * @param reputationScore User's reputation score
-   * @returns Transaction signature
-   */
-  async stakeWithReputation(amount: number, reputationScore: number): Promise<string> {
-    if (!this.axiomStakingProgram) {
-      throw new Error('Axiom Staking program not initialized');
-    }
-
-    // TODO: Implement actual reputation-based staking logic with proper account addresses
-    // This is a simplified version for demonstration
-    
-    return "transaction_signature";
   }
 }

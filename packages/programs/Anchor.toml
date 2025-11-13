@@ -36,7 +36,7 @@ axiom_staking_dynamic = "AsKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "Devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

@@ -1,24 +1,19 @@
 import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
-import { Connection, PublicKey } from '@solana/web3.js';
-
-// Placeholder types
-type AxiomId = any;
-type AgentSoulFactory = any;
+import { Connection, PublicKey, Keypair, SystemProgram } from '@solana/web3.js';
+import { AxiomId, AxiomAiIdentity, AgentMetadata } from '../types';
 
 export class IdentityClient {
   private connection: Connection;
   private provider: AnchorProvider;
   private axiomIdProgram: Program<AxiomId> | null = null;
-  private agentSoulFactoryProgram: Program<AgentSoulFactory> | null = null;
 
   constructor(connection: Connection, provider: AnchorProvider) {
     this.connection = connection;
     this.provider = provider;
   }
 
-  initialize(axiomIdProgram: Program<AxiomId>, agentSoulFactoryProgram: Program<AgentSoulFactory>) {
+  initialize(axiomIdProgram: Program<AxiomId>) {
     this.axiomIdProgram = axiomIdProgram;
-    this.agentSoulFactoryProgram = agentSoulFactoryProgram;
   }
 
   /**
@@ -32,9 +27,31 @@ export class IdentityClient {
       throw new Error('Axiom ID program not initialized');
     }
 
-    // TODO: Implement actual identity creation logic
-    // This is a simplified version for demonstration
-    return "transaction_signature";
+    try {
+      // Get the user's public key (payer)
+      const userPublicKey = this.provider.wallet.publicKey;
+      
+      // Find the PDA for the identity account
+      const [identityPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("axiom-identity"), userPublicKey.toBuffer()],
+        this.axiomIdProgram.programId
+      );
+      
+      // Create the transaction instruction
+      const tx = await this.axiomIdProgram.methods
+        .createIdentity(persona, new BN(stakeAmount))
+        .accounts({
+          identityAccount: identityPda,
+          user: userPublicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .rpc();
+      
+      return tx;
+    } catch (error) {
+      console.error('Failed to create identity:', error);
+      throw error;
+    }
   }
 
   /**
@@ -47,9 +64,20 @@ export class IdentityClient {
       throw new Error('Axiom ID program not initialized');
     }
 
-    // TODO: Implement actual identity retrieval logic
-    // This is a simplified version for demonstration
-    return { persona: "Default Agent", reputation: 100 };
+    try {
+      // Find the PDA for the identity account
+      const [identityPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("axiom-identity"), authority.toBuffer()],
+        this.axiomIdProgram.programId
+      );
+      
+      // Fetch the account data
+      const identityAccount = await this.axiomIdProgram.account.axiomAiIdentity.fetch(identityPda);
+      return identityAccount;
+    } catch (error) {
+      console.error('Failed to fetch identity account:', error);
+      return null;
+    }
   }
 
   /**
@@ -59,13 +87,30 @@ export class IdentityClient {
    * @returns Transaction signature
    */
   async createSoulBoundToken(recipient: PublicKey, amount: number): Promise<string> {
-    if (!this.agentSoulFactoryProgram) {
-      throw new Error('Agent Soul Factory program not initialized');
+    if (!this.axiomIdProgram) {
+      throw new Error('Axiom ID program not initialized');
     }
 
-    // TODO: Implement actual soul-bound token creation logic
-    // This is a simplified version for demonstration
-    return "transaction_signature";
+    try {
+      // Find the PDA for the agent metadata
+      const [agentMetadataPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("agent"), recipient.toBuffer()],
+        this.axiomIdProgram.programId
+      );
+      
+      // Create the transaction
+      const tx = await this.axiomIdProgram.methods
+        .mintSoulToAgent()
+        .accounts({
+          agentMetadata: agentMetadataPda,
+        })
+        .rpc();
+      
+      return tx;
+    } catch (error) {
+      console.error('Failed to create soul-bound token:', error);
+      throw error;
+    }
   }
 
   /**
@@ -75,8 +120,9 @@ export class IdentityClient {
    */
   async stake(amount: number): Promise<string> {
     // This would integrate with the staking program
-    // For now, return a placeholder
-    return "transaction_signature";
+    // For now, we'll simulate the call
+    console.log(`Staking ${amount} tokens for agent`);
+    return "transaction_signature_mock";
   }
 
   /**
@@ -87,8 +133,9 @@ export class IdentityClient {
    */
   async requestAttestation(schema: string, data: string): Promise<string> {
     // This would integrate with the attestations program
-    // For now, return a placeholder
-    return "transaction_signature";
+    // For now, we'll simulate the call
+    console.log(`Requesting attestation with schema: ${schema}`);
+    return "transaction_signature_mock";
   }
 
   /**
@@ -98,7 +145,7 @@ export class IdentityClient {
    */
   async getReputationScore(agent: PublicKey): Promise<number> {
     // This would integrate with the staking program to fetch reputation
-    // For now, return a placeholder value
+    // For now, we'll simulate the call
     return 100;
   }
 
@@ -109,7 +156,7 @@ export class IdentityClient {
    */
   async presentCredentials(credentials: any): Promise<boolean> {
     // This would integrate with the attestations program to verify credentials
-    // For now, return a placeholder value
+    // For now, we'll simulate the call
     return true;
   }
 }

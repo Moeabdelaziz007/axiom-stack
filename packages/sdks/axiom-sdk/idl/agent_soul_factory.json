@@ -1,0 +1,90 @@
+{
+  "version": "0.1.0",
+  "name": "agent_soul_factory",
+  "instructions": [
+    {
+      "name": "createSoul",
+      "accounts": [
+        {
+          "name": "soul",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "soulName",
+          "type": "string"
+        },
+        {
+          "name": "soulType",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "transferSoul",
+      "accounts": [
+        {
+          "name": "soul",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "currentOwner",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "newOwner",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Soul",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "soulName",
+            "type": "string"
+          },
+          {
+            "name": "soulType",
+            "type": "string"
+          },
+          {
+            "name": "isTransferable",
+            "type": "bool"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "address": "6sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+  }
+}
