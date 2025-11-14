@@ -13,6 +13,22 @@ services:
       - key: PINECONE_API_KEY
         sync: false
 
+  - type: web
+    name: axiom-id-socket-server
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run socket:start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: SOCKET_PORT
+        value: 3001
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+
   - type: worker
     name: axiom-id-discord-bot
     env: node

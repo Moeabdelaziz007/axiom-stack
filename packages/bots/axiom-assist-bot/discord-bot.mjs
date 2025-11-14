@@ -2,6 +2,9 @@
 import { Client, GatewayIntentBits, Events, ActivityType } from 'discord.js';
 import 'dotenv/config';
 
+// Import the orchestrator
+import AxiomOrchestrator from './orchestrator.mjs';
+
 // Create a new client instance
 const client = new Client({ 
   intents: [
@@ -12,6 +15,9 @@ const client = new Client({
   ] 
 });
 
+// Create a global orchestrator instance
+const orchestrator = new AxiomOrchestrator();
+
 // When the client is ready, run this code (only once)
 client.once(Events.ClientReady, readyClient => {
   console.log(`🎉 Ready! Logged in as ${readyClient.user.tag}`);
@@ -19,6 +25,15 @@ client.once(Events.ClientReady, readyClient => {
   
   // Set bot status
   client.user.setActivity('Axiom ID Docs', { type: ActivityType.Reading });
+  
+  // Initialize the orchestrator
+  orchestrator.initialize()
+    .then(() => {
+      console.log('✅ Axiom Orchestrator connected to Discord bot');
+    })
+    .catch(error => {
+      console.error('❌ Failed to initialize Axiom Orchestrator:', error);
+    });
 });
 
 // Listen for messages
@@ -83,13 +98,22 @@ Example: "@AxiomAssist how do I create an agent identity?"`,
     
     console.log(`🤖 Question from ${message.author.tag}: ${question}`);
     
-    // For now, just acknowledge the question without querying knowledge base
-    await message.reply({
-      content: "I'm currently being updated to work with our new Pinecone-based knowledge base. Please check back soon!",
-      allowedMentions: { repliedUser: false }
-    });
+    // Use the orchestrator to handle the query
+    try {
+      const response = await orchestrator.handleUserQuery(question);
+      await message.reply({
+        content: response,
+        allowedMentions: { repliedUser: false }
+      });
+    } catch (error) {
+      console.error('Error processing with orchestrator:', error);
+      await message.reply({
+        content: "Sorry, I encountered an error while processing your question. Please try again later.",
+        allowedMentions: { repliedUser: false }
+      });
+    }
     
-    console.log(`✅ Acknowledged question for ${message.author.tag}`);
+    console.log(`✅ Responded to ${message.author.tag}`);
     
   } catch (error) {
     console.error('Error processing message:', error);

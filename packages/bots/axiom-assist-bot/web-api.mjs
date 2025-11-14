@@ -149,7 +149,7 @@ const retriever = vectorStore.asRetriever();
 // 4. Initialize Gemini Chat Model
 const model = new ChatGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY,
-  modelName: "gemini-2.5-flash-preview-09-2025",
+  modelName: "gemini-2.5-flash-preview-05-20",
   temperature: 0.7,
 });
 

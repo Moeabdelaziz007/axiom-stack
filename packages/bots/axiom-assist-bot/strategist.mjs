@@ -14,7 +14,7 @@ const STRATEGIST_PROMPT = fs.readFileSync(path.join(__dirname, 'strategist-promp
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-preview-05-20" });
 
 // Initialize Pinecone and Embeddings
 const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
