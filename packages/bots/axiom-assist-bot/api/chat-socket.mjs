@@ -17,7 +17,7 @@ const server = http.createServer(app);
 // Initialize Socket.io server
 const io = new Server(server, {
   cors: {
-    origin: "*", // In production, restrict this to your frontend domain
+    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "https://axiomid.app"],
     methods: ["GET", "POST"]
   }
 });
