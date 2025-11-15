@@ -103,7 +103,7 @@ export class PaymentRouter {
                 success: true,
                 error: null,
                 paymentRequest: paymentRequest,
-                tokenUsed: tokenInfo.mint,
+                tokenUsed: tokenInfo.mint || null,
                 adjustedAmount: adjustedAmount
             };
         } catch (error) {
