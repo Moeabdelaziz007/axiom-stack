@@ -1,7 +1,7 @@
 // components/HoloCoreVisual.tsx - 3D Holographic Visualization Component
 import { useState, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, MeshDistortMaterial, PointMaterial, Points, PointMaterialProps, OrbitControlsProps } from '@react-three/drei';
+import { OrbitControls, Sphere, MeshDistortMaterial, PointMaterial, Points as DreiPoints, PointMaterialProps, OrbitControlsProps } from '@react-three/drei';
 import * as THREE from 'three';
 
 // Floating particles component
@@ -29,7 +29,7 @@ const Particles = () => {
   });
 
   return (
-    <points ref={pointsRef}>
+    <DreiPoints ref={pointsRef}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
@@ -46,7 +46,7 @@ const Particles = () => {
         transparent={true}
         opacity={0.8}
       />
-    </points>
+    </DreiPoints>
   );
 };
 
@@ -55,18 +55,19 @@ const CoreSphere = ({ state }: { state: string }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHover] = useState(false);
   
-  useFrame((state, delta) => {
+  useFrame((frameState, delta) => {
     if (meshRef.current) {
       // Rotate slowly
       meshRef.current.rotation.x += delta * 0.1;
       meshRef.current.rotation.y += delta * 0.15;
       
       // Pulsing effect based on state
-      const scale = 1 + Math.sin(state === 'isBuilding' ? state.time * 10 : state.time * 2) * 0.05;
+      const time = frameState.clock.elapsedTime;
+      const scale = 1 + Math.sin(state === 'isBuilding' ? time * 10 : time * 2) * 0.05;
       meshRef.current.scale.setScalar(scale);
       
       // Color changes based on state
-      if (meshRef.current.material instanceof THREE.MeshDistortMaterial) {
+      if (meshRef.current.material instanceof MeshDistortMaterial) {
         if (state === 'isBuilding') {
           meshRef.current.material.color.set('#8b5cf6'); // Purple for building
         } else if (state === 'isListening') {
@@ -125,7 +126,7 @@ const Sparks = () => {
   });
 
   return (
-    <points ref={pointsRef}>
+    <DreiPoints ref={pointsRef}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
@@ -142,7 +143,7 @@ const Sparks = () => {
         transparent={true}
         opacity={0.9}
       />
-    </points>
+    </DreiPoints>
   );
 };
 

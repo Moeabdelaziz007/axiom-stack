@@ -1,0 +1,52 @@
+services:
+  - type: web
+    name: axiom-id-web-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run web-api
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+
+  - type: web
+    name: axiom-id-socket-server
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run socket:start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: SOCKET_PORT
+        value: 3001
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: WEB_API_INTERNAL_URL
+        value: http://axiom-id-web-api:3000
+
+  - type: worker
+    name: axiom-id-discord-bot
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run bot-pinecone
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: DISCORD_BOT_TOKEN
+        sync: false
+      - key: WEB_API_INTERNAL_URL
+        value: http://axiom-id-web-api:3000
+      - key: SOCKET_SERVER_INTERNAL_URL
+        value: http://axiom-id-socket-server:3001

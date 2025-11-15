@@ -66,6 +66,7 @@ class ContentCreationAgent {
       };
       
       const attestationTx = await this.sdk.attestations.requestAttestation(
+        this.agentPublicKey,
         'content_creation',
         JSON.stringify(attestationData)
       );
@@ -80,7 +81,7 @@ class ContentCreationAgent {
         attestationTx,
         reputationBoost
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create content:', error);
       return {
         success: false,

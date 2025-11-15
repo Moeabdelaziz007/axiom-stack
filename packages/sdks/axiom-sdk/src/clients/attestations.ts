@@ -27,31 +27,32 @@ export class AttestationClient {
   }
 
   /**
-   * Request an attestation for an agent
-   * @param schema Schema for the attestation
-   * @param data Attestation data
+   * Create an attestation for an agent
+   * @param subject Public key of the subject being attested
+   * @param claim The claim being made
+   * @param evidence Evidence supporting the claim
    * @returns Transaction signature
    */
-  async requestAttestation(schema: string, data: string): Promise<string> {
+  async requestAttestation(subject: PublicKey, claim: string, evidence: string): Promise<string> {
     if (!this.axiomAttestationsProgram) {
       throw new Error('Axiom Attestations program not initialized');
     }
 
     try {
-      // Get the user's public key (payer)
-      const userPublicKey = this.provider.wallet.publicKey;
+      // Get the user's public key (attester)
+      const attesterPublicKey = this.provider.wallet.publicKey;
       
       // Find the PDA for the attestation
       const [attestationPda] = PublicKey.findProgramAddressSync(
-        [Buffer.from("attestation"), userPublicKey.toBuffer()],
+        [Buffer.from("attestation"), attesterPublicKey.toBuffer(), subject.toBuffer()],
         this.axiomAttestationsProgram.programId
       );
       
       // Create the transaction
       const tx = await this.axiomAttestationsProgram.methods
-        .requestAttestation(schema, data)
+        .createAttestation(subject, claim, evidence)
         .accounts({
-          payer: userPublicKey,
+          attester: attesterPublicKey,
           attestation: attestationPda,
           systemProgram: SystemProgram.programId,
         })
@@ -59,7 +60,7 @@ export class AttestationClient {
       
       return tx;
     } catch (error) {
-      console.error('Failed to request attestation:', error);
+      console.error('Failed to create attestation:', error);
       throw error;
     }
   }
