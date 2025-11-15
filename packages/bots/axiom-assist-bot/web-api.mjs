@@ -1,98 +1,99 @@
-🚀 قائمة تدقيق الإطلاق (Axiom $0 Stack)
-1. تجميع المفاتيح (Gather the Keys)
-أنت الآن بحاجة إلى جمع 4 مفاتيح API أساسية (مفاتيح Gemini معك بالفعل):
-
-PINECONE_API_KEY: اذهب إلى Pinecone.io، أنشئ حساباً مجانياً (Starter Plan)، وأنشئ "Index" (فهرس) واحد. (سمّه axiom-id-brain كما اتفقنا).
-
-DISCORD_BOT_TOKEN: اذهب إلى Discord Developer Portal، أنشئ "New Application"، وأنشئ "Bot"، واحصل على الـ Token.
-
-DISCORD_CLIENT_ID: (ستجده في نفس صفحة البوت)
-
-STRATEGIST_WEBHOOK_URL: في سيرفر Discord الخاص بك، أنشئ قناة خاصة #ai-strategy-log، واذهب إلى الإعدادات (Integrations -> Webhooks) وأنشئ Webhook جديد.
-
-2. إعداد "الأسرار" (Configure Secrets)
-الآن يجب أن نضع هذه المفاتيح في الأماكن الصحيحة:
-
-في مستودع GitHub (لـ Actions):
-
-اذهب إلى Settings > Secrets and variables > Actions.
-
-أضف هذه الـ "Secrets":
-
-GEMINI_API_KEY
-
-PINECONE_API_KEY
-
-STRATEGIST_WEBHOOK_URL
-
-في خدمة Render (للبوتات الحية):
-
-اذهب إلى Render.com.
-
-عندما تنشئ الخدمات في الخطوة 4، اذهب إلى Environment.
-
-أضف هذه الـ "Environment Variables":
-
-GEMINI_API_KEY
-
-PINECONE_API_KEY
-
-DISCORD_BOT_TOKEN
-
-3. "التغذية الأولى للدماغ" (The First Brain Ingest)
-قبل أن تعمل البوتات، يجب أن يكون "الدماغ" (Pinecone) ممتلئاً.
-
-اذهب إلى مستودع البوت (axiom-assist-bot) على GitHub.
-
-اذهب إلى تبويب "Actions".
-
-على اليسار، ابحث عن Update Axiom Brain (ملف update-brain.yml).
-
-انقر على "Run workflow" يدوياً.
-
-انتظر 5-10 دقائق حتى يكتمل. الآن "الدماغ" جاهز.
-
-4. نشر الخدمات الحية (Deploy Live Services)
-الآن اذهب إلى Render لنشر البوتات (ستكون خدمتين مجانيتين):
-
-الخدمة 1: بوت الموقع (Web API):
-
-أنشئ "New Web Service" وقم بربطه بمستودع axiom-assist-bot.
-
-Start Command: npm install && npm run start:web
-
-(تأكد من إضافة متغيرات البيئة من الخطوة 2).
-
-انسخ الرابط الذي سيعطيك إياه Render (مثل: https://axiom-web-api.onrender.com).
-
-الخدمة 2: بوت الديسكورد (Discord Bot):
-
-أنشئ "New Web Service" (نعم، خدمة أخرى مجانية) واربطه بنفس المستودع.
-
-Start Command: npm install && npm run start:discord
-
-(تأكد من إضافة متغيرات البيئة من الخطوة 2).
-
-5. ربط الواجهة الأمامية (Connect the Frontend)
-الخطوة الأخيرة:
-
-خذ الرابط الذي نسخته من Render (مثل https://axiom-web-api.onrender.com).
-
-اذهب إلى كود الواجهة الأمامية لموقعك (axiom_id project).
-
-افتح ملف ChatWidget.tsx.
-
-ابحث عن const API_URL = 'http://localhost:3001/api/chat' (أو ما شابه).
-
-قم بتغييره إلى الرابط الحقيقي: const API_URL = 'https://axiom-web-api.onrender.com/api/chat'.
-
-قم بإعادة نشر (re-deploy) موقعك.
-
-بمجرد الانتهاء من هذه الخطوات الخمس، يصبح "النظام البيئي الآلي" بالكامل حياً وجاهزاً لاستقبال الزوار والمطورين.
-
-هل أنت مستعد للبدء في تجميع هذه المفاتيح؟// هذا السكريبت هو "واجهة الويب"
-// سيتم تشغيله على Render (الخطة المجانية)
-// مهمته: استقبال الأسئلة من axiomid.app، البحث في Pinecone، الإجابة بـ Gemini
+// Launch Checklist (Axiom $0 Stack)
+// 1. Gather the Keys (Gather the Keys)
+// You now need to collect 4 basic API keys (Gemini keys are already with you):
+//
+// PINECONE_API_KEY: Go to Pinecone.io, create a free account (Starter Plan), and create one "Index". (Name it axiom-id-brain as we agreed).
+//
+// DISCORD_BOT_TOKEN: Go to Discord Developer Portal, create a "New Application", create a "Bot", and get the Token.
+//
+// DISCORD_CLIENT_ID: (You'll find it on the same bot page)
+//
+// STRATEGIST_WEBHOOK_URL: In your Discord server, create a private channel #ai-strategy-log, go to Settings (Integrations -> Webhooks) and create a new Webhook.
+//
+// 2. Set up "Secrets" (Configure Secrets)
+// Now you need to put these keys in the right places:
+//
+// In GitHub repository (for Actions):
+//
+// Go to Settings > Secrets and variables > Actions.
+//
+// Add these "Secrets":
+//
+// GEMINI_API_KEY
+//
+// PINECONE_API_KEY
+//
+// STRATEGIST_WEBHOOK_URL
+//
+// In Render service (for live bots):
+//
+// Go to Render.com.
+//
+// When you create the services in step 4, go to Environment.
+//
+// Add these "Environment Variables":
+//
+// GEMINI_API_KEY
+//
+// PINECONE_API_KEY
+//
+// DISCORD_BOT_TOKEN
+//
+// 3. "First Brain Feeding" (The First Brain Ingest)
+// Before the bots work, the "brain" (Pinecone) must be filled.
+//
+// Go to the bot repository (axiom-assist-bot) on GitHub.
+//
+// Go to the "Actions" tab.
+//
+// On the left, look for Update Axiom Brain (file update-brain.yml).
+//
+// Click "Run workflow" manually.
+//
+// Wait 5-10 minutes until it completes. Now the "brain" is ready.
+//
+// 4. Deploy Live Services
+// Now go to Render to deploy the bots (there will be two free services):
+//
+// Service 1: Website Bot (Web API):
+//
+// Create "New Web Service" and link it to the axiom-assist-bot repository.
+//
+// Start Command: npm install && npm run start:web
+//
+// (Make sure to add environment variables from step 2).
+//
+// Copy the link that Render will give you (e.g.: https://axiom-web-api.onrender.com).
+//
+// Service 2: Discord Bot:
+//
+// Create "New Web Service" (yes, another free service) and link it to the same repository.
+//
+// Start Command: npm install && npm run start:discord
+//
+// (Make sure to add environment variables from step 2).
+//
+// 5. Connect the Frontend
+// The final step:
+//
+// Take the link you copied from Render (e.g. https://axiom-web-api.onrender.com).
+//
+// Go to your website's frontend code (axiom_id project).
+//
+// Open the ChatWidget.tsx file.
+//
+// Look for const API_URL = 'http://localhost:3001/api/chat' (or similar).
+//
+// Change it to the real link: const API_URL = 'https://axiom-web-api.onrender.com/api/chat'.
+//
+// Redeploy your site.
+//
+// Once you've completed these five steps, the "automated ecosystem" becomes fully alive and ready to welcome visitors and developers.
+//
+// Are you ready to start collecting these keys?
+// This script is the "web interface"
+// It will run on Render (free plan)
+// Its mission: receive questions from axiomid.app, search in Pinecone, answer with Gemini
 
 import express from 'express';
 import 'dotenv/config';
