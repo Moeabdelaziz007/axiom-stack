@@ -74,7 +74,7 @@ const HoloCoreWidget = () => {
     // Initialize Socket.io connection
     // Use SOCKET_SERVER_URL if available (for internal communication), otherwise fallback to domain-based logic
     const socketUrl = process.env.SOCKET_SERVER_URL || 
-                     (process.env.NODE_ENV === 'production' ? 'https://axiomid.app' : 'http://localhost:3001');
+                     (process.env.NODE_ENV === 'production' ? 'https://api.axiomid.app' : 'http://localhost:3001');
     socketRef.current = io(socketUrl);
     
     socketRef.current.on('connect', () => {
