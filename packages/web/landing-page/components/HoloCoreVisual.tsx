@@ -1,54 +1,8 @@
 // components/HoloCoreVisual.tsx - 3D Holographic Visualization Component
 import { useState, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, MeshDistortMaterial, PointMaterial, Points as DreiPoints, PointMaterialProps, OrbitControlsProps } from '@react-three/drei';
+import { OrbitControls, Sphere, MeshDistortMaterial } from '@react-three/drei';
 import * as THREE from 'three';
-
-// Floating particles component
-const Particles = () => {
-  const pointsRef = useRef<THREE.Points>(null);
-  const [sphere] = useState(() => {
-    const pts = [];
-    for (let i = 0; i < 2000; i++) {
-      const t = Math.random() * 2 * Math.PI;
-      const u = Math.random() * 2 - 1;
-      const r = Math.sqrt(1 - u * u);
-      const x = r * Math.cos(t) * 5;
-      const y = r * Math.sin(t) * 5;
-      const z = u * 5;
-      pts.push(x, y, z);
-    }
-    return new Float32Array(pts);
-  });
-
-  useFrame((state, delta) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.x += delta * 0.02;
-      pointsRef.current.rotation.y += delta * 0.01;
-    }
-  });
-
-  return (
-    <DreiPoints ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={sphere.length / 3}
-          array={sphere}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointMaterial
-        color="#3b82f6"
-        size={0.02}
-        sizeAttenuation={true}
-        depthWrite={false}
-        transparent={true}
-        opacity={0.8}
-      />
-    </DreiPoints>
-  );
-};
 
 // Animated core sphere component
 const CoreSphere = ({ state }: { state: string }) => {
@@ -101,52 +55,6 @@ const CoreSphere = ({ state }: { state: string }) => {
   );
 };
 
-// Sparks effect for building state
-const Sparks = () => {
-  const pointsRef = useRef<THREE.Points>(null);
-  const [sphere] = useState(() => {
-    const pts = [];
-    for (let i = 0; i < 100; i++) {
-      const t = Math.random() * 2 * Math.PI;
-      const u = Math.random() * 2 - 1;
-      const r = Math.sqrt(1 - u * u);
-      const x = r * Math.cos(t) * 2;
-      const y = r * Math.sin(t) * 2;
-      const z = u * 2;
-      pts.push(x, y, z);
-    }
-    return new Float32Array(pts);
-  });
-
-  useFrame((state, delta) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.x += delta * 0.5;
-      pointsRef.current.rotation.y += delta * 0.3;
-    }
-  });
-
-  return (
-    <DreiPoints ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={sphere.length / 3}
-          array={sphere}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointMaterial
-        color="#fbbf24"
-        size={0.05}
-        sizeAttenuation={true}
-        depthWrite={false}
-        transparent={true}
-        opacity={0.9}
-      />
-    </DreiPoints>
-  );
-};
-
 // Main HoloCoreVisual component
 const HoloCoreVisual = ({ state = 'idle' }: { state?: string }) => {
   return (
@@ -162,12 +70,6 @@ const HoloCoreVisual = ({ state = 'idle' }: { state?: string }) => {
         
         {/* Core sphere with state-based animations */}
         <CoreSphere state={state} />
-        
-        {/* Floating particles */}
-        <Particles />
-        
-        {/* Sparks effect when building */}
-        {state === 'isBuilding' && <Sparks />}
         
         {/* Controls for user interaction */}
         <OrbitControls
@@ -203,4 +105,4 @@ const HoloCoreVisual = ({ state = 'idle' }: { state?: string }) => {
   );
 };
 
-export default HoloCoreVisual;// Force rebuild Sat Nov 15 05:49:27 EET 2025
+export default HoloCoreVisual;

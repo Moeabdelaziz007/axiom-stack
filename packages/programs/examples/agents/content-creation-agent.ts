@@ -98,7 +98,7 @@ class ContentCreationAgent {
       const score = await this.sdk.attestations.getReputationScore(this.agentPublicKey);
       console.log(`Current reputation score: ${score}`);
       return score;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get reputation score:', error);
       return 0;
     }
@@ -120,7 +120,7 @@ class ContentCreationAgent {
       
       console.log('Credentials presented successfully');
       return credentials;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to present credentials:', error);
       return null;
     }
@@ -139,7 +139,7 @@ class ContentCreationAgent {
       const tx = await this.sdk.payments.routePayment(recipient, amount, memo);
       console.log(`Payment sent with transaction: ${tx}`);
       return tx;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to make payment:', error);
       return null;
     }
@@ -162,7 +162,7 @@ class ContentCreationAgent {
       
       console.log('Content history retrieved');
       return history;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get content history:', error);
       return [];
     }
@@ -211,7 +211,7 @@ async function main() {
     await contentAgent.makePayment(recipient, 50, 'Content licensing fee');
     
     console.log('=== Content Creation Agent Example Completed ===');
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in Content Creation Agent example:', error);
   }
 }

@@ -86,7 +86,7 @@ class ResearchAgent {
         attestationTx,
         reputationBoost
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to conduct research:', error);
       return {
         success: false,
@@ -103,7 +103,7 @@ class ResearchAgent {
       const score = await this.sdk.attestations.getReputationScore(this.agentPublicKey);
       console.log(`Current reputation score: ${score}`);
       return score;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get reputation score:', error);
       return 0;
     }
@@ -125,7 +125,7 @@ class ResearchAgent {
       
       console.log('Credentials presented successfully');
       return credentials;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to present credentials:', error);
       return null;
     }
@@ -144,7 +144,7 @@ class ResearchAgent {
       const tx = await this.sdk.payments.routePayment(recipient, amount, memo);
       console.log(`Payment sent with transaction: ${tx}`);
       return tx;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to make payment:', error);
       return null;
     }
@@ -182,7 +182,7 @@ class ResearchAgent {
         attestationTx,
         paymentTx
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to collaborate with agent:', error);
       return {
         success: false,
@@ -208,7 +208,7 @@ class ResearchAgent {
       
       console.log('Research portfolio retrieved');
       return portfolio;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get research portfolio:', error);
       return [];
     }
@@ -265,7 +265,7 @@ async function main() {
     await researchAgent.collaborateWithAgent(collaborator, 'Cross-chain Interoperability');
     
     console.log('=== Research Agent Example Completed ===');
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in Research Agent example:', error);
   }
 }
