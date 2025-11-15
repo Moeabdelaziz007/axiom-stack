@@ -71,6 +71,7 @@ class ResearchAgent {
       };
       
       const attestationTx = await this.sdk.attestations.requestAttestation(
+        this.agentPublicKey,
         'research_completion',
         JSON.stringify(attestationData)
       );
@@ -167,6 +168,7 @@ class ResearchAgent {
       };
       
       const attestationTx = await this.sdk.attestations.requestAttestation(
+        this.agentPublicKey,
         'research_collaboration',
         JSON.stringify(collaborationData)
       );

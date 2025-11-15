@@ -7,7 +7,7 @@ export declare class AttestationClient {
     private axiomAttestationsProgram;
     constructor(connection: Connection, provider: AnchorProvider);
     initialize(axiomAttestationsProgram: Program<AxiomAttestations>): void;
-    requestAttestation(schema: string, data: string): Promise<string>;
+    requestAttestation(subject: PublicKey, claim: string, evidence: string): Promise<string>;
     verifyAttestation(attestationId: PublicKey): Promise<boolean>;
     revokeAttestation(attestationId: PublicKey): Promise<string>;
 }

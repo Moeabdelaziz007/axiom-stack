@@ -11,17 +11,17 @@ class AttestationClient {
     initialize(axiomAttestationsProgram) {
         this.axiomAttestationsProgram = axiomAttestationsProgram;
     }
-    async requestAttestation(schema, data) {
+    async requestAttestation(subject, claim, evidence) {
         if (!this.axiomAttestationsProgram) {
             throw new Error('Axiom Attestations program not initialized');
         }
         try {
-            const userPublicKey = this.provider.wallet.publicKey;
-            const [attestationPda] = web3_js_1.PublicKey.findProgramAddressSync([Buffer.from("attestation"), userPublicKey.toBuffer()], this.axiomAttestationsProgram.programId);
+            const attesterPublicKey = this.provider.wallet.publicKey;
+            const [attestationPda] = web3_js_1.PublicKey.findProgramAddressSync([Buffer.from("attestation"), attesterPublicKey.toBuffer(), subject.toBuffer()], this.axiomAttestationsProgram.programId);
             const tx = await this.axiomAttestationsProgram.methods
-                .requestAttestation(schema, data)
+                .createAttestation(subject, claim, evidence)
                 .accounts({
-                payer: userPublicKey,
+                attester: attesterPublicKey,
                 attestation: attestationPda,
                 systemProgram: web3_js_1.SystemProgram.programId,
             })
@@ -29,7 +29,7 @@ class AttestationClient {
             return tx;
         }
         catch (error) {
-            console.error('Failed to request attestation:', error);
+            console.error('Failed to create attestation:', error);
             throw error;
         }
     }

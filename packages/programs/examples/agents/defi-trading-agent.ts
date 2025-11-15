@@ -68,6 +68,7 @@ class DeFiTradingAgent {
       };
       
       const attestationTx = await this.sdk.attestations.requestAttestation(
+        this.agentPublicKey,
         'trading_strategy_execution',
         JSON.stringify(attestationData)
       );
