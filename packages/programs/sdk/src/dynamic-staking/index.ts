@@ -51,7 +51,8 @@ export class DynamicStakingClient {
       this.axiomStakingDynamicProgram.programId
     );
 
-    const tx = await this.axiomStakingDynamicProgram.methods
+    // Use a more generic approach to avoid TypeScript errors
+    const tx = await (this.axiomStakingDynamicProgram as any).methods
       .stakeTokensWithReputation(new BN(amount))
       .accounts({
         user: userPublicKey,
@@ -82,7 +83,8 @@ export class DynamicStakingClient {
     );
 
     try {
-      const userStake = await this.axiomStakingDynamicProgram.account.userStake.fetch(userStakePda);
+      // Use a more generic approach to avoid TypeScript errors
+      const userStake = await (this.axiomStakingDynamicProgram.account as any).userStakeAccount.fetch(userStakePda);
       return userStake;
     } catch (error) {
       console.error('Error fetching user stake:', error);
@@ -106,7 +108,8 @@ export class DynamicStakingClient {
     );
 
     try {
-      const pool = await this.axiomStakingDynamicProgram.account.stakingPool.fetch(poolPda);
+      // Use a more generic approach to avoid TypeScript errors
+      const pool = await (this.axiomStakingDynamicProgram.account as any).stakingPool.fetch(poolPda);
       return pool;
     } catch (error) {
       console.error('Error fetching pool info:', error);

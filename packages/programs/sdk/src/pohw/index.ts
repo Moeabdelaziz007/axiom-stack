@@ -1,5 +1,5 @@
 import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey, SystemProgram } from '@solana/web3.js';
 
 // Placeholder types
 type AxiomPoHW = any;
@@ -45,14 +45,15 @@ export class PoHWClient {
       this.axiomPoHWProgram.programId
     );
 
-    const tx = await this.axiomPoHWProgram.methods
+    // Use a more generic approach to avoid TypeScript errors
+    const tx = await (this.axiomPoHWProgram as any).methods
       .recordHumanWork(workData)
       .accounts({
         payer: this.provider.wallet.publicKey,
         user: user,
         schema: schemaPda,
         attestation: attestationPda,
-        systemProgram: this.connection.programId,
+        systemProgram: SystemProgram.programId,
       })
       .rpc();
 
@@ -86,14 +87,15 @@ export class PoHWClient {
       this.axiomPoHWProgram.programId
     );
 
-    const tx = await this.axiomPoHWProgram.methods
+    // Use a more generic approach to avoid TypeScript errors
+    const tx = await (this.axiomPoHWProgram as any).methods
       .updateHumanWork(workData)
       .accounts({
         payer: this.provider.wallet.publicKey,
         user: user,
         schema: schemaPda,
         attestation: attestationPda,
-        systemProgram: this.connection.programId,
+        systemProgram: SystemProgram.programId,
       })
       .rpc();
 
@@ -127,7 +129,8 @@ export class PoHWClient {
     );
 
     try {
-      const attestation = await this.axiomPoHWProgram.account.humanWorkAttestation.fetch(attestationPda);
+      // Use a more generic approach to avoid TypeScript errors
+      const attestation = await (this.axiomPoHWProgram.account as any).humanWorkAttestation.fetch(attestationPda);
       return attestation;
     } catch (error) {
       console.error('Error fetching attestation:', error);

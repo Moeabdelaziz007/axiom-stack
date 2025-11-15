@@ -94,7 +94,7 @@ describe("axiom_staking_enhanced", () => {
     console.log("Stake tokens with reputation transaction signature", tx);
     
     // Verify the stake was created with reputation
-    const userStakeAccount = await program.account.userStake.fetch(userStakePda);
+    const userStakeAccount = await program.account.userStakeAccount.fetch(userStakePda);
     expect(userStakeAccount.amount.toString()).toBe("100");
     expect(userStakeAccount.reputationScore.toString()).toBe("5000");
     expect(userStakeAccount.effectiveAmount.toNumber()).toBeGreaterThan(100); // Should be higher due to reputation multiplier

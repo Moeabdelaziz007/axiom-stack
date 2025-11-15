@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     // Wait for connection
     await new Promise((resolve, reject) => {
-      socket.on('connect', resolve);
+      socket.on('connect', () => resolve(undefined));
       setTimeout(() => reject(new Error('Connection timeout')), 5000);
     });
     

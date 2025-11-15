@@ -116,7 +116,7 @@ const TestVoiceRecognition = () => {
       </div>
       
       <div className="mt-4 text-xs text-gray-500">
-        <p>Try saying: "Hey Axiom", "Hi Axiom", or "Axiom"</p>
+        <p>Try saying: &quot;Hey Axiom&quot;, &quot;Hi Axiom&quot;, or &quot;Axiom&quot;</p>
       </div>
     </div>
   );

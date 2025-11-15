@@ -166,7 +166,7 @@ describe('axiom_staking_dynamic', () => {
       program.programId
     );
     
-    const userStakeAccount = await program.account.userStake.fetch(userStakePda);
+    const userStakeAccount = await program.account.userStakeAccount.fetch(userStakePda);
     console.log('User stake account:', userStakeAccount);
 
     // Verify the stake was recorded correctly
@@ -221,7 +221,7 @@ describe('axiom_staking_dynamic', () => {
       program.programId
     );
     
-    const userStakeAccount = await program.account.userStake.fetch(userStakePda);
+    const userStakeAccount = await program.account.userStakeAccount.fetch(userStakePda);
     console.log('User stake account with reputation:', userStakeAccount);
 
     // Verify the stake was recorded correctly
@@ -258,7 +258,7 @@ describe('axiom_staking_dynamic', () => {
       program.programId
     );
     
-    const userStakeAccount = await program.account.userStake.fetch(userStakePda);
+    const userStakeAccount = await program.account.userStakeAccount.fetch(userStakePda);
     console.log('User stake account after unstaking:', userStakeAccount);
 
     // Verify the stake was reduced correctly

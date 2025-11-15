@@ -3,7 +3,7 @@
 
 import { PublicKey } from '@solana/web3.js';
 import { AxiomIDSDK } from '../../sdk/src/index';
-import { X402Protocol } from '../../protocols/x402';
+import { X402Protocol, PaymentRequest, ServiceResponse, PaymentReceipt } from './x402-protocol';
 
 export class PaymentRouter {
     private sdk: AxiomIDSDK;
@@ -178,7 +178,7 @@ export class PaymentRouter {
         // For medium reputation users, use stablecoins for predictability
         if (reputationScore >= 5000) {
             // Find a supported stablecoin
-            for (const [mint, tokenInfo] of this.supportedTokens.entries()) {
+            for (const [mint, tokenInfo] of Array.from(this.supportedTokens.entries())) {
                 if (tokenInfo.isStable) {
                     return {
                         ...tokenInfo,
@@ -189,7 +189,7 @@ export class PaymentRouter {
         }
         
         // For lower reputation users, use the most stable option
-        for (const [mint, tokenInfo] of this.supportedTokens.entries()) {
+        for (const [mint, tokenInfo] of Array.from(this.supportedTokens.entries())) {
             if (tokenInfo.isStable) {
                 return {
                     ...tokenInfo,
@@ -281,7 +281,7 @@ export class PaymentRouter {
      */
     public getSupportedTokens(): SupportedToken[] {
         const tokens: SupportedToken[] = [];
-        for (const [mint, tokenInfo] of this.supportedTokens.entries()) {
+        for (const [mint, tokenInfo] of Array.from(this.supportedTokens.entries())) {
             tokens.push({
                 mint: mint,
                 name: tokenInfo.name,
