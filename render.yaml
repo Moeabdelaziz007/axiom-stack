@@ -1,9 +1,9 @@
 services:
   - type: web
     name: axiom-id-web-api
-    env: node
+    runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
     startCommand: npm run web-api
     envVars:
       - key: NODE_VERSION
@@ -15,9 +15,9 @@ services:
 
   - type: web
     name: axiom-id-socket-server
-    env: node
+    runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
     startCommand: npm run socket:start
     envVars:
       - key: NODE_VERSION
@@ -28,12 +28,14 @@ services:
         sync: false
       - key: PINECONE_API_KEY
         sync: false
+      - key: WEB_API_INTERNAL_URL
+        value: http://axiom-id-web-api:3000
 
   - type: worker
     name: axiom-id-discord-bot
-    env: node
+    runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
     startCommand: npm run bot-pinecone
     envVars:
       - key: NODE_VERSION
@@ -44,3 +46,7 @@ services:
         sync: false
       - key: DISCORD_BOT_TOKEN
         sync: false
+      - key: WEB_API_INTERNAL_URL
+        value: http://axiom-id-web-api:3000
+      - key: SOCKET_SERVER_INTERNAL_URL
+        value: http://axiom-id-socket-server:3001

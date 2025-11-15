@@ -12,3 +12,10 @@ codegen-units = 1
 opt-level = 3
 incremental = false
 codegen-units = 1
+
+[workspace.dependencies]
+anchor-lang = "0.28.0"
+anchor-spl = "0.28.0"
+toml_parser = "0.5.0"
+proc-macro-crate = "3.3.0"
+borsh = "1.5.0"

@@ -17,8 +17,8 @@ no-log-ix-name = []
 idl-build = []
 
 [dependencies]
-anchor-lang = "0.28.0"
-anchor-spl = "0.28.0"
+anchor-lang = { workspace = true }
+anchor-spl = { workspace = true }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }

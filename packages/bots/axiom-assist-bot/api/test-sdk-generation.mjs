@@ -2,7 +2,9 @@
 import { io } from 'socket.io-client';
 
 // Connect to the server
-const socket = io('http://localhost:3001');
+// Use internal service URL in production, localhost in development
+const SOCKET_SERVER_URL = process.env.SOCKET_SERVER_INTERNAL_URL || 'http://localhost:3001';
+const socket = io(SOCKET_SERVER_URL);
 
 console.log('🔌 Connecting to Socket.io server...');
 

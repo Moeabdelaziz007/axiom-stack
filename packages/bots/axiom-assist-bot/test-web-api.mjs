@@ -5,7 +5,10 @@ async function testWebAPI() {
   try {
     console.log('Testing Axiom ID Web API...');
     
-    const response = await fetch('http://localhost:3001/', {
+    // Use internal service URL in production, localhost in development
+    const WEB_API_URL = process.env.WEB_API_INTERNAL_URL || 'http://localhost:3001';
+    
+    const response = await fetch(`${WEB_API_URL}/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -17,7 +20,7 @@ async function testWebAPI() {
     
     // Test chat endpoint
     console.log('\nTesting chat endpoint...');
-    const chatResponse = await fetch('http://localhost:3001/api/chat', {
+    const chatResponse = await fetch(`${WEB_API_URL}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -6,7 +6,6 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
-name = "axiom_attestations"
 
 [features]
 default = []
@@ -17,5 +16,5 @@ no-log-ix-name = []
 idl-build = []
 
 [dependencies]
-anchor-lang = "0.28.0"
-anchor-spl = "0.28.0"
+anchor-lang = { workspace = true }
+anchor-spl = { workspace = true }

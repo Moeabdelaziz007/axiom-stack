@@ -421,7 +421,10 @@ pub enum GovernanceError {
     
     #[msg("Proposal has not passed")]
     ProposalNotPassed,
-}use anchor_lang::prelude::*;
+}
+}
+
+use anchor_lang::prelude::*;
 use anchor_spl::{
     token_2022::Token2022,
     token_interface::{Mint, TokenAccount, TransferChecked, transfer_checked},

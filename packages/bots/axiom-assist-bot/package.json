@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node ingest.mjs",
+    "build": "echo 'No build required for axiom-assist-bot'",
     "ingest": "node ingest.mjs",
     "bot": "node discord-bot.mjs",
     "bot-pinecone": "node discord-bot-pinecone.mjs",

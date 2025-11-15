@@ -72,8 +72,9 @@ const HoloCoreWidget = () => {
     setConnectionStatus('connecting');
     
     // Initialize Socket.io connection
-    // Use production domain when deployed, localhost when developing
-    const socketUrl = process.env.NODE_ENV === 'production' ? 'https://axiomid.app' : 'http://localhost:3001';
+    // Use SOCKET_SERVER_URL if available (for internal communication), otherwise fallback to domain-based logic
+    const socketUrl = process.env.SOCKET_SERVER_URL || 
+                     (process.env.NODE_ENV === 'production' ? 'https://axiomid.app' : 'http://localhost:3001');
     socketRef.current = io(socketUrl);
     
     socketRef.current.on('connect', () => {

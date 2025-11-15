@@ -1,0 +1,17 @@
+{
+  "name": "HoloCoreAgent",
+  "version": "1.0.0",
+  "description": "A holographic AI agent",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "@axiom-id/sdk": "^1.0.0"
+  },
+  "keywords": ["axiom-agent", "custom"],
+  "author": "Axiom ID User",
+  "license": "MIT"
+}

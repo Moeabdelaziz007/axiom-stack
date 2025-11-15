@@ -2,13 +2,13 @@
 
 ## HTTP Referrer Restrictions (Critical Security Step)
 
-To ensure maximum security for the Google API key (AIzaSyCUWN8AROr3y15JDdPgD4XrD9dlkd0YfR0), you MUST set up HTTP referrer restrictions in the Google Cloud Console:
+To ensure maximum security for the Google API key (AIzaSyA8G5FjzDYWgV6ZzvU33gfYgKI7mu-ikgM), you MUST set up HTTP referrer restrictions in the Google Cloud Console:
 
 ### Steps to Set Up HTTP Referrer Restrictions:
 
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
 2. Navigate to "APIs & Services" → "Credentials"
-3. Find the API key: AIzaSyCUWN8AROr3y15JDdPgD4XrD9dlkd0YfR0
+3. Find the API key: AIzaSyA8G5FjzDYWgV6ZzvU33gfYgKI7mu-ikgM
 4. Click on the pencil icon to edit the key
 5. Under "Application restrictions", select "HTTP referrers (websites)"
 6. In the "Website restrictions" field, add:

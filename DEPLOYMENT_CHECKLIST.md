@@ -31,7 +31,7 @@
 In Render.com dashboard, add the following environment variables:
 
 #### For Socket.io Server Service:
-- [ ] `GEMINI_API_KEY` - Your secure Google API key (AIzaSyCUWN8AROr3y15JDdPgD4XrD9dlkd0YfR0)
+- [ ] `GEMINI_API_KEY` - Your secure Google API key (AIzaSyA8G5FjzDYWgV6ZzvU33gfYgKI7mu-ikgM)
 - [ ] `PINECONE_API_KEY` - Your Pinecone API key
 - [ ] `SOCKET_PORT` - 3001
 - [ ] `NODE_VERSION` - 20
@@ -52,7 +52,7 @@ Before deployment, ensure HTTP referrer restrictions are set up:
 
 1. [ ] Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. [ ] Navigate to "APIs & Services" → "Credentials"
-3. [ ] Find the API key: AIzaSyCUWN8AROr3y15JDdPgD4XrD9dlkd0YfR0
+3. [ ] Find the API key: AIzaSyA8G5FjzDYWgV6ZzvU33gfYgKI7mu-ikgM
 4. [ ] Click on the pencil icon to edit the key
 5. [ ] Under "Application restrictions", select "HTTP referrers (websites)"
 6. [ ] In the "Website restrictions" field, add:
