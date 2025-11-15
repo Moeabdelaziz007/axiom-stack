@@ -203,4 +203,4 @@ const HoloCoreVisual = ({ state = 'idle' }: { state?: string }) => {
   );
 };
 
-export default HoloCoreVisual;
+export default HoloCoreVisual;// Force rebuild Sat Nov 15 05:49:27 EET 2025
