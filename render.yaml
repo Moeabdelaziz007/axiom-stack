@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
-    startCommand: npm run web-api
+    startCommand: npm run web-api --workspace=axiom-assist-bot
     envVars:
       - key: NODE_VERSION
         value: 20
@@ -18,7 +18,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
-    startCommand: npm run socket:start
+    startCommand: npm run socket:start --workspace=axiom-assist-bot
     envVars:
       - key: NODE_VERSION
         value: 20
@@ -36,7 +36,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
-    startCommand: npm run bot-pinecone
+    startCommand: npm run bot-pinecone --workspace=axiom-assist-bot
     envVars:
       - key: NODE_VERSION
         value: 20
