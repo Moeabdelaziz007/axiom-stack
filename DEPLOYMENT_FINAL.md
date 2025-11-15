@@ -22,14 +22,14 @@ This document provides step-by-step instructions for setting up the subdomain co
 ### 3. Verify Configuration
 1. Wait for DNS propagation (5-30 minutes)
 2. Test the connection by visiting https://api.axiomid.app/health
-3. Verify that the frontend can connect to the backend through the new subdomain
+3. Verify that the frontend can connect to the backend via the new subdomain
+
+### 4. Update Environment Variables (if needed)
+1. In your Render service settings, ensure the following environment variables are set:
+   - `SOCKET_SERVER_URL` = `https://api.axiomid.app`
+   - Any other relevant environment variables for your application
 
 ## Troubleshooting
-- If the domain doesn't resolve, check that the CNAME record is correctly configured
-- If CORS issues occur, ensure the origin is properly added in the socket server configuration
-- If the health check fails, verify the service is running on Render
-
-## Notes
-- The frontend now connects to `https://api.axiomid.app` instead of `https://axiomid.app`
-- The CORS configuration allows both the main domain and the API subdomain
-- This separation allows for better scalability and security in the future
+- If the connection fails, check that the CORS settings in your backend allow requests from your frontend domain
+- Ensure that all SSL certificates are properly configured for the subdomain
+- Verify that the CNAME record has propagated using a DNS lookup tool
