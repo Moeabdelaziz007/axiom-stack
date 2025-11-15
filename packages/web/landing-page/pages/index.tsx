@@ -1,9 +1,6 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import HoloCoreWidget from '../components/HoloCoreWidget';
-import TestSocketConnection from '../components/test-socket-connection';
-import TestVoiceRecognition from '../components/test-voice-recognition';
-import TestHoloCoreVisual from '../components/test-holocore-visual';
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
@@ -29,22 +26,9 @@ export default function Home() {
             Your voice-first, holographic AI assistant for the decentralized agent economy
           </p>
           
-          <div className="flex flex-col items-center justify-center mt-16">
-            <div className="relative w-64 h-64 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-2xl shadow-blue-500/30 animate-pulse">
-              <div className="absolute inset-4 rounded-full bg-black/20 backdrop-blur-sm"></div>
-              <div className="text-center z-10">
-                <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                  </svg>
-                </div>
-                <p className="text-sm">Say &quot;Hey Axiom&quot;</p>
-              </div>
-            </div>
-            
-            <div className="mt-8 text-gray-400">
-              <p>Initializing Holo-Core...</p>
-            </div>
+          <div className="flex flex-col items-center justify-center mt-8">
+            <p className="text-lg text-gray-400 mb-4">Activate the Holo-Core by saying &quot;Hey Axiom&quot;</p>
+            <p className="text-sm text-gray-500 mb-8">Or click the &quot;Start Listening&quot; button in the interface below</p>
           </div>
         </div>
         
@@ -53,12 +37,33 @@ export default function Home() {
             <div className="mt-8">
               <HoloCoreWidget />
             </div>
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <TestSocketConnection />
-              <TestVoiceRecognition />
-            </div>
-            <div className="mt-8">
-              <TestHoloCoreVisual />
+            
+            <div className="mt-16 max-w-3xl mx-auto text-gray-400">
+              <h2 className="text-2xl font-bold mb-4 text-center">Holo-Factory Features</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+                  <div className="text-blue-400 text-2xl mb-3">🔊</div>
+                  <h3 className="text-lg font-semibold mb-2">Voice-First Interface</h3>
+                  <p className="text-sm">Control everything with your voice. Just say "Hey Axiom" to activate.</p>
+                </div>
+                
+                <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+                  <div className="text-purple-400 text-2xl mb-3">✨</div>
+                  <h3 className="text-lg font-semibold mb-2">Holographic Visualization</h3>
+                  <p className="text-sm">Interactive 3D visualization that responds to your commands.</p>
+                </div>
+                
+                <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+                  <div className="text-green-400 text-2xl mb-3">🛠️</div>
+                  <h3 className="text-lg font-semibold mb-2">SDK Factory</h3>
+                  <p className="text-sm">Generate custom agent SDKs with a single voice command.</p>
+                </div>
+              </div>
+              
+              <div className="mt-12 text-center">
+                <p className="text-lg mb-2">Connected to live backend at <span className="text-blue-400">https://api.axiomid.app</span></p>
+                <p className="text-sm text-gray-500">Real-time communication powered by Socket.io</p>
+              </div>
             </div>
           </>
         )}

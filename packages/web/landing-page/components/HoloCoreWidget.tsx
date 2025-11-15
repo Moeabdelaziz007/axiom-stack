@@ -16,6 +16,7 @@ const HoloCoreWidget = () => {
   const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected'>('disconnected');
   const [lastResponse, setLastResponse] = useState('');
   const [isBuildingSDK, setIsBuildingSDK] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const socketRef = useRef<Socket | null>(null);
 
   const {
@@ -94,6 +95,13 @@ const HoloCoreWidget = () => {
     socketRef.current.on('agent_speaks_response', (data: any) => {
       setProcessing(false);
       setLastResponse(data.text);
+      // Use Web Speech API to speak the response
+      if ('speechSynthesis' in window) {
+        setIsSpeaking(true);
+        const utterance = new SpeechSynthesisUtterance(data.text);
+        utterance.onend = () => setIsSpeaking(false);
+        speechSynthesis.speak(utterance);
+      }
     });
     
     socketRef.current.on('agent_error', (data: any) => {
@@ -186,6 +194,7 @@ const HoloCoreWidget = () => {
 
   // Determine visual state for HoloCoreVisual
   const visualState = isBuildingSDK ? 'isBuilding' : 
+                     isSpeaking ? 'isSpeaking' : 
                      isListening ? 'isListening' : 
                      isProcessing ? 'isProcessing' : 
                      'idle';
