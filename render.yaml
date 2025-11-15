@@ -31,22 +31,3 @@ services:
       - key: WEB_API_INTERNAL_URL
         value: http://axiom-id-web-api:3000
 
-  - type: worker
-    name: axiom-id-discord-bot
-    runtime: node
-    plan: free
-    buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
-    startCommand: npm run bot-pinecone --workspace=axiom-assist-bot
-    envVars:
-      - key: NODE_VERSION
-        value: 20
-      - key: GEMINI_API_KEY
-        sync: false
-      - key: PINECONE_API_KEY
-        sync: false
-      - key: DISCORD_BOT_TOKEN
-        sync: false
-      - key: WEB_API_INTERNAL_URL
-        value: http://axiom-id-web-api:3000
-      - key: SOCKET_SERVER_INTERNAL_URL
-        value: http://axiom-id-socket-server:3001
