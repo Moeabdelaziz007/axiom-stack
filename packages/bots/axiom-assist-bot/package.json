@@ -41,7 +41,7 @@
     "langchain": "^0.2.20",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
-    "whatwg-url": "^9.1.0"
+    "whatwg-url": "^11.0.0"
   },
   "description": "🤖 The official AI Developer Advocate for the Axiom ID open-source project.",
   "keywords": [],
