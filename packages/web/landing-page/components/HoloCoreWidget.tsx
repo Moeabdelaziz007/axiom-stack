@@ -4,7 +4,18 @@ import { saveAs } from 'file-saver';
 import { io, Socket } from 'socket.io-client';
 import useVoiceRecognition from './useVoiceRecognition';
 import useWakeWord from './useWakeWord';
-import HoloCoreVisual from './HoloCoreVisual';
+import dynamic from 'next/dynamic';
+import ConnectionStatusIndicator from './ConnectionStatusIndicator';
+
+// Dynamically import HoloCoreVisual and DISABLE SSR
+const HoloCoreVisual = dynamic(
+  () => import('./HoloCoreVisual'),
+  {
+    ssr: false, // <-- This is the critical fix
+    // Optional: Add a placeholder while the 3D component is loading
+    loading: () => <div style={{ height: '300px', width: '300px', opacity: 0 }} /> 
+  }
+);
 
 declare type SpeechRecognitionOptions = {
   interimResults?: boolean;
@@ -13,7 +24,8 @@ declare type SpeechRecognitionOptions = {
 };
 
 const HoloCoreWidget = () => {
-  const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected'>('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
   const [lastResponse, setLastResponse] = useState('');
   const [isBuildingSDK, setIsBuildingSDK] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -71,26 +83,46 @@ const HoloCoreWidget = () => {
 
   const connectToBackend = () => {
     setConnectionStatus('connecting');
+    setErrorMessage('');
     
-    // Initialize Socket.io connection
+    // Initialize Socket.io connection with resilience options
     // Use SOCKET_SERVER_URL if available (for internal communication), otherwise fallback to domain-based logic
     const socketUrl = process.env.SOCKET_SERVER_URL || 
                      (process.env.NODE_ENV === 'production' ? 'https://api.axiomid.app' : 'http://localhost:3001');
-    socketRef.current = io(socketUrl);
     
+    console.log('[HOLO-WIDGET] Attempting to connect to:', socketUrl);
+    
+    // Task 1: Add Socket.io resilience configuration
+    socketRef.current = io(socketUrl, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 10000,
+      transports: ['websocket']
+    });
+    
+    // START: CRITICAL DEBUG LOGS
+    console.log(`[HOLO-WIDGET] Attempting to connect to: ${socketUrl}`);
+
+    // Task 3: Link socket events to UI state
     socketRef.current.on('connect', () => {
-      console.log('Connected to backend');
+      console.log('✅ [HOLO-WIDGET] SOCKET.IO CONNECTED SUCCESSFULLY!');
+      console.log('Socket ID:', socketRef.current?.id);
       setConnectionStatus('connected');
     });
     
-    socketRef.current.on('agent_connected', (data: any) => {
-      console.log('Agent connected:', data);
+    socketRef.current.on('connect_error', (error: any) => { 
+      console.error('❌ [HOLO-WIDGET] SOCKET.IO CONNECTION ERROR:', error.message); 
+      console.error('Full Error Object:', error); 
+      setConnectionStatus('error'); // Assuming 'Error' is a valid state
+      setErrorMessage(error.message); // Set the error message state
     });
-    
-    socketRef.current.on('agent_processing', (data: any) => {
-      setProcessing(true);
-      setLastResponse(data.message);
+
+    socketRef.current.on('disconnect', (reason) => { 
+      console.warn(`[HOLO-WIDGET] Socket disconnected. Reason: ${reason}`); 
+      setConnectionStatus('error'); // Assuming 'Disconnected' is a valid state
     });
+    // END: CRITICAL DEBUG LOGS
     
     socketRef.current.on('agent_speaks_response', (data: any) => {
       setProcessing(false);
@@ -107,10 +139,6 @@ const HoloCoreWidget = () => {
     socketRef.current.on('agent_error', (data: any) => {
       setProcessing(false);
       setLastResponse(`Error: ${data.message}`);
-    });
-    
-    socketRef.current.on('disconnect', () => {
-      setConnectionStatus('disconnected');
     });
   };
 
@@ -200,79 +228,111 @@ const HoloCoreWidget = () => {
                      'idle';
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-4">
-      {/* HoloCore Visual Component */}
-      <div className="w-64 h-64 md:w-80 md:h-80 rounded-xl overflow-hidden shadow-2xl">
-        <HoloCoreVisual state={visualState} />
-      </div>
-      
-      {/* Control Panel */}
-      <div className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-xl p-4 w-80 shadow-2xl">
-        <div className="flex justify-between items-center mb-3">
-          <h3 className="font-bold text-lg">Holo-Core Assistant</h3>
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-4 max-w-md">
+      {/* Glassmorphism Control Panel */}
+      <div className="glass-strong rounded-2xl p-6 w-full shadow-2xl border border-white/20">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="font-bold text-xl text-gradient-blue">Holo-Core</h3>
           <div className={`w-3 h-3 rounded-full ${
-            connectionStatus === 'connected' ? 'bg-green-500' : 
-            connectionStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'
+            connectionStatus === 'connected' ? 'bg-green-500 animate-pulse' : 
+            connectionStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' : 
+            connectionStatus === 'error' ? 'bg-red-500 animate-pulse' : 'bg-gray-500'
           }`}></div>
         </div>
-        
-        <div className="mb-4">
-          <div className="text-sm text-gray-400 mb-1">Status</div>
-          <div className="text-sm">
+
+        {/* HoloCore Visual - Centerpiece */}
+        <div className="w-full h-80 mb-6 rounded-xl overflow-hidden relative">
+          <HoloCoreVisual state={visualState} />
+        </div>
+
+        {/* Connection Status */}
+        <div className="mb-4 glass rounded-lg p-3">
+          <div className="text-xs text-gray-300 mb-1 font-medium">Connection Status</div>
+          <ConnectionStatusIndicator status={connectionStatus} errorMessage={errorMessage} />
+        </div>
+
+        {/* Voice Status */}
+        <div className="mb-4 glass rounded-lg p-3">
+          <div className="text-xs text-gray-300 mb-1 font-medium">Voice Status</div>
+          <div className="text-sm font-medium">
             {isListening ? (
-              <span className="text-green-400">Listening...</span>
+              <span className="text-blue-400 flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+                Listening...
+              </span>
             ) : isProcessing ? (
-              <span className="text-yellow-400">Processing...</span>
+              <span className="text-yellow-400 flex items-center gap-2">
+                <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                Processing...
+              </span>
             ) : isBuildingSDK ? (
-              <span className="text-blue-400">Building SDK...</span>
+              <span className="text-purple-400 flex items-center gap-2">
+                <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></span>
+                Building SDK...
+              </span>
+            ) : isSpeaking ? (
+              <span className="text-green-400 flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                Speaking...
+              </span>
             ) : (
-              <span className="text-gray-400">Idle</span>
+              <span className="text-gray-400 flex items-center gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                Idle
+              </span>
             )}
           </div>
         </div>
-        
+
+        {/* Transcript Display */}
         {transcript && (
-          <div className="mb-4 p-2 bg-gray-800/50 rounded">
-            <div className="text-xs text-gray-500">You said:</div>
-            <div className="text-sm">{transcript}</div>
+          <div className="mb-4 glass rounded-lg p-3 max-h-24 overflow-y-auto">
+            <div className="text-xs text-gray-400 mb-1">You said:</div>
+            <div className="text-sm text-white">{transcript}</div>
           </div>
         )}
-        
+
+        {/* Response Display */}
         {lastResponse && (
-          <div className="mb-4 p-2 bg-blue-900/30 rounded">
-            <div className="text-xs text-gray-500">Response:</div>
-            <div className="text-sm">{lastResponse}</div>
+          <div className="mb-4 glass rounded-lg p-3 max-h-32 overflow-y-auto border border-blue-500/30">
+            <div className="text-xs text-blue-300 mb-1">Response:</div>
+            <div className="text-sm text-white">{lastResponse}</div>
           </div>
         )}
-        
-        <div className="flex gap-2">
+
+        {/* Control Buttons */}
+        <div className="flex gap-3 mb-4">
           {!isListening ? (
             <button
               onClick={startListening}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition"
+              className="flex-1 glass-strong hover:bg-blue-500/20 text-white py-3 px-4 rounded-lg transition-all duration-300 font-medium border border-blue-500/30 hover:border-blue-500/50"
             >
-              Start Listening
+              🎤 Start Listening
             </button>
           ) : (
             <button
               onClick={stopListening}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition"
+              className="flex-1 glass-strong hover:bg-red-500/20 text-white py-3 px-4 rounded-lg transition-all duration-300 font-medium border border-red-500/30 hover:border-red-500/50"
             >
-              Stop Listening
+              ⏹️ Stop Listening
             </button>
           )}
-          
+
           <button
             onClick={downloadSampleSDK}
             disabled={isBuildingSDK}
-            className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-900 text-white py-2 px-4 rounded-lg transition"
+            className="flex-1 glass-strong hover:bg-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 px-4 rounded-lg transition-all duration-300 font-medium border border-purple-500/30 hover:border-purple-500/50"
           >
-            {isBuildingSDK ? 'Building...' : 'Get SDK'}
+            {isBuildingSDK ? '⚙️ Building...' : '📦 Get SDK'}
           </button>
         </div>
-        
-        <div className="mt-3 text-xs text-gray-500 text-center">
-          Say &quot;Hey Axiom&quot; to activate
+
+        {/* Wake Word Hint */}
+        <div className="text-center">
+          <div className="inline-block glass rounded-full px-4 py-2 text-xs text-gray-300">
+            💬 Say <span className="text-blue-400 font-semibold">&quot;Hey Axiom&quot;</span> to activate
+          </div>
         </div>
       </div>
     </div>

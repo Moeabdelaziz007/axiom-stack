@@ -12,13 +12,17 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.0",
     "@tailwindcss/postcss": "^4.1.17",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.9.1",
     "file-saver": "^2.0.5",
+    "glob-to-regexp": "^0.4.1",
     "jszip": "^3.10.1",
     "next": "14.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-speech-recognition": "^4.0.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "tsparticles": "^3.9.1"
   },
   "devDependencies": {
     "@jridgewell/gen-mapping": "^0.3.5",

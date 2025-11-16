@@ -21,12 +21,15 @@ interface VoiceRecognitionOptions {
 
 const useVoiceRecognition = (options: VoiceRecognitionOptions = {}): VoiceRecognitionHook => {
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Add null check for useSpeechRecognition
+  const speechRecognitionResult = useSpeechRecognition();
   const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition
-  } = useSpeechRecognition();
+    transcript = '',
+    listening = false,
+    resetTranscript = () => {},
+    browserSupportsSpeechRecognition = false
+  } = speechRecognitionResult || {};
 
   const defaultOptions = {
     continuous: true,

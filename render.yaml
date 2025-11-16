@@ -19,6 +19,8 @@ services:
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
     startCommand: npm run socket:start --workspace=axiom-assist-bot
+    domains:
+      - api.axiomid.app
     envVars:
       - key: NODE_VERSION
         value: 20
