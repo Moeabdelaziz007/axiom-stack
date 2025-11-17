@@ -109,6 +109,7 @@ import {
 import { formatDocumentsAsString } from 'langchain/util/document';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { promises as fs } from 'fs';
+import { Webhooks, createNodeMiddleware } from "@octokit/webhooks";
 
 // --- Configuration ---
 const PINECONE_INDEX_NAME = 'axiom-id-brain';
@@ -119,6 +120,11 @@ const PORT = process.env.PORT || 3001;
 if (!process.env.GEMINI_API_KEY || !process.env.PINECONE_API_KEY) {
   throw new Error('Missing GEMINI_API_KEY or PINECONE_API_KEY in environment');
 }
+
+// Initialize GitHub Webhook Verifier
+const githubWebhooks = new Webhooks({
+  secret: process.env.GITHUB_WEBHOOK_SECRET || 'temp_secret'
+});
 
 const app = express();
 app.use(express.json());
@@ -189,7 +195,21 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// 7. Start the server
+// 7. GitHub Webhook Endpoint
+app.post('/api/v1/github-webhook', createNodeMiddleware(githubWebhooks));
+console.log('✅ GitHub Webhook Endpoint listening at /api/v1/github-webhook');
+
+// 8. GitHub Webhook Listeners
+// Listen for new Pull Requests or when new commits are pushed
+githubWebhooks.on(["pull_request.opened", "pull_request.synchronize"], async ({ id, name, payload }) => {
+  console.log(`[GitHub Webhook] Received: ${name} (ID: ${id})`);
+  
+  // In a production implementation, we would forward these events to the orchestrator
+  // For now, we'll just log them
+  console.log(`[GitHub Webhook] PR event received for ${payload.repository.full_name} #${payload.pull_request.number}`);
+});
+
+// 9. Start the server
 app.listen(PORT, () => {
   console.log(`Web API server listening on port ${PORT}`);
 });
