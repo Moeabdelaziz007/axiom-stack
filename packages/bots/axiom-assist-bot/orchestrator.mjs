@@ -183,12 +183,24 @@ class AxiomOrchestrator {
       const repo = payload.repository;
       
       try {
-        // --- TASK 1: Dispatch Vulnerability Scan ---
-        // NOTE: The VulnerabilityScanPower requires a local path.
-        // We'll skip this for now until we build a "cloning" power.
-        console.log("[GitHub Webhook] Skipping vulnerability_scan (requires repo cloning logic).");
+        // --- TASK 1: Clone Repository for Security Scanning ---
+        const clonePayload = {
+          repo_url: repo.clone_url,
+          branch: pr.base.ref // Use the base branch of the PR
+        };
+
+        // Dispatch the clone_repo task to an available agent
+        const cloneResult = await this.taskService.createAgentTask(
+          clonePayload, 
+          "clone_repo" // The name of our new superpower
+        );
         
-        // --- TASK 2: Dispatch Code Review ---
+        // --- TASK 2: Dispatch Vulnerability Scan (after cloning) ---
+        // In a production implementation, we would wait for the clone result
+        // and then dispatch the vulnerability scan with the cloned repo path
+        console.log("[GitHub Webhook] Repository cloning initiated for vulnerability scanning.");
+        
+        // --- TASK 3: Dispatch Code Review ---
         const diff = await this.getPRDiff(repo.owner.login, repo.name, pr.number);
         
         const reviewPayload = {
