@@ -91,7 +91,7 @@ class AxiomOrchestrator {
 
   setupCallbackEndpoint() {
     // Endpoint for ADK agents to send results back
-    this.app.post('/adk-callback', (req, res) => {
+    this.app.post('/adk-callback', async (req, res) => {
       try {
         const { taskId, result, status, error, agentId } = req.body;
         
@@ -109,12 +109,59 @@ class AxiomOrchestrator {
         
         // Process the result
         if (status === 'completed') {
-          // Send result to the client via Socket.io
-          if (task.socket) {
-            task.socket.emit('agent_speaks_response', {
-              text: result,
-              timestamp: new Date().toISOString()
-            });
+          // Handle different task types
+          if (task.type === 'clone_repo') {
+            // Handle clone_repo completion
+            try {
+              const cloneResult = JSON.parse(result);
+              if (cloneResult.status === 'success' && cloneResult.temp_dir) {
+                console.log(`[Task Chain] Clone successful for ${task.prInfo.repoFullName}. Starting vulnerability scan and code review.`);
+                
+                // --- Dispatch Vulnerability Scan ---
+                const vulnerabilityPayload = {
+                  repo_path: cloneResult.temp_dir
+                };
+                
+                await this.taskService.createAgentTask(
+                  vulnerabilityPayload,
+                  "vulnerability_scan"
+                );
+                
+                // --- Dispatch Code Review ---
+                const diff = await this.getPRDiff(
+                  task.prInfo.owner,
+                  task.prInfo.repo,
+                  task.prInfo.prNumber
+                );
+                
+                const reviewPayload = {
+                  diff: diff,
+                  repo_full_name: task.prInfo.repoFullName,
+                  pr_number: task.prInfo.prNumber,
+                  github_token: process.env.GITHUB_BOT_TOKEN,
+                  gemini_api_key: process.env.GEMINI_API_KEY
+                };
+                
+                await this.taskService.createAgentTask(
+                  reviewPayload,
+                  "code_review"
+                );
+                
+                console.log(`[Task Chain] Dispatched vulnerability scan and code review for ${task.prInfo.repoFullName} PR #${task.prInfo.prNumber}`);
+              } else {
+                console.error(`[Task Chain] Clone failed for ${task.prInfo.repoFullName}:`, cloneResult.message);
+              }
+            } catch (parseError) {
+              console.error(`[Task Chain] Failed to parse clone result:`, parseError);
+            }
+          } else {
+            // Handle other task types (send result to client via Socket.io)
+            if (task.socket) {
+              task.socket.emit('agent_speaks_response', {
+                text: result,
+                timestamp: new Date().toISOString()
+              });
+            }
           }
           
           // Update agent reputation on successful task completion
@@ -195,30 +242,22 @@ class AxiomOrchestrator {
           "clone_repo" // The name of our new superpower
         );
         
-        // --- TASK 2: Dispatch Vulnerability Scan (after cloning) ---
-        // In a production implementation, we would wait for the clone result
-        // and then dispatch the vulnerability scan with the cloned repo path
-        console.log("[GitHub Webhook] Repository cloning initiated for vulnerability scanning.");
+        // Store PR information for later use when we get the clone result
+        this.pendingTasks.set(cloneResult, {
+          type: 'clone_repo',
+          prInfo: {
+            owner: repo.owner.login,
+            repo: repo.name,
+            prNumber: pr.number,
+            repoFullName: repo.full_name,
+            cloneUrl: repo.clone_url
+          }
+        });
         
-        // --- TASK 3: Dispatch Code Review ---
-        const diff = await this.getPRDiff(repo.owner.login, repo.name, pr.number);
-        
-        const reviewPayload = {
-          diff: diff,
-          repo_full_name: repo.full_name,
-          pr_number: pr.number,
-          github_token: process.env.GITHUB_BOT_TOKEN,
-          gemini_api_key: process.env.GEMINI_API_KEY // Assumes this is loaded
-        };
-
-        // Dispatch the code_review task to an available agent
-        await this.taskService.createAgentTask(
-          reviewPayload, 
-          "code_review" // The name of the new superpower
-        );
+        console.log(`[GitHub Webhook] Repository cloning initiated for ${repo.full_name} PR #${pr.number}.`);
 
       } catch (error) {
-        console.error(`[GitHub Webhook] Failed to dispatch tasks for PR #${pr.number}:`, error);
+        console.error(`[GitHub Webhook] Failed to dispatch clone task for PR #${pr.number}:`, error);
       }
     });
 
