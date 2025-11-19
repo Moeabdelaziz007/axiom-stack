@@ -6,7 +6,7 @@ services:
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
     startCommand: npm run web-api --workspace=axiom-assist-bot
     domains:
-      - axiomid.app
+      - www.axiomid.app
     envVars:
       - key: NODE_VERSION
         value: 20
@@ -48,7 +48,6 @@ services:
     startCommand: npm run start
     domains:
       - axiomid.app
-      - www.axiomid.app
     envVars:
       - key: NODE_VERSION
         value: 20

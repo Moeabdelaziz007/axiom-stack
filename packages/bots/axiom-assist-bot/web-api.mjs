@@ -209,6 +209,64 @@ githubWebhooks.on(["pull_request.opened", "pull_request.synchronize"], async ({ 
   console.log(`[GitHub Webhook] PR event received for ${payload.repository.full_name} #${payload.pull_request.number}`);
 });
 
+// Add Agents API Endpoint
+app.get('/api/agents', async (req, res) => {
+  try {
+    // Return mock AIX agent data similar to what's used in the frontend
+    const mockAgents = [
+      {
+        id: "aix_agent_001",
+        name: "Data Analyzer Pro",
+        description: "Advanced AI agent for data analysis and pattern recognition",
+        status: "active",
+        createdAt: "2023-06-15T10:30:00Z",
+        lastActive: new Date().toISOString(),
+        capabilities: ["data-analysis", "pattern-recognition", "reporting"],
+        reputation: 92,
+        loadFactor: 46
+      },
+      {
+        id: "aix_agent_002",
+        name: "Content Creator AI",
+        description: "Generates marketing content and social media posts",
+        status: "active",
+        createdAt: "2023-06-18T09:15:00Z",
+        lastActive: new Date().toISOString(),
+        capabilities: ["content-generation", "seo", "social-media"],
+        reputation: 87,
+        loadFactor: 42
+      },
+      {
+        id: "aix_agent_003",
+        name: "Security Monitor",
+        description: "Monitors system security and detects threats",
+        status: "busy",
+        createdAt: "2023-06-12T16:30:00Z",
+        lastActive: new Date().toISOString(),
+        capabilities: ["threat-detection", "intrusion-prevention", "compliance"],
+        reputation: 95,
+        loadFactor: 65
+      },
+      {
+        id: "aix_agent_004",
+        name: "Research Assistant",
+        description: "Conducts research and gathers information on various topics",
+        status: "active",
+        createdAt: "2023-06-20T14:20:00Z",
+        lastActive: new Date().toISOString(),
+        capabilities: ["research", "information-gathering", "summarization"],
+        reputation: 78,
+        loadFactor: 32
+      }
+    ];
+    
+    res.status(200).json(mockAgents);
+  } catch (error) {
+    console.error('Error fetching agents:', error);
+    res.status(500).json({ message: 'Failed to fetch agents', error: error.message });
+  }
+});
+
 // 9. Start the server
 app.listen(PORT, () => {
   console.log(`Web API server listening on port ${PORT}`);
