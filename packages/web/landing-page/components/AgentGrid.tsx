@@ -24,8 +24,8 @@ const AgentGrid = () => {
     const fetchAgents = async () => {
       try {
         setLoading(true);
-        // Use the local API route for agents data
-        const response = await fetch('/api/agents');
+        // Use the web API service URL for agents data
+        const response = await fetch('https://www.axiomid.app/api/agents');
         
         if (!response.ok) {
           throw new Error(`Failed to fetch agents: ${response.status} ${response.statusText}`);
