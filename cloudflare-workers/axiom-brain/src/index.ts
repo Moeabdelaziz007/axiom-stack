@@ -12,6 +12,8 @@
 
 import { Hono } from 'hono';
 import { ChatRoom } from './objects';
+import { GeminiClient } from './gemini';
+import { AIResponse } from './gemini-types';
 
 // Export the Durable Object class
 export { ChatRoom } from './objects';
@@ -22,6 +24,7 @@ interface Env {
   AI: Ai;
   CHAT_ROOM: DurableObjectNamespace;
   BROWSER: Fetcher;
+  GOOGLE_API_KEY: string;
 }
 
 // Define message interface
@@ -57,6 +60,9 @@ app.post('/chat', async (c) => {
       return c.json({ error: 'chatId and message are required' }, 400);
     }
     
+    // Initialize Gemini client
+    const geminiClient = new GeminiClient(c.env.GOOGLE_API_KEY);
+    
     // Get the ChatRoom Durable Object for this chat
     const id = c.env.CHAT_ROOM.idFromName(chatId);
     const stub = c.env.CHAT_ROOM.get(id);
@@ -74,11 +80,26 @@ app.post('/chat', async (c) => {
     const { history } = await historyResponse.json<{ history: Message[] }>();
     
     // Search Vectorize for relevant project info (RAG)
-    const queryVector: any = await c.env.AI.run('@cf/baai/bge-large-en-v1.5', { text: message });
-    const matches = await c.env.VECTORIZE.query(queryVector.data[0], { topK: 5 });
+    let context = '';
+    try {
+      const queryVector: any = await c.env.AI.run('@cf/baai/bge-large-en-v1.5', { text: message });
+      console.log('Query vector result:', JSON.stringify(queryVector));
+      
+      // Check if queryVector has the expected structure
+      if (!queryVector || !queryVector.data || !Array.isArray(queryVector.data) || queryVector.data.length === 0) {
+        console.error('Invalid query vector response:', queryVector);
+        context = 'No relevant context found.';
+      } else {
+        const matches = await c.env.VECTORIZE.query(queryVector.data[0], { topK: 5 });
+        console.log('Vectorize matches:', JSON.stringify(matches));
+        context = matches.matches.map(match => match.metadata?.text || '').join('\n\n');
+      }
+    } catch (vectorizeError) {
+      console.error('Vectorize error:', vectorizeError);
+      context = 'Error retrieving context.';
+    }
     
     // Prepare context for LLM
-    const context = matches.matches.map(match => match.metadata?.text || '').join('\n\n');
     const conversationHistory = history.map(msg => `${msg.role}: ${msg.content}`).join('\n');
     
     // Create prompt with context and history
@@ -94,27 +115,78 @@ User Question: ${message}
 
 Please provide a helpful and accurate response based on the context and conversation history:`;
     
-    // Send to Workers AI (via AI Gateway)
-    const response = await c.env.AI.run('@cf/meta/llama-3-8b-instruct', { 
-      prompt,
-      stream: false
-    });
+    console.log('Sending prompt to Gemini:', prompt.substring(0, 200) + '...');
     
-    const aiResponse = response.response || 'Sorry, I could not generate a response.';
+    // Decide whether to use grounding based on message content
+    let aiResponse: AIResponse;
+    const lowerMessage = message.toLowerCase();
+    const useGrounding = lowerMessage.includes('news') || lowerMessage.includes('price') || lowerMessage.includes('current') || lowerMessage.includes('latest');
+    
+    if (useGrounding) {
+      // Use grounding for news/price related queries
+      const payload = geminiClient.createGroundedPayload(prompt, 'You are an expert on the Axiom ID project. Provide accurate and helpful responses.');
+      aiResponse = await geminiClient.generateContent(payload);
+    } else {
+      // Use standard generation
+      const payload = {
+        contents: [{
+          role: 'user',
+          parts: [{ text: prompt }]
+        }]
+      };
+      aiResponse = await geminiClient.generateContent(payload);
+    }
+    
+    console.log('Gemini response:', JSON.stringify(aiResponse));
     
     // Save AI response to history via DO fetch method
     await stub.fetch('http://chat-room/add-message', {
       method: 'POST',
-      body: JSON.stringify({ role: 'assistant', content: aiResponse })
+      body: JSON.stringify({ role: 'assistant', content: aiResponse.text })
     });
     
     return c.json({ 
-      response: aiResponse,
-      chatId 
+      response: aiResponse.text,
+      chatId,
+      citations: aiResponse.citations,
+      searchQueries: aiResponse.searchQueries
     });
   } catch (error) {
     console.error('Chat error:', error);
-    return c.json({ error: 'Internal server error' }, 500);
+    return c.json({ error: 'Internal server error: ' + (error as Error).message }, 500);
+  }
+});
+
+// Vision endpoint - analyze trading charts
+app.post('/analyze-chart', async (c) => {
+  try {
+    const { image } = await c.req.json();
+    
+    if (!image) {
+      return c.json({ error: 'image (base64) is required' }, 400);
+    }
+    
+    // Initialize Gemini client
+    const geminiClient = new GeminiClient(c.env.GOOGLE_API_KEY);
+    
+    // Create vision payload
+    const payload = geminiClient.createVisionPayload(
+      image,
+      'Analyze this trading chart. Identify patterns (RSI, MACD) and output JSON.',
+      'You are a professional trading chart analyst. Provide detailed technical analysis.'
+    );
+    
+    // Generate content
+    const aiResponse = await geminiClient.generateContent(payload);
+    
+    return c.json({
+      analysis: aiResponse.text,
+      citations: aiResponse.citations,
+      searchQueries: aiResponse.searchQueries
+    });
+  } catch (error) {
+    console.error('Chart analysis error:', error);
+    return c.json({ error: 'Internal server error: ' + (error as Error).message }, 500);
   }
 });
 
@@ -150,6 +222,7 @@ app.get('/', async (c) => {
     version: '2.0.0',
     endpoints: [
       'POST /chat { chatId, message }',
+      'POST /analyze-chart { image }',
       'GET /snap',
       'GET /health'
     ]
