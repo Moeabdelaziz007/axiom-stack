@@ -63,8 +63,8 @@ services:
     name: axiom-id-frontend
     runtime: node
     plan: free
-    rootDir: packages/web-ui
-    buildCommand: npm install --legacy-peer-deps && npm run build
+    rootDir: packages/web/landing-page
+    buildCommand: npm install && npm run build
     startCommand: npm run start
     domains:
       - app.axiomid.app
