@@ -1,0 +1,17 @@
+{
+  "name": "axiom-gemini-router",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-11-19",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "vars": {
+    "GOOGLE_API_KEY": ""
+  },
+  "services": [
+    {
+      "binding": "TOOL_EXECUTOR",
+      "service": "axiom-tool-executor"
+    }
+  ]
+}

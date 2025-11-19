@@ -1,0 +1,21 @@
+{
+  "name": "axiom-tool-executor",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-11-19",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "r2_buckets": [
+    {
+      "binding": "ASSETS_BUCKET",
+      "bucket_name": "axiom-assets",
+      "preview_bucket_name": "axiom-assets-preview"
+    }
+  ],
+  "services": [
+    {
+      "binding": "AUTH_WORKER",
+      "service": "axiom-auth-worker"
+    }
+  ]
+}

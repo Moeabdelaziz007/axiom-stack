@@ -1,0 +1,13 @@
+{
+  "name": "axiom-auth-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-11-19",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "vars": {
+    "FIREBASE_PROJECT_ID": "",
+    "FIREBASE_CLIENT_EMAIL": "",
+    "FIREBASE_SERVICE_ACCOUNT_JSON": ""
+  }
+}

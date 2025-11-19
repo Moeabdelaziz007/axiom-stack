@@ -1,4 +1,4 @@
-// packages/workers/agent-factory/src/index.ts - Agent Factory Worker Entry Point
+// packages/workers/agent-factory/src/index.ts - Agent Factory Worker Entry Point (Nano Banana Architecture)
 import { Hono } from 'hono';
 import type { AgentConfig, GenesisRules, SpawnRequest } from '@axiom-stack/core';
 
@@ -8,7 +8,7 @@ const app = new Hono();
 // Health check endpoint
 app.get('/', async (c: any) => {
   return c.json({
-    message: 'AxiomID Agent Factory',
+    message: 'AxiomID Agent Factory (Nano Banana Architecture)',
     version: '1.0.0',
     status: 'ok'
   });
@@ -49,6 +49,43 @@ app.post('/spawn', async (c: any) => {
   } catch (error: any) {
     console.error('Error spawning agent:', error);
     return c.json({ error: 'Failed to create agent' }, 500);
+  }
+});
+
+// POST /orchestrate endpoint - Orchestrate agent actions using Nano Banana architecture
+app.post('/orchestrate', async (c: any) => {
+  try {
+    const { agentId, action, payload }: { agentId: string; action: string; payload: any } = await c.req.json();
+    
+    // Validate required fields
+    if (!agentId || !action) {
+      return c.json({ error: 'Missing required fields: agentId and action' }, 400);
+    }
+    
+    console.log(`Orchestrating action ${action} for agent ${agentId}`);
+    
+    // In the Nano Banana architecture, orchestration happens through Service Bindings
+    // This provides sub-5ms latency for internal agent communications
+    
+    // TODO: Implement actual orchestration logic
+    // This would involve:
+    // 1. Calling appropriate specialized workers via Service Bindings
+    // 2. Routing to Gemini Router for AI decisions
+    // 3. Routing to Tool Executor for action execution
+    
+    // For now, return a mock result
+    const result = {
+      agentId,
+      action,
+      status: 'orchestrated',
+      timestamp: Date.now(),
+      message: `Action ${action} orchestrated successfully for agent ${agentId}`
+    };
+    
+    return c.json(result);
+  } catch (error: any) {
+    console.error('Error orchestrating agent action:', error);
+    return c.json({ error: 'Failed to orchestrate agent action' }, 500);
   }
 });
 

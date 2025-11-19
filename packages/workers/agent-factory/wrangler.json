@@ -1,40 +1,33 @@
 {
   "name": "axiom-agent-factory",
   "main": "src/index.ts",
-  "compatibility_date": "2023-10-01",
-  "compatibility_flags": ["nodejs_compat"],
-  "workers_dev": true,
-  "account_id": "",
-  "route": "",
-  "routes": [],
-  "triggers": {
-    "crons": []
-  },
-  "usage_model": "bundled",
-  "env": {
-    "production": {
-      "name": "axiom-agent-factory-prod"
+  "compatibility_date": "2025-11-19",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "services": [
+    {
+      "binding": "AGENT_DO",
+      "service": "axiom-agent-do"
+    },
+    {
+      "binding": "GEMINI_ROUTER",
+      "service": "axiom-gemini-router"
+    },
+    {
+      "binding": "TOOL_EXECUTOR",
+      "service": "axiom-tool-executor"
+    },
+    {
+      "binding": "AUTH_WORKER",
+      "service": "axiom-auth-worker"
     }
-  },
-  "durable_objects": {
-    "bindings": []
-  },
-  "kv_namespaces": [],
-  "r2_buckets": [],
-  "d1_databases": [],
-  "services": [],
-  "analytics_engine_datasets": [],
-  "queues": {
-    "producers": [],
-    "consumers": []
-  },
-  "dispatch_namespaces": [],
-  "mtls_certificates": [],
-  "logfwdr": {
-    "bindings": []
-  },
-  "tail_consumers": [],
-  "unsafe": {
-    "bindings": []
-  }
+  ],
+  "d1_databases": [
+    {
+      "binding": "AGENT_REGISTRY",
+      "database_name": "axiom-agent-registry",
+      "database_id": ""
+    }
+  ]
 }
