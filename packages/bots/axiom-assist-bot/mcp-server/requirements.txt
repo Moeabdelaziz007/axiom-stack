@@ -1,0 +1,2 @@
+mcp>=1.21.1
+google-cloud-firestore

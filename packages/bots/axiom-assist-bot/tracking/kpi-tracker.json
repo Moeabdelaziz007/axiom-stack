@@ -1,0 +1,54 @@
+{
+  "project": "Axiom ID Google Cloud Integration",
+  "tracking_start_date": "2025-11-17",
+  "kpis": [
+    {
+      "category": "AI Performance",
+      "name": "Task Completion Rate",
+      "target": "> 90%",
+      "current": "75%",
+      "measurement_tool": "ADK Evaluation (User Simulation logs)",
+      "last_updated": "2025-11-16T10:00:00Z"
+    },
+    {
+      "category": "AI Performance",
+      "name": "Average Response Time (P95)",
+      "target": "< 3 seconds (for simple async tasks)",
+      "current": "1.2 seconds",
+      "measurement_tool": "Cloud Run (Latency metrics)",
+      "last_updated": "2025-11-16T10:00:00Z"
+    },
+    {
+      "category": "Security",
+      "name": "Attacks Detected and Blocked",
+      "target": "100% of known attacks in test suite",
+      "current": "85%",
+      "measurement_tool": "Model Armor Logs (via BigQuery queries)",
+      "last_updated": "2025-11-16T10:00:00Z"
+    },
+    {
+      "category": "User Experience",
+      "name": "Customer Satisfaction (CSAT)",
+      "target": "> 4.5/5",
+      "current": "4.2/5",
+      "measurement_tool": "BigQuery AI.SCORE (on chat evaluation logs)",
+      "last_updated": "2025-11-16T10:00:00Z"
+    },
+    {
+      "category": "Operations",
+      "name": "Mean Time to Detect Error (MTTD)",
+      "target": "< 15 minutes",
+      "current": "8 minutes",
+      "measurement_tool": "Gemini Cloud Assist / Cloud Logging Alerts",
+      "last_updated": "2025-11-16T10:00:00Z"
+    },
+    {
+      "category": "Operations",
+      "name": "Developer Velocity",
+      "target": "+30% (reduction in maintenance task time)",
+      "current": "+25%",
+      "measurement_tool": "Jules (completed tasks) / DORA metrics",
+      "last_updated": "2025-11-16T10:00:00Z"
+    }
+  ]
+}

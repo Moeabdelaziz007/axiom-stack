@@ -1,0 +1,227 @@
+{
+  "project": "Axiom ID Google Cloud Integration",
+  "timeline": "12 weeks",
+  "start_date": "2025-11-17",
+  "weeks": [
+    {
+      "week": 1,
+      "phase": "Setup & Foundation",
+      "status": "completed",
+      "tasks": [
+        {
+          "name": "Setup GCP project, service accounts, and IAM roles",
+          "status": "completed",
+          "responsible_team": "Cloud Ops, AI Lead",
+          "updated_at": "2025-11-16T10:00:00Z"
+        },
+        {
+          "name": "Setup GitHub repository and connect with Jules",
+          "status": "completed",
+          "responsible_team": "AI Lead",
+          "updated_at": "2025-11-16T10:00:00Z"
+        },
+        {
+          "name": "Deploy 'Hello World' ADK service to Cloud Run",
+          "status": "completed",
+          "responsible_team": "Cloud Ops",
+          "updated_at": "2025-11-16T10:00:00Z"
+        },
+        {
+          "name": "Setup Cloud Tasks queue",
+          "status": "completed",
+          "responsible_team": "Cloud Ops",
+          "updated_at": "2025-11-16T10:00:00Z"
+        },
+        {
+          "name": "Configure Cloud Run service permissions",
+          "status": "completed",
+          "responsible_team": "Cloud Ops",
+          "updated_at": "2025-11-16T10:00:00Z"
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "phase": "Setup & Foundation",
+      "status": "completed",
+      "tasks": [
+        {
+          "name": "Verify GCP project configuration",
+          "status": "completed",
+          "responsible_team": "Cloud Ops, AI Lead",
+          "updated_at": "2025-11-16T10:00:00Z"
+        },
+        {
+          "name": "Test Jules integration with GitHub",
+          "status": "completed",
+          "responsible_team": "AI Lead",
+          "updated_at": "2025-11-16T10:00:00Z"
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "phase": "Core Integration",
+      "status": "in-progress",
+      "tasks": [
+        {
+          "name": "Implement async pattern: AxiomOrchestrator -> Cloud Tasks -> ADK Agent",
+          "status": "completed",
+          "responsible_team": "Backend (Node.js), AI Lead",
+          "updated_at": "2025-11-16T10:00:00Z"
+        },
+        {
+          "name": "Setup Model Armor API and create security template",
+          "status": "in-progress",
+          "responsible_team": "AI Lead"
+        },
+        {
+          "name": "Integrate Model Armor in AxiomOrchestrator",
+          "status": "completed",
+          "responsible_team": "Backend (Node.js)",
+          "updated_at": "2025-11-16T10:00:00Z"
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "phase": "Core Integration",
+      "status": "in-progress",
+      "tasks": [
+        {
+          "name": "Complete Model Armor integration testing",
+          "status": "pending",
+          "responsible_team": "AI Lead"
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "phase": "Tools & Memory",
+      "status": "pending",
+      "tasks": [
+        {
+          "name": "Setup Pinecone and Firestore hybrid architecture",
+          "status": "in-progress",
+          "responsible_team": "Data Engineering"
+        },
+        {
+          "name": "Develop custom MCP Toolbox service for Firestore",
+          "status": "pending",
+          "responsible_team": "AI Team"
+        },
+        {
+          "name": "Integrate MCP tools and hybrid memory in ADK service",
+          "status": "pending",
+          "responsible_team": "AI Team"
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "phase": "Tools & Memory",
+      "status": "pending",
+      "tasks": []
+    },
+    {
+      "week": 7,
+      "phase": "Testing & Evaluation",
+      "status": "pending",
+      "tasks": [
+        {
+          "name": "Develop ADK User Simulation test cases",
+          "status": "pending",
+          "responsible_team": "QA Team, AI Team"
+        },
+        {
+          "name": "Implement Model Armor penetration tests",
+          "status": "pending",
+          "responsible_team": "QA Team"
+        },
+        {
+          "name": "Use Jules to add unit tests for new components",
+          "status": "pending",
+          "responsible_team": "DevOps"
+        }
+      ]
+    },
+    {
+      "week": 8,
+      "phase": "Testing & Evaluation",
+      "status": "pending",
+      "tasks": []
+    },
+    {
+      "week": 9,
+      "phase": "Logging & Analytics",
+      "status": "pending",
+      "tasks": [
+        {
+          "name": "Setup log flow: Render -> Pub/Sub -> Cloud Function -> Cloud Logging",
+          "status": "pending",
+          "responsible_team": "Cloud Ops"
+        },
+        {
+          "name": "Setup Log Sink from Cloud Logging to BigQuery",
+          "status": "pending",
+          "responsible_team": "Data Analytics"
+        },
+        {
+          "name": "Develop dashboards using BigQuery AI queries",
+          "status": "pending",
+          "responsible_team": "Data Analytics"
+        }
+      ]
+    },
+    {
+      "week": 10,
+      "phase": "Logging & Analytics",
+      "status": "pending",
+      "tasks": []
+    },
+    {
+      "week": 11,
+      "phase": "Debug & Optimize",
+      "status": "pending",
+      "tasks": [
+        {
+          "name": "Activate Gemini Cloud Assist Investigations",
+          "status": "pending",
+          "responsible_team": "Full Stack Team"
+        },
+        {
+          "name": "Performance analysis and debugging using Cloud Assist",
+          "status": "pending",
+          "responsible_team": "QA Team"
+        },
+        {
+          "name": "Use Chrome DevTools MCP for automated E2E tests",
+          "status": "pending",
+          "responsible_team": "QA Team"
+        }
+      ]
+    },
+    {
+      "week": 12,
+      "phase": "Go-Live & Review",
+      "status": "pending",
+      "tasks": [
+        {
+          "name": "Implement backup and rollback plan",
+          "status": "pending",
+          "responsible_team": "Cloud Ops"
+        },
+        {
+          "name": "Gradual rollout (Canary) using Cloud Run Traffic Splitting",
+          "status": "pending",
+          "responsible_team": "Cloud Ops"
+        },
+        {
+          "name": "Review KPIs after launch and compare with targets",
+          "status": "pending",
+          "responsible_team": "Project Lead"
+        }
+      ]
+    }
+  ]
+}

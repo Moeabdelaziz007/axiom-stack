@@ -1,0 +1,125 @@
+{
+  "version": "0.1.0",
+  "name": "axiom_id_final",
+  "instructions": [
+    {
+      "name": "createAgent",
+      "accounts": [
+        {
+          "name": "agentInfo",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "agent"
+              },
+              {
+                "kind": "arg",
+                "type": "string",
+                "path": "agent_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "agent_id",
+          "type": "string"
+        },
+        {
+          "name": "initial_reputation",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "updateReputation",
+      "accounts": [
+        {
+          "name": "agentInfo",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "agent"
+              },
+              {
+                "kind": "account",
+                "type": "string",
+                "account": "AgentInfo",
+                "path": "agent_info.agent_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "score_delta",
+          "type": "i64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AgentInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "agent_id",
+            "type": "string"
+          },
+          {
+            "name": "reputation_score",
+            "type": "u64"
+          },
+          {
+            "name": "tasks_completed",
+            "type": "u64"
+          },
+          {
+            "name": "capabilities",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "address": "CcrbGS99N45XPZBLRxeN6q76P93iog6qGdLAiK839d6g"
+  }
+}

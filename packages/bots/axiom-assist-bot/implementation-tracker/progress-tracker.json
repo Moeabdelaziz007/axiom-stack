@@ -1,0 +1,194 @@
+{
+  "project": "Axiom ID Google Cloud Integration",
+  "timeline": "12 weeks",
+  "start_date": "2025-11-17",
+  "current_week": 1,
+  "phases": [
+    {
+      "week_range": "1-2",
+      "phase": "Setup & Foundation",
+      "key_tasks": [
+        "Setup GCP project, service accounts, and IAM roles (including roles/run.invoker)",
+        "Setup GitHub repository and connect it to Jules",
+        "Deploy 'Hello World' ADK service (Python/FastAPI) to Cloud Run (private)",
+        "Setup Cloud Tasks queue"
+      ],
+      "responsible_team": "Cloud Ops, AI Lead",
+      "status": "in_progress",
+      "completion_percentage": 25,
+      "completed_tasks": [
+        "Setup GitHub repository and connect it to Jules"
+      ],
+      "in_progress_tasks": [
+        "Setup GCP project, service accounts, and IAM roles (including roles/run.invoker)",
+        "Deploy 'Hello World' ADK service (Python/FastAPI) to Cloud Run (private)",
+        "Setup Cloud Tasks queue"
+      ],
+      "pending_tasks": []
+    },
+    {
+      "week_range": "3-4",
+      "phase": "Core Integration",
+      "key_tasks": [
+        "Implement asynchronous invocation pattern: AxiomOrchestrator (Node.js) -> Cloud Tasks -> ADK Agent (Python)",
+        "Setup Model Armor API and create security template",
+        "Integrate Model Armor (sanitizeUserPrompt) in AxiomOrchestrator to intercept Socket.io messages"
+      ],
+      "responsible_team": "Backend (Node.js), AI Lead",
+      "status": "pending",
+      "completion_percentage": 0,
+      "completed_tasks": [],
+      "in_progress_tasks": [],
+      "pending_tasks": [
+        "Implement asynchronous invocation pattern: AxiomOrchestrator (Node.js) -> Cloud Tasks -> ADK Agent (Python)",
+        "Setup Model Armor API and create security template",
+        "Integrate Model Armor (sanitizeUserPrompt) in AxiomOrchestrator to intercept Socket.io messages"
+      ]
+    },
+    {
+      "week_range": "5-6",
+      "phase": "Tools & Memory",
+      "key_tasks": [
+        "Setup Pinecone and Firestore and configure hybrid architecture",
+        "Develop custom MCP Toolbox for Firestore (as separate Cloud Run endpoint)",
+        "Integrate MCP tools and hybrid memory (Firestore+Pinecone) in main ADK service"
+      ],
+      "responsible_team": "AI Team, Data Engineering",
+      "status": "pending",
+      "completion_percentage": 0,
+      "completed_tasks": [],
+      "in_progress_tasks": [],
+      "pending_tasks": [
+        "Setup Pinecone and Firestore and configure hybrid architecture",
+        "Develop custom MCP Toolbox for Firestore (as separate Cloud Run endpoint)",
+        "Integrate MCP tools and hybrid memory (Firestore+Pinecone) in main ADK service"
+      ]
+    },
+    {
+      "week_range": "7-8",
+      "phase": "Testing & Evaluation",
+      "key_tasks": [
+        "Develop ADK User Simulation test cases (conversation plan)",
+        "Implement security penetration tests for Model Armor",
+        "Start using Jules to add unit tests for newly developed components"
+      ],
+      "responsible_team": "QA Team, AI Team, DevOps",
+      "status": "pending",
+      "completion_percentage": 0,
+      "completed_tasks": [],
+      "in_progress_tasks": [],
+      "pending_tasks": [
+        "Develop ADK User Simulation test cases (conversation plan)",
+        "Implement security penetration tests for Model Armor",
+        "Start using Jules to add unit tests for newly developed components"
+      ]
+    },
+    {
+      "week_range": "9-10",
+      "phase": "Logging & Analytics",
+      "key_tasks": [
+        "Setup log pipeline: Render -> Pub/Sub -> Cloud Function -> Cloud Logging",
+        "Setup Log Sink from Cloud Logging to BigQuery",
+        "Develop dashboards using BigQuery AI queries (AI.CLASSIFY, AI.SCORE)"
+      ],
+      "responsible_team": "Cloud Ops, Data Analytics",
+      "status": "pending",
+      "completion_percentage": 0,
+      "completed_tasks": [],
+      "in_progress_tasks": [],
+      "pending_tasks": [
+        "Setup log pipeline: Render -> Pub/Sub -> Cloud Function -> Cloud Logging",
+        "Setup Log Sink from Cloud Logging to BigQuery",
+        "Develop dashboards using BigQuery AI queries (AI.CLASSIFY, AI.SCORE)"
+      ]
+    },
+    {
+      "week_range": "11",
+      "phase": "Debug & Optimize",
+      "key_tasks": [
+        "Activate Gemini Cloud Assist Investigations (and related APIs)",
+        "Analyze performance and debug discovered issues (RCA) using Cloud Assist",
+        "Use Chrome DevTools MCP for automated E2E tests"
+      ],
+      "responsible_team": "Full Stack Team, QA Team",
+      "status": "pending",
+      "completion_percentage": 0,
+      "completed_tasks": [],
+      "in_progress_tasks": [],
+      "pending_tasks": [
+        "Activate Gemini Cloud Assist Investigations (and related APIs)",
+        "Analyze performance and debug discovered issues (RCA) using Cloud Assist",
+        "Use Chrome DevTools MCP for automated E2E tests"
+      ]
+    },
+    {
+      "week_range": "12",
+      "phase": "Go-Live & Review",
+      "key_tasks": [
+        "Implement backup and rollback plan and document it",
+        "Gradual rollout (Canary) at 10% using Cloud Run Traffic Splitting",
+        "Review KPIs post-launch and compare against targets"
+      ],
+      "responsible_team": "Cloud Ops, Project Lead",
+      "status": "pending",
+      "completion_percentage": 0,
+      "completed_tasks": [],
+      "in_progress_tasks": [],
+      "pending_tasks": [
+        "Implement backup and rollback plan and document it",
+        "Gradual rollout (Canary) at 10% using Cloud Run Traffic Splitting",
+        "Review KPIs post-launch and compare against targets"
+      ]
+    }
+  ],
+  "kpis": [
+    {
+      "category": "AI Performance",
+      "kpi": "Task Completion Rate",
+      "target": "> 90%",
+      "measurement_tool": "ADK Evaluation (User Simulation logs)",
+      "current_value": "N/A",
+      "status": "pending"
+    },
+    {
+      "category": "AI Performance",
+      "kpi": "Average Response Time (P95)",
+      "target": "< 3 seconds (for simple asynchronous tasks)",
+      "measurement_tool": "Cloud Run (Latency metrics)",
+      "current_value": "N/A",
+      "status": "pending"
+    },
+    {
+      "category": "Security",
+      "kpi": "Attacks Detected and Blocked",
+      "target": "100% of known attacks in test set",
+      "measurement_tool": "Model Armor Logs (via BigQuery queries)",
+      "current_value": "N/A",
+      "status": "pending"
+    },
+    {
+      "category": "User Experience",
+      "kpi": "Customer Satisfaction (CSAT)",
+      "target": "> 4.5/5",
+      "measurement_tool": "BigQuery AI.SCORE (on chat evaluation logs)",
+      "current_value": "N/A",
+      "status": "pending"
+    },
+    {
+      "category": "Operations",
+      "kpi": "Mean Time to Detect Error (MTTD)",
+      "target": "< 15 minutes",
+      "measurement_tool": "Gemini Cloud Assist / Cloud Logging Alerts",
+      "current_value": "N/A",
+      "status": "pending"
+    },
+    {
+      "category": "Operations",
+      "kpi": "Developer Velocity",
+      "target": "+30% (reduction in maintenance task time)",
+      "measurement_tool": "Jules (completed tasks) / DORA metrics",
+      "current_value": "N/A",
+      "status": "pending"
+    }
+  ]
+}

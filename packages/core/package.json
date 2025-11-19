@@ -1,0 +1,32 @@
+{
+  "name": "@axiom-stack/core",
+  "version": "1.0.0",
+  "description": "🧠 The Core Brain of Axiom ID - Platform-agnostic AI logic layer",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "axiom",
+    "ai",
+    "core",
+    "brain",
+    "platform-agnostic"
+  ],
+  "author": "Axiom ID Team",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.9"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "typescript": "^5.5.2"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "axiom-monitoring-functions",
+  "version": "1.0.0",
+  "description": "Google Cloud Functions for Axiom ID monitoring",
+  "main": "monitoring-function.mjs",
+  "scripts": {
+    "test": "node monitoring-function.mjs"
+  },
+  "dependencies": {
+    "@google-cloud/tasks": "^5.5.0",
+    "@solana/web3.js": "^1.98.4",
+    "bs58": "^6.0.0",
+    "dotenv": "^16.4.5"
+  },
+  "type": "module"
+}
