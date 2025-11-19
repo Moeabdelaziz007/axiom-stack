@@ -6,7 +6,7 @@ services:
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
     startCommand: cd packages/bots/axiom-assist-bot && npm run web-api
     domains:
-      - www.axiomid.app
+      - api.axiomid.app
     envVars:
       - key: NODE_VERSION
         value: 20
@@ -33,7 +33,7 @@ services:
       - key: AXIOM_PROGRAM_ID
         value: CcrbGS99N45XPZBLRxeN6q76P93iog6qGdLAiK839d6g
       - key: ORCHESTRATOR_PUBLIC_URL
-        value: https://axiomid.app
+        value: https://app.axiomid.app
 
   - type: web
     name: axiom-id-socket-server
@@ -42,7 +42,7 @@ services:
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
     startCommand: cd packages/bots/axiom-assist-bot && npm run socket:start
     domains:
-      - api.axiomid.app
+      - socket.axiomid.app
     envVars:
       - key: NODE_VERSION
         value: 20
@@ -57,7 +57,7 @@ services:
       - key: SOCKET_SERVER_INTERNAL_URL
         value: http://axiom-id-socket-server:3001
       - key: ORCHESTRATOR_PUBLIC_URL
-        value: https://axiomid.app
+        value: https://app.axiomid.app
 
   - type: web
     name: axiom-id-frontend
@@ -67,9 +67,9 @@ services:
     buildCommand: npm install --legacy-peer-deps && npm run build
     startCommand: cd packages/web/landing-page && npm run start
     domains:
-      - axiomid.app
+      - app.axiomid.app
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: NEXT_PUBLIC_SITE_URL
-        value: https://axiomid.app
+        value: https://app.axiomid.app
