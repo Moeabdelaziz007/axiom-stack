@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react';
 
 export default function TestApiPage() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const testApiRoute = async (route: string) => {
     try {
@@ -18,7 +18,7 @@ export default function TestApiPage() {
       setData(result);
     } catch (err) {
       console.error('API Error:', err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setLoading(false);
     }
