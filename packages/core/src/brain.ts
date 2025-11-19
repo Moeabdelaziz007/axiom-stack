@@ -9,11 +9,12 @@ export interface BrainResponse {
 
 export class AxiomBrain {
   private cloudflareWorkerUrl: string;
-  private vectorizeEndpoint: string;
 
   constructor() {
-    this.cloudflareWorkerUrl = process.env.CLOUDFLARE_WORKER_URL || 'https://axiom-brain.your-subdomain.workers.dev';
-    this.vectorizeEndpoint = `${this.cloudflareWorkerUrl}/api/v1`;
+    // Use AXIOM_BRAIN_URL if available, otherwise fallback to CLOUDFLARE_WORKER_URL, then default
+    this.cloudflareWorkerUrl = process.env.AXIOM_BRAIN_URL || 
+                              process.env.CLOUDFLARE_WORKER_URL || 
+                              'https://axiom-brain.your-subdomain.workers.dev';
   }
 
   /**
@@ -26,20 +27,18 @@ export class AxiomBrain {
     try {
       console.log(`🧠 AxiomBrain processing message from user ${userId}: ${message}`);
 
-      // Step 1: Check Vectorize memory (RAG)
-      const memoryContext = await this.checkMemory(message);
-      
-      // Step 2: Call Cloudflare Workers AI
-      const aiResponse = await this.callWorkersAI(message, memoryContext);
-      
-      // Step 3: Execute Blockchain checks (Solana) if needed
-      const blockchainData = await this.checkBlockchain(message);
-      
-      // Step 4: Combine responses and format output
-      const finalResponse = this.formatResponse(aiResponse, memoryContext, blockchainData);
-      
-      console.log(`✅ AxiomBrain response generated for user ${userId}`);
-      return finalResponse;
+      // For now, we'll use the chat endpoint directly since that's what's available
+      const response = await axios.post(`${this.cloudflareWorkerUrl}/chat`, {
+        chatId: userId,
+        message: message
+      }, {
+        timeout: 15000
+      });
+
+      return {
+        text: response.data.response || "I'm not sure how to respond to that.",
+        actions: ['processed']
+      };
     } catch (error) {
       console.error('❌ Error in AxiomBrain.process:', error);
       return {
@@ -53,71 +52,24 @@ export class AxiomBrain {
    * Check Vectorize memory (RAG) for relevant context
    */
   private async checkMemory(query: string): Promise<string | null> {
-    try {
-      const response = await axios.post(`${this.vectorizeEndpoint}/knowledge-search`, {
-        query
-      }, {
-        timeout: 5000
-      });
-      
-      if (response.data && response.data.results && response.data.results.length > 0) {
-        return response.data.results[0].text;
-      }
-      return null;
-    } catch (error) {
-      console.warn('⚠️  Memory check failed:', error);
-      return null;
-    }
+    // This functionality is now handled by the Cloudflare worker's chat endpoint
+    return null;
   }
 
   /**
    * Call Cloudflare Workers AI for inference
    */
   private async callWorkersAI(message: string, context?: string | null): Promise<string> {
-    try {
-      // First try cached AI to reduce costs
-      const cachedResponse = await this.callCachedAI(message);
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      // If no cache hit, use the main AI endpoint
-      const payload = {
-        prompt: context ? `${context}\n\nUser: ${message}` : message,
-        model: '@cf/meta/llama-3-8b-instruct'
-      };
-
-      const response = await axios.post(`${this.vectorizeEndpoint}/ai`, payload, {
-        timeout: 10000
-      });
-
-      return response.data.response || "I'm not sure how to respond to that.";
-    } catch (error) {
-      console.error('❌ Workers AI call failed:', error);
-      return "I'm having trouble processing your request right now. Please try again later.";
-    }
+    // This functionality is now handled by the Cloudflare worker's chat endpoint
+    return "AI response would be here";
   }
 
   /**
    * Call cached AI endpoint to reduce costs
    */
   private async callCachedAI(message: string): Promise<string | null> {
-    try {
-      const response = await axios.post(`${this.vectorizeEndpoint}/cached-ai`, {
-        prompt: message
-      }, {
-        timeout: 5000
-      });
-
-      if (response.data && response.data.cached) {
-        console.log('✅ Using cached AI response');
-        return response.data.response;
-      }
-      return null;
-    } catch (error) {
-      console.warn('⚠️  Cached AI check failed:', error);
-      return null;
-    }
+    // This functionality is now handled by the Cloudflare worker's chat endpoint
+    return null;
   }
 
   /**

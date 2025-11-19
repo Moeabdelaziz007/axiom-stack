@@ -55,6 +55,8 @@ services:
         value: CcrbGS99N45XPZBLRxeN6q76P93iog6qGdLAiK839d6g
       - key: ORCHESTRATOR_PUBLIC_URL
         value: https://app.axiomid.app
+      - key: AXIOM_BRAIN_URL
+        value: https://axiom-brain.amrikyy.workers.dev
 
   # Socket Server Service
   - type: web
@@ -80,6 +82,8 @@ services:
         value: http://axiom-id-socket-server:3001
       - key: ORCHESTRATOR_PUBLIC_URL
         value: https://app.axiomid.app
+      - key: AXIOM_BRAIN_URL
+        value: https://axiom-brain.amrikyy.workers.dev
 
   # Omni-Bot Worker Service
   - type: worker
