@@ -16,6 +16,22 @@ services:
         sync: false
       - key: DISCORD_BOT_TOKEN
         sync: false
+      - key: GOOGLE_CLOUD_PROJECT_ID
+        value: axiom-id-project
+      - key: GOOGLE_CLOUD_REGION
+        value: us-central1
+      - key: GOOGLE_CLOUD_TASKS_QUEUE
+        value: axiom-agent-queue
+      - key: GOOGLE_CLOUD_SERVICE_ACCOUNT
+        value: axiom-agent@axiom-id-project.iam.gserviceaccount.com
+      - key: AGENT_SERVICE_URL
+        value: https://axiom-superpower-host-abc123.a.run.app
+      - key: MODEL_ARMOR_TEMPLATE_ID
+        value: axiom-security-template
+      - key: SOLANA_RPC_URL
+        value: https://api.devnet.solana.com
+      - key: AXIOM_PROGRAM_ID
+        value: CcrbGS99N45XPZBLRxeN6q76P93iog6qGdLAiK839d6g
       - key: ORCHESTRATOR_PUBLIC_URL
         value: https://axiomid.app
 
@@ -38,6 +54,8 @@ services:
         sync: false
       - key: WEB_API_INTERNAL_URL
         value: http://axiom-id-web-api:3000
+      - key: SOCKET_SERVER_INTERNAL_URL
+        value: http://axiom-id-socket-server:3001
       - key: ORCHESTRATOR_PUBLIC_URL
         value: https://axiomid.app
 
