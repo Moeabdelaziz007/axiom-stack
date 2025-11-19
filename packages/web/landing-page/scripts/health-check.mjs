@@ -7,19 +7,25 @@
 
 import fetch from 'node-fetch';
 
-const API_BASE_URL = 'https://www.axiomid.app';
-const HEALTH_CHECK_TIMEOUT = 10000; // 10 seconds
+// Allow overriding the base URL via environment variable
+const API_BASE_URL = process.env.AXIOM_API_URL || 'https://www.axiomid.app';
+const HEALTH_CHECK_TIMEOUT = 15000; // 15 seconds
 
 console.log('🔍 Axiom ID Health Check');
 console.log('========================\n');
 
 async function checkApiEndpoint() {
-  console.log('📡 Checking API Endpoint: /api/agents');
+  console.log(`📡 Checking API Endpoint: ${API_BASE_URL}/api/agents`);
+  console.log(`⏱️  Timeout set to ${HEALTH_CHECK_TIMEOUT}ms\n`);
   
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), HEALTH_CHECK_TIMEOUT);
+    const timeoutId = setTimeout(() => {
+      console.log('⏰ Request timeout reached');
+      controller.abort();
+    }, HEALTH_CHECK_TIMEOUT);
     
+    console.log('🔗 Attempting to connect...');
     const response = await fetch(`${API_BASE_URL}/api/agents`, {
       signal: controller.signal
     });
@@ -32,16 +38,24 @@ async function checkApiEndpoint() {
       throw new Error(`Expected status 200, got ${response.status}`);
     }
     
+    const contentType = response.headers.get('content-type');
+    console.log(`✅ Content-Type: ${contentType}`);
+    
+    // Check if response is JSON
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error(`Expected JSON response, got ${contentType}`);
+    }
+    
     const data = await response.json();
-    console.log(`✅ Content-Type: ${response.headers.get('content-type')}`);
     console.log(`✅ Response received with ${Array.isArray(data) ? data.length : 'unknown'} items\n`);
     
     return data;
   } catch (error) {
+    console.log(`❌ Connection failed: ${error.message}`);
     if (error.name === 'AbortError') {
-      throw new Error('Request timeout');
+      throw new Error('Request timeout - server may be unreachable');
     }
-    throw error;
+    throw new Error(`Connection failed: ${error.message}`);
   }
 }
 
@@ -129,6 +143,8 @@ async function checkServerResponse() {
 }
 
 async function runHealthCheck() {
+  console.log(`📍 Target URL: ${API_BASE_URL}`);
+  
   try {
     // Check API endpoint
     const agentsData = await checkApiEndpoint();
@@ -151,7 +167,12 @@ async function runHealthCheck() {
     console.error('❌ Health Check Failed!');
     console.error('======================');
     console.error(error.message);
-    console.log('\n🔧 Please check the deployment and try again.');
+    console.log('\n🔧 Troubleshooting tips:');
+    console.log('  1. Check if the deployment is complete');
+    console.log('  2. Verify the domain is correctly configured');
+    console.log('  3. Ensure the API service is running');
+    console.log('  4. Try setting AXIOM_API_URL environment variable to test a different endpoint');
+    console.log('\n📝 Example: AXIOM_API_URL=http://localhost:3000 npm run health-check');
     
     process.exit(1);
   }
