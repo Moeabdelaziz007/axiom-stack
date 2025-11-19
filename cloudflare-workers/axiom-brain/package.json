@@ -1,0 +1,23 @@
+{
+	"name": "axiom-brain",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest",
+		"test-memory": "node test-memory.js",
+		"cf-typegen": "wrangler types"
+	},
+	"dependencies": {
+		"hono": "^4.0.0",
+		"@cloudflare/puppeteer": "^0.0.1"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.8.19",
+		"typescript": "^5.5.2",
+		"vitest": "~3.2.0",
+		"wrangler": "^3.101.0"
+	}
+}

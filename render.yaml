@@ -96,7 +96,7 @@ services:
       - key: DISCORD_TOKEN
         sync: false
       - key: AXIOM_BRAIN_URL
-        value: https://axiom-brain.your-subdomain.workers.dev
+        value: https://axiom-brain.amrikyy.workers.dev
       - key: GEMINI_API_KEY
         sync: false
       - key: PINECONE_API_KEY
