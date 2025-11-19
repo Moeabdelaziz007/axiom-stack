@@ -1,0 +1,40 @@
+{
+  "name": "axiom-agent-factory",
+  "main": "src/index.ts",
+  "compatibility_date": "2023-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "account_id": "",
+  "route": "",
+  "routes": [],
+  "triggers": {
+    "crons": []
+  },
+  "usage_model": "bundled",
+  "env": {
+    "production": {
+      "name": "axiom-agent-factory-prod"
+    }
+  },
+  "durable_objects": {
+    "bindings": []
+  },
+  "kv_namespaces": [],
+  "r2_buckets": [],
+  "d1_databases": [],
+  "services": [],
+  "analytics_engine_datasets": [],
+  "queues": {
+    "producers": [],
+    "consumers": []
+  },
+  "dispatch_namespaces": [],
+  "mtls_certificates": [],
+  "logfwdr": {
+    "bindings": []
+  },
+  "tail_consumers": [],
+  "unsafe": {
+    "bindings": []
+  }
+}
