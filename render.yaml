@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
-    startCommand: npm run test-web-api --workspace=axiom-assist-bot
+    startCommand: npm run web-api --workspace=axiom-assist-bot
     domains:
       - www.axiomid.app
     envVars:
@@ -45,7 +45,7 @@ services:
     plan: free
     rootDir: packages/web/landing-page
     buildCommand: npm install --legacy-peer-deps && npm run build
-    startCommand: npm run start -- -p $PORT
+    startCommand: npm run start
     domains:
       - axiomid.app
     envVars:
@@ -53,5 +53,3 @@ services:
         value: 20
       - key: NEXT_PUBLIC_SITE_URL
         value: https://axiomid.app
-      - key: PORT
-        value: 3000
