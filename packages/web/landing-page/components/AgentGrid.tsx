@@ -1,6 +1,6 @@
 // components/AgentGrid.tsx
 import { useState, useEffect } from 'react';
-import AgentCard from './AgentCard';
+import AgentCard from './AgentCard.tsx';
 
 interface Agent {
   id: string;
