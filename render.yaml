@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
-    startCommand: npm run web-api --workspace=axiom-assist-bot
+    startCommand: cd packages/bots/axiom-assist-bot && npm run web-api
     domains:
       - www.axiomid.app
     envVars:
@@ -40,7 +40,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
-    startCommand: npm run socket:start --workspace=axiom-assist-bot
+    startCommand: cd packages/bots/axiom-assist-bot && npm run socket:start
     domains:
       - api.axiomid.app
     envVars:
@@ -65,7 +65,7 @@ services:
     plan: free
     rootDir: packages/web/landing-page
     buildCommand: npm install --legacy-peer-deps && npm run build
-    startCommand: npm run start
+    startCommand: cd packages/web/landing-page && npm run start
     domains:
       - axiomid.app
     envVars:
