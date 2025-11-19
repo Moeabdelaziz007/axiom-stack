@@ -1,0 +1,20 @@
+{
+  "name": "@axiom-stack/gcp-executor",
+  "version": "1.0.0",
+  "description": "Cloud Run service for executing complex mathematical analysis and computational tasks",
+  "main": "app.py",
+  "scripts": {
+    "start": "python app.py",
+    "test": "python test_executor.py",
+    "build": "docker build -t axiom-gcp-executor ."
+  },
+  "keywords": [
+    "axiom",
+    "gcp",
+    "cloud-run",
+    "executor",
+    "analysis"
+  ],
+  "author": "Axiom ID Team",
+  "license": "MIT"
+}
