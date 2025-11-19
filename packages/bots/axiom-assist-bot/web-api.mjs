@@ -136,46 +136,62 @@ try {
   websitePromptTemplate = await fs.readFile('website-prompt.txt', 'utf-8');
 } catch (e) {
   console.error('Failed to load website-prompt.txt', e);
-  process.exit(1);
+  // Continue without the prompt template
+  websitePromptTemplate = "You are a helpful assistant for the Axiom ID platform.";
 }
 
-// 2. Initialize Pinecone & Embeddings
-const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
-const pineconeIndex = pinecone.Index(PINECONE_INDEX_NAME);
-const embeddings = new GoogleGenerativeAIEmbeddings({
-  apiKey: process.env.GEMINI_API_KEY,
-  model: "embedding-001",
-  taskType: "RETRIEVAL_DOCUMENT"
-});
+// 2. Initialize Pinecone & Embeddings (with error handling)
+let pinecone, pineconeIndex, embeddings, vectorStore, retriever, model, chain;
+try {
+  if (process.env.GEMINI_API_KEY && process.env.PINECONE_API_KEY) {
+    // Initialize Pinecone & Embeddings
+    pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
+    pineconeIndex = pinecone.Index(PINECONE_INDEX_NAME);
+    embeddings = new GoogleGenerativeAIEmbeddings({
+      apiKey: process.env.GEMINI_API_KEY,
+      model: "embedding-001",
+      taskType: "RETRIEVAL_DOCUMENT"
+    });
 
-// 3. Initialize Pinecone as Retriever
-const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
-  pineconeIndex,
-});
-const retriever = vectorStore.asRetriever();
+    // Initialize Pinecone as Retriever
+    vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
+      pineconeIndex,
+    });
+    retriever = vectorStore.asRetriever();
 
-// 4. Initialize Gemini Chat Model
-const model = new ChatGoogleGenerativeAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  modelName: "gemini-2.5-flash-preview-05-20",
-  temperature: 0.7,
-});
+    // Initialize Gemini Chat Model
+    model = new ChatGoogleGenerativeAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      modelName: "gemini-2.5-flash-preview-05-20",
+      temperature: 0.7,
+    });
 
-// 5. Create the RAG Chain (Retrieval-Augmented Generation)
-const prompt = PromptTemplate.fromTemplate(websitePromptTemplate);
-
-const chain = RunnableSequence.from([
-  {
-    context: retriever.pipe(formatDocumentsAsString),
-    question: new RunnablePassthrough(),
-  },
-  prompt,
-  model,
-  new StringOutputParser(),
-]);
+    // Create the RAG Chain (Retrieval-Augmented Generation)
+    const prompt = PromptTemplate.fromTemplate(websitePromptTemplate);
+    chain = RunnableSequence.from([
+      {
+        context: retriever.pipe(formatDocumentsAsString),
+        question: new RunnablePassthrough(),
+      },
+      prompt,
+      model,
+      new StringOutputParser(),
+    ]);
+  } else {
+    console.log('Missing API keys, chat functionality will be disabled');
+  }
+} catch (error) {
+  console.error('Failed to initialize AI services:', error);
+  // Continue without AI services
+}
 
 // 6. Create the API Endpoint
 app.post('/api/chat', async (req, res) => {
+  // Check if services are initialized
+  if (!chain) {
+    return res.status(503).json({ error: 'Chat service unavailable' });
+  }
+  
   const { question } = req.body;
 
   if (!question) {
