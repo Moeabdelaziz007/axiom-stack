@@ -6,8 +6,8 @@ export default function TestPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Test API route
-    fetch('/api/agents')
+    // Test simple API route
+    fetch('/api/simple-test')
       .then(res => res.json())
       .then(data => {
         setData(data);
