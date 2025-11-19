@@ -5,6 +5,8 @@ services:
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
     startCommand: cd packages/bots/axiom-assist-bot && npm run web-api
+    domains:
+      - www.axiomid.app
     envVars:
       - key: NODE_VERSION
         value: 20
@@ -39,6 +41,8 @@ services:
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
     startCommand: cd packages/bots/axiom-assist-bot && npm run socket:start
+    domains:
+      - api.axiomid.app
     envVars:
       - key: NODE_VERSION
         value: 20
@@ -62,6 +66,8 @@ services:
     rootDir: packages/web/landing-page
     buildCommand: npm install --legacy-peer-deps && npm run build
     startCommand: cd packages/web/landing-page && npm run start
+    domains:
+      - axiomid.app
     envVars:
       - key: NODE_VERSION
         value: 20
