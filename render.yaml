@@ -3,7 +3,7 @@ services:
     name: axiom-id-web-api
     runtime: node
     plan: free
-    buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
+    buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap && npx lerna run build
     startCommand: cd packages/bots/axiom-assist-bot && npm run web-api
     domains:
       - api.axiomid.app
@@ -39,7 +39,7 @@ services:
     name: axiom-id-socket-server
     runtime: node
     plan: free
-    buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
+    buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap && npx lerna run build
     startCommand: cd packages/bots/axiom-assist-bot && npm run socket:start
     domains:
       - socket.axiomid.app
@@ -63,9 +63,9 @@ services:
     name: axiom-id-frontend
     runtime: node
     plan: free
-    rootDir: packages/web/landing-page
+    rootDir: packages/web-ui
     buildCommand: npm install --legacy-peer-deps && npm run build
-    startCommand: cd packages/web/landing-page && npm run start
+    startCommand: npm run start
     domains:
       - app.axiomid.app
     envVars:
