@@ -1,10 +1,29 @@
 services:
+  # Frontend Service
+  - type: web
+    name: axiom-id-frontend
+    runtime: node
+    plan: free
+    rootDir: packages/web/landing-page
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    domains:
+      - app.axiomid.app
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NEXT_PUBLIC_API_URL
+        value: https://api.axiomid.app
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://app.axiomid.app
+
+  # Web API Service
   - type: web
     name: axiom-id-web-api
     runtime: node
     plan: free
-    buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap && npx lerna run build
-    startCommand: cd packages/bots/axiom-assist-bot && npm run web-api
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     domains:
       - api.axiomid.app
     envVars:
@@ -15,6 +34,8 @@ services:
       - key: PINECONE_API_KEY
         sync: false
       - key: DISCORD_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: GOOGLE_CLOUD_PROJECT_ID
         value: axiom-id-project
@@ -35,12 +56,13 @@ services:
       - key: ORCHESTRATOR_PUBLIC_URL
         value: https://app.axiomid.app
 
+  # Socket Server Service
   - type: web
     name: axiom-id-socket-server
     runtime: node
     plan: free
-    buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap && npx lerna run build
-    startCommand: cd packages/bots/axiom-assist-bot && npm run socket:start
+    buildCommand: npm install
+    startCommand: node index.js
     domains:
       - socket.axiomid.app
     envVars:
@@ -59,17 +81,25 @@ services:
       - key: ORCHESTRATOR_PUBLIC_URL
         value: https://app.axiomid.app
 
-  - type: web
-    name: axiom-id-frontend
+  # Omni-Bot Worker Service
+  - type: worker
+    name: axiom-id-omni-bot
     runtime: node
     plan: free
-    rootDir: packages/web/landing-page
     buildCommand: npm install && npm run build
-    startCommand: npm run start
-    domains:
-      - app.axiomid.app
+    startCommand: npm start
     envVars:
       - key: NODE_VERSION
         value: 20
-      - key: NEXT_PUBLIC_SITE_URL
-        value: https://app.axiomid.app
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: AXIOM_BRAIN_URL
+        value: https://axiom-brain.your-subdomain.workers.dev
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: SOLANA_DEPLOY_SEED
+        sync: false
