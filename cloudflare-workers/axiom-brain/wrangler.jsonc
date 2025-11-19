@@ -41,6 +41,8 @@
     "crons": ["*/15 * * * *"]
   },
   "vars": {
-    "GOOGLE_API_KEY": ""
+    "GOOGLE_API_KEY": "",
+    "FIREBASE_PROJECT_ID": "",
+    "FIREBASE_CLIENT_EMAIL": ""
   }
 }

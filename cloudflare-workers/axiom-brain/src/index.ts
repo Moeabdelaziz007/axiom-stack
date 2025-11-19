@@ -14,6 +14,7 @@ import { Hono } from 'hono';
 import { ChatRoom } from './objects';
 import { GeminiClient } from './gemini';
 import { AIResponse } from './gemini-types';
+import { FirestoreAuth, FirestoreClient } from './services/firestore';
 
 // Export the Durable Object class
 export { ChatRoom } from './objects';
@@ -25,6 +26,9 @@ interface Env {
   CHAT_ROOM: DurableObjectNamespace;
   BROWSER: Fetcher;
   GOOGLE_API_KEY: string;
+  FIREBASE_PROJECT_ID: string;
+  FIREBASE_CLIENT_EMAIL: string;
+  FIREBASE_SERVICE_ACCOUNT_JSON: string;
 }
 
 // Define message interface
@@ -215,6 +219,56 @@ app.get('/snap', async (c) => {
   }
 });
 
+// Firestore query endpoint - allows agents to query Firestore
+app.post('/db/query', async (c) => {
+  try {
+    // Check if required environment variables are set
+    if (!c.env.FIREBASE_SERVICE_ACCOUNT_JSON || !c.env.FIREBASE_PROJECT_ID) {
+      return c.json({ error: 'Firebase configuration missing' }, 500);
+    }
+
+    // Parse request body
+    const { operation, collection, id, data, filters } = await c.req.json();
+    
+    // Initialize Firestore client
+    const auth = new FirestoreAuth(c.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+    const firestore = new FirestoreClient(c.env.FIREBASE_PROJECT_ID, auth);
+    
+    let result: any;
+    
+    switch (operation) {
+      case 'get':
+        if (!collection || !id) {
+          return c.json({ error: 'Collection and ID are required for get operation' }, 400);
+        }
+        result = await firestore.getDocument(collection, id);
+        break;
+        
+      case 'set':
+        if (!collection || !id || !data) {
+          return c.json({ error: 'Collection, ID, and data are required for set operation' }, 400);
+        }
+        result = await firestore.setDocument(collection, id, data);
+        break;
+        
+      case 'query':
+        if (!collection || !filters) {
+          return c.json({ error: 'Collection and filters are required for query operation' }, 400);
+        }
+        result = await firestore.runQuery(collection, filters);
+        break;
+        
+      default:
+        return c.json({ error: 'Invalid operation. Supported operations: get, set, query' }, 400);
+    }
+    
+    return c.json({ result });
+  } catch (error) {
+    console.error('Firestore query error:', error);
+    return c.json({ error: 'Internal server error: ' + (error as Error).message }, 500);
+  }
+});
+
 // Default route
 app.get('/', async (c) => {
   return c.json({
@@ -224,7 +278,8 @@ app.get('/', async (c) => {
       'POST /chat { chatId, message }',
       'POST /analyze-chart { image }',
       'GET /snap',
-      'GET /health'
+      'GET /health',
+      'POST /db/query { operation, collection, id, data, filters }'
     ]
   });
 });
