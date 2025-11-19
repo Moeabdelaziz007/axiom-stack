@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx lerna bootstrap
-    startCommand: npm run web-api --workspace=axiom-assist-bot
+    startCommand: npm run test-web-api --workspace=axiom-assist-bot
     domains:
       - www.axiomid.app
     envVars:
