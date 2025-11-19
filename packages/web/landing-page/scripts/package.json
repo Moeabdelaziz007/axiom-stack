@@ -8,7 +8,7 @@
     "test": "node health-check.mjs"
   },
   "dependencies": {
-    "node-fetch": "^3.3.0"
+    "node-fetch": "^3.3.2"
   },
   "keywords": [
     "axiom",
