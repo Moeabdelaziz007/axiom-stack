@@ -1,5 +1,5 @@
-# Use a lightweight, hardened base image
-FROM python:3.11-slim-buster
+# Use a lightweight base image
+FROM python:3.10-slim
 
 # Set working directory
 WORKDIR /app

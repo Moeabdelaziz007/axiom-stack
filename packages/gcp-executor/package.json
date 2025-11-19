@@ -5,7 +5,8 @@
   "main": "app.py",
   "scripts": {
     "start": "python app.py",
-    "test": "python test_executor.py",
+    "test": "python test_python_executor.py",
+    "test-original": "python test_executor.py",
     "build": "docker build -t axiom-gcp-executor ."
   },
   "keywords": [
@@ -13,7 +14,8 @@
     "gcp",
     "cloud-run",
     "executor",
-    "analysis"
+    "analysis",
+    "python"
   ],
   "author": "Axiom ID Team",
   "license": "MIT"

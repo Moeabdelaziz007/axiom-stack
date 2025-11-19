@@ -169,4 +169,52 @@ export class GeminiClient {
 
     return payload;
   }
+
+  /**
+   * Create a payload for Python code execution
+   * @param prompt - The user prompt
+   * @param systemInstruction - System instruction for persona
+   * @returns Gemini payload with Python execution tool
+   */
+  createPythonExecutionPayload(prompt: string, systemInstruction?: string): GeminiPayload {
+    const payload: GeminiPayload = {
+      contents: [{
+        role: 'user',
+        parts: [{ text: prompt }]
+      }],
+      tools: [{
+        function_declarations: [
+          {
+            name: "run_python_analysis",
+            description: "Executes Python code for complex math or data analysis.",
+            parameters: {
+              type: "object",
+              properties: {
+                code: {
+                  type: "string",
+                  description: "Python code to execute"
+                },
+                args: {
+                  type: "array",
+                  items: {
+                    type: "any"
+                  },
+                  description: "Arguments to pass to the Python code"
+                }
+              },
+              required: ["code"]
+            }
+          }
+        ]
+      }]
+    };
+
+    if (systemInstruction) {
+      payload.system_instruction = {
+        parts: [{ text: systemInstruction }]
+      };
+    }
+
+    return payload;
+  }
 }

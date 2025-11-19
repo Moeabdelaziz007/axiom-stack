@@ -8,10 +8,10 @@ This service handles resource-intensive computational tasks that are better suit
 
 ## 🏗️ Architecture
 
-- **Runtime**: Python 3.11 on Cloud Run
+- **Runtime**: Python 3.10 on Cloud Run
 - **Framework**: Flask
 - **Trigger**: Google Cloud Pub/Sub Push Subscription
-- **FinOps**: Optimized for 512MiB memory limit
+- **Libraries**: Pre-installed numpy, pandas for data analysis
 
 ## 🚀 Deployment
 
@@ -34,7 +34,7 @@ gcloud run deploy axiom-gcp-executor \
   --image gcr.io/YOUR_PROJECT_ID/axiom-gcp-executor \
   --platform managed \
   --region us-central1 \
-  --cpu 0.08 \
+  --cpu 1 \
   --memory 512Mi \
   --max-instances 10 \
   --allow-unauthenticated
@@ -44,17 +44,48 @@ gcloud run deploy axiom-gcp-executor \
 
 ```bash
 # Run the test script
-python test_executor.py
+python test_python_executor.py
 ```
 
 ## 📦 Dependencies
 
 - Flask: Web framework
 - Requests: HTTP client
-- Google Cloud Pub/Sub: Message queuing
+- Numpy: Numerical computing
+- Pandas: Data analysis
 
 ## 🔐 Security
 
 - Runs as non-root user
-- Minimal base image (python:3.11-slim-buster)
+- Minimal base image (python:3.10-slim)
 - No unnecessary system packages
+- Restricted code execution environment
+
+## 🛠️ Endpoints
+
+### POST /execute
+Execute Python code with optional arguments.
+
+**Request:**
+```json
+{
+  "code": "print('Hello, World!')",
+  "args": [1, 2, 3]
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "stdout": "Hello, World!\n",
+  "stderr": "",
+  "result": null
+}
+```
+
+### POST /analyze
+Handle Pub/Sub push messages for analysis tasks.
+
+### GET /
+Health check endpoint.
