@@ -165,4 +165,91 @@ app.post('/upload-asset', async (c: any) => {
   }
 });
 
+// POST /get-health-recommendations endpoint - Route to Health Agent
+app.post('/get-health-recommendations', async (c: any) => {
+  try {
+    const payload = await c.req.json();
+    
+    // Route to Health Agent via Service Binding (Nano Banana optimization)
+    if (c.env.HEALTH_AGENT) {
+      try {
+        const response = await c.env.HEALTH_AGENT.fetch('http://health-agent/get-health-recommendations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        return c.json(result);
+      } catch (error: any) {
+        console.error('Error calling health agent:', error);
+        return c.json({ error: 'Failed to get health recommendations' }, 500);
+      }
+    } else {
+      return c.json({ error: 'Health agent not available' }, 500);
+    }
+  } catch (error: any) {
+    console.error('Error routing to health agent:', error);
+    return c.json({ error: 'Failed to route to health agent' }, 500);
+  }
+});
+
+// POST /compute-route endpoint - Route to Travel Agent
+app.post('/compute-route', async (c: any) => {
+  try {
+    const payload = await c.req.json();
+    
+    // Route to Travel Agent via Service Binding (Nano Banana optimization)
+    if (c.env.TRAVEL_AGENT) {
+      try {
+        const response = await c.env.TRAVEL_AGENT.fetch('http://travel-agent/compute-route', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        return c.json(result);
+      } catch (error: any) {
+        console.error('Error calling travel agent:', error);
+        return c.json({ error: 'Failed to compute route' }, 500);
+      }
+    } else {
+      return c.json({ error: 'Travel agent not available' }, 500);
+    }
+  } catch (error: any) {
+    console.error('Error routing to travel agent:', error);
+    return c.json({ error: 'Failed to route to travel agent' }, 500);
+  }
+});
+
+// POST /compute-route-matrix endpoint - Route to Travel Agent
+app.post('/compute-route-matrix', async (c: any) => {
+  try {
+    const payload = await c.req.json();
+    
+    // Route to Travel Agent via Service Binding (Nano Banana optimization)
+    if (c.env.TRAVEL_AGENT) {
+      try {
+        const response = await c.env.TRAVEL_AGENT.fetch('http://travel-agent/compute-route-matrix', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        return c.json(result);
+      } catch (error: any) {
+        console.error('Error calling travel agent:', error);
+        return c.json({ error: 'Failed to compute route matrix' }, 500);
+      }
+    } else {
+      return c.json({ error: 'Travel agent not available' }, 500);
+    }
+  } catch (error: any) {
+    console.error('Error routing to travel agent:', error);
+    return c.json({ error: 'Failed to route to travel agent' }, 500);
+  }
+});
+
 export default app;

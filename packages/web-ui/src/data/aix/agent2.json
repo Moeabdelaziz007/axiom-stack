@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "id": "aix_agent_002",
+    "name": "Content Creator AI",
+    "description": "Generates marketing content and social media posts",
+    "version": "1.2.0",
+    "created_at": "2023-06-18T09:15:00Z"
+  },
+  "persona": {
+    "role": "Content Creator",
+    "personality": "Creative and engaging",
+    "communication_style": "Friendly and conversational"
+  },
+  "identity_layer": {
+    "solana_wallet": "9xHkz5B5XqQ6v5k7n9m2pR4sT8y1uV3wA6zQ9x2cE4fH",
+    "reputation": 87,
+    "verified": true
+  },
+  "economics": {
+    "token": "AXIOM",
+    "cost_per_action": 0.3,
+    "balance": 890.25
+  },
+  "superpowers": [
+    {
+      "name": "content-generation",
+      "description": "Creates engaging written content",
+      "version": "1.8.0"
+    },
+    {
+      "name": "seo",
+      "description": "Optimizes content for search engines",
+      "version": "2.2.1"
+    },
+    {
+      "name": "social-media",
+      "description": "Crafts platform-specific social media content",
+      "version": "1.9.4"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "id": "aix_agent_001",
+    "name": "Data Analyzer Pro",
+    "description": "Advanced AI agent for data analysis and pattern recognition",
+    "version": "1.0.0",
+    "created_at": "2023-06-15T10:30:00Z"
+  },
+  "persona": {
+    "role": "Data Scientist",
+    "personality": "Analytical and precise",
+    "communication_style": "Technical but accessible"
+  },
+  "identity_layer": {
+    "solana_wallet": "8wHjz5B5XqQ6v5k7n9m2pR4sT8y1uV3wA6zQ9x2cE4fG",
+    "reputation": 92,
+    "verified": true
+  },
+  "economics": {
+    "token": "AXIOM",
+    "cost_per_action": 0.5,
+    "balance": 1250.75
+  },
+  "superpowers": [
+    {
+      "name": "data-analysis",
+      "description": "Analyzes large datasets and extracts insights",
+      "version": "2.1.0"
+    },
+    {
+      "name": "pattern-recognition",
+      "description": "Identifies patterns and anomalies in data",
+      "version": "1.5.3"
+    },
+    {
+      "name": "reporting",
+      "description": "Generates comprehensive reports and visualizations",
+      "version": "3.0.1"
+    }
+  ]
+}

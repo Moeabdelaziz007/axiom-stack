@@ -87,6 +87,66 @@ app.post('/function-call', async (c: any) => {
           return c.json({ error: 'Portfolio manager not available' }, 500);
         }
         
+      case 'get_health_recommendations':
+        // Route to health agent
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/get-health-recommendations', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling health agent:', error);
+            return c.json({ error: 'Failed to get health recommendations' }, 500);
+          }
+        } else {
+          return c.json({ error: 'Health agent not available' }, 500);
+        }
+        
+      case 'compute_route':
+        // Route to travel agent
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/compute-route', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling travel agent:', error);
+            return c.json({ error: 'Failed to compute route' }, 500);
+          }
+        } else {
+          return c.json({ error: 'Travel agent not available' }, 500);
+        }
+        
+      case 'compute_route_matrix':
+        // Route to travel agent
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/compute-route-matrix', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling travel agent:', error);
+            return c.json({ error: 'Failed to compute route matrix' }, 500);
+          }
+        } else {
+          return c.json({ error: 'Travel agent not available' }, 500);
+        }
+        
       default:
         return c.json({ error: `Unknown function: ${functionName}` }, 400);
     }
@@ -154,6 +214,82 @@ app.post('/chat', async (c: any) => {
                 userId: { type: 'string', description: 'User ID to get portfolio for' }
               },
               required: ['userId']
+            }
+          },
+          {
+            name: 'get_health_recommendations',
+            description: 'Get personalized health recommendations based on user profile',
+            parameters: {
+              type: 'object',
+              properties: {
+                age: { type: 'number', description: 'User age' },
+                sex: { type: 'string', enum: ['male', 'female'], description: 'User sex' },
+                pregnant: { type: 'boolean', description: 'Whether the user is pregnant (if female)' },
+                sexualActivity: { type: 'string', description: 'Sexual activity level' },
+                tobaccoUse: { type: 'string', description: 'Tobacco use status' }
+              },
+              required: ['age', 'sex']
+            }
+          },
+          {
+            name: 'compute_route',
+            description: 'Compute the optimal route between two locations',
+            parameters: {
+              type: 'object',
+              properties: {
+                origin: { 
+                  type: 'object',
+                  description: 'Starting location (lat/lng or address)',
+                  properties: {
+                    lat: { type: 'number' },
+                    lng: { type: 'number' }
+                  }
+                },
+                destination: { 
+                  type: 'object',
+                  description: 'Destination location (lat/lng or address)',
+                  properties: {
+                    lat: { type: 'number' },
+                    lng: { type: 'number' }
+                  }
+                },
+                mode: { type: 'string', enum: ['driving', 'walking', 'bicycling', 'transit'], description: 'Transportation mode' },
+                alternatives: { type: 'boolean', description: 'Whether to compute alternative routes' }
+              },
+              required: ['origin', 'destination']
+            }
+          },
+          {
+            name: 'compute_route_matrix',
+            description: 'Compute a matrix of routes between multiple origins and destinations',
+            parameters: {
+              type: 'object',
+              properties: {
+                origins: { 
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      lat: { type: 'number' },
+                      lng: { type: 'number' }
+                    }
+                  },
+                  description: 'Array of origin locations'
+                },
+                destinations: { 
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      lat: { type: 'number' },
+                      lng: { type: 'number' }
+                    }
+                  },
+                  description: 'Array of destination locations'
+                },
+                mode: { type: 'string', enum: ['driving', 'walking', 'bicycling', 'transit'], description: 'Transportation mode' }
+              },
+              required: ['origins', 'destinations']
             }
           }
         ]

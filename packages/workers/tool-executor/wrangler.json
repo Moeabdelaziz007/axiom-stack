@@ -16,6 +16,14 @@
     {
       "binding": "AUTH_WORKER",
       "service": "axiom-auth-worker"
+    },
+    {
+      "binding": "HEALTH_AGENT",
+      "service": "axiom-health-agent"
+    },
+    {
+      "binding": "TRAVEL_AGENT",
+      "service": "axiom-travel-agent"
     }
   ]
 }
