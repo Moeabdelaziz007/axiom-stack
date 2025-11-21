@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FixedSizeList } from 'react-window';
 import { format } from 'date-fns';
-import { Terminal, Download, Filter, X } from 'lucide-react';
+import { Terminal, Download, Filter, X, Brain, ChevronDown, ChevronRight } from 'lucide-react';
 import { useDecisionLogs, type DecisionLog } from '@/hooks/useDecisionLogs';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -13,10 +13,17 @@ interface LiveTerminalProps {
   height?: number;
 }
 
+// Extended DecisionLog type to include THOUGHT level
+type ExtendedDecisionLog = DecisionLog & {
+  level: DecisionLog['level'] | 'THOUGHT';
+  reasoning?: string; // For THOUGHT logs
+};
+
 export function LiveTerminal({ className, height = 400 }: LiveTerminalProps) {
   const { logs, loading, error } = useDecisionLogs(200);
   const [autoScroll, setAutoScroll] = useState(true);
-  const [filterLevel, setFilterLevel] = useState<DecisionLog['level'] | 'ALL'>('ALL');
+  const [filterLevel, setFilterLevel] = useState<ExtendedDecisionLog['level'] | 'ALL'>('ALL');
+  const [expandedLogs, setExpandedLogs] = useState<Set<string>>(new Set());
   const listRef = useRef<FixedSizeList>(null);
 
   // Auto-scroll to top when new logs arrive
@@ -26,11 +33,11 @@ export function LiveTerminal({ className, height = 400 }: LiveTerminalProps) {
     }
   }, [logs, autoScroll]);
 
-  const filteredLogs = filterLevel === 'ALL' 
-    ? logs 
+  const filteredLogs = filterLevel === 'ALL'
+    ? logs
     : logs.filter(log => log.level === filterLevel);
 
-  const getLevelColor = (level: DecisionLog['level']) => {
+  const getLevelColor = (level: ExtendedDecisionLog['level']) => {
     switch (level) {
       case 'ERROR':
         return 'text-axiom-red';
@@ -40,12 +47,14 @@ export function LiveTerminal({ className, height = 400 }: LiveTerminalProps) {
         return 'text-axiom-cyan';
       case 'DEBUG':
         return 'text-gray-500';
+      case 'THOUGHT':
+        return 'text-purple-500'; // Neon Purple for reasoning
       default:
         return 'text-gray-400';
     }
   };
 
-  const getLevelBg = (level: DecisionLog['level']) => {
+  const getLevelBg = (level: ExtendedDecisionLog['level']) => {
     switch (level) {
       case 'ERROR':
         return 'bg-axiom-red/10';
@@ -55,6 +64,8 @@ export function LiveTerminal({ className, height = 400 }: LiveTerminalProps) {
         return 'bg-axiom-cyan/10';
       case 'DEBUG':
         return 'bg-gray-500/10';
+      case 'THOUGHT':
+        return 'bg-purple-500/10'; // Purple glow for reasoning
       default:
         return 'bg-gray-400/10';
     }
@@ -71,9 +82,25 @@ export function LiveTerminal({ className, height = 400 }: LiveTerminalProps) {
     URL.revokeObjectURL(url);
   };
 
+  const toggleExpandLog = (logId: string) => {
+    setExpandedLogs(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(logId)) {
+        newSet.delete(logId);
+      } else {
+        newSet.add(logId);
+      }
+      return newSet;
+    });
+  };
+
   const LogRow = ({ index, style }: { index: number; style: React.CSSProperties }) => {
-    const log = filteredLogs[index];
+    const log = filteredLogs[index] as ExtendedDecisionLog;
     if (!log) return null;
+
+    const isThought = log.level === 'THOUGHT';
+    const isExpanded = expandedLogs.has(log.id);
+    const hasReasoning = isThought && log.reasoning;
 
     return (
       <div
@@ -87,16 +114,40 @@ export function LiveTerminal({ className, height = 400 }: LiveTerminalProps) {
           <span className="text-gray-500 text-xs whitespace-nowrap">
             {format(new Date(log.timestamp), 'HH:mm:ss')}
           </span>
-          <span className={cn('text-xs font-bold w-12', getLevelColor(log.level))}>
+
+          {/* Level badge with special icon for THOUGHT */}
+          <span className={cn('text-xs font-bold w-12 flex items-center gap-1', getLevelColor(log.level))}>
+            {isThought && <Brain className="w-3 h-3" />}
             {log.level}
           </span>
+
           <span className="text-gray-300 flex-1">{log.message}</span>
+
           {log.agentId && (
             <span className="text-axiom-purple text-xs">
               {log.agentId.substring(0, 8)}...
             </span>
           )}
+
+          {/* Expand/Collapse button for THOUGHT logs */}
+          {hasReasoning && (
+            <button
+              onClick={() => toggleExpandLog(log.id)}
+              className="text-purple-500 hover:text-purple-400 transition-colors"
+            >
+              {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+            </button>
+          )}
         </div>
+
+        {/* Collapsible reasoning section */}
+        {hasReasoning && isExpanded && (
+          <div className="mt-2 ml-20 p-3 bg-purple-950/30 border border-purple-500/30 rounded-lg">
+            <div className="text-xs text-purple-300 whitespace-pre-wrap">
+              {log.reasoning}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -117,17 +168,18 @@ export function LiveTerminal({ className, height = 400 }: LiveTerminalProps) {
         <div className="flex items-center gap-2">
           {/* Filter Buttons */}
           <div className="flex items-center gap-1 bg-gray-800/50 rounded-lg p-1">
-            {(['ALL', 'ERROR', 'WARN', 'INFO', 'DEBUG'] as const).map((level) => (
+            {(['ALL', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'THOUGHT'] as const).map((level) => (
               <button
                 key={level}
                 onClick={() => setFilterLevel(level)}
                 className={cn(
-                  'px-2 py-1 text-xs font-mono rounded transition-colors',
+                  'px-2 py-1 text-xs font-mono rounded transition-colors flex items-center gap-1',
                   filterLevel === level
-                    ? 'bg-axiom-cyan text-black'
+                    ? level === 'THOUGHT' ? 'bg-purple-500 text-white' : 'bg-axiom-cyan text-black'
                     : 'text-gray-400 hover:text-white'
                 )}
               >
+                {level === 'THOUGHT' && <Brain className="w-3 h-3" />}
                 {level}
               </button>
             ))}

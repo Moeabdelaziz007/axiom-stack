@@ -28,7 +28,7 @@ export class GeminiClient {
       }
 
       const url = `${this.baseUrl}?key=${this.apiKey}`;
-      
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -100,9 +100,39 @@ export class GeminiClient {
       tools: [{ google_search: {} }]
     };
 
-    if (systemInstruction) {
+    // Inject Chain of Thought (CoT) reasoning requirement
+    let enhancedSystemInstruction = systemInstruction || '';
+
+    // Add CoT rules to enforce reasoning traces
+    const cotRules = `
+
+## CRITICAL: Chain of Thought Reasoning Protocol
+Before executing any tool, making a trade decision, or providing a final answer, you MUST:
+1. Write your reasoning inside <reasoning>...</reasoning> tags.
+2. In your reasoning, analyze:
+   - User intent: What is the user really asking for?
+   - Risk assessment: What could go wrong?
+   - Data verification: Do I have enough information?
+   - Alternative approaches: Are there better options?
+3. Only after completing your reasoning should you take action or provide an answer.
+
+Example:
+<reasoning>
+The user wants to buy SOL. Let me verify:
+- Current price is reasonable (checked via Birdeye)
+- Liquidity is sufficient (>$100K)
+- Risk: Market volatility is high, but within user's tolerance
+- Decision: Execute buy with 5% slippage protection
+</reasoning>
+
+[Then execute the action or provide response]
+`;
+
+    enhancedSystemInstruction += cotRules;
+
+    if (enhancedSystemInstruction) {
       payload.system_instruction = {
-        parts: [{ text: systemInstruction }]
+        parts: [{ text: enhancedSystemInstruction }]
       };
     }
 
@@ -148,7 +178,7 @@ export class GeminiClient {
         role: 'user',
         parts: [
           { text: prompt },
-          { 
+          {
             inline_data: {
               mime_type: 'image/png',
               data: imageData

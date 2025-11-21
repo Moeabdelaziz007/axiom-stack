@@ -180,21 +180,40 @@ export class FirestoreClient {
   private projectId: string;
   private baseUrl: string;
   private auth: FirestoreAuth;
+  private kvNamespace: KVNamespace | null = null;
 
-  constructor(projectId: string, auth: FirestoreAuth) {
+  constructor(projectId: string, auth: FirestoreAuth, kvNamespace?: KVNamespace) {
     this.projectId = projectId;
     this.auth = auth;
     this.baseUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
+    this.kvNamespace = kvNamespace || null;
   }
 
   /**
-   * Get a document from Firestore
+   * Get a document from Firestore with KV caching
    * @param collection - Collection name
    * @param id - Document ID
    * @returns Promise<FirestoreDocument | null> - The document or null if not found
    */
   async getDocument(collection: string, id: string): Promise<FirestoreDocument | null> {
     try {
+      // Generate cache key
+      const cacheKey = `firestore_${collection}_${id}`;
+      
+      // Check KV cache first (Nano Optimization)
+      if (this.kvNamespace) {
+        try {
+          const cachedDocument = await this.kvNamespace.get(cacheKey, 'json');
+          if (cachedDocument) {
+            console.log(`Returning cached document for ${collection}/${id}`);
+            return cachedDocument as FirestoreDocument;
+          }
+        } catch (cacheError) {
+          console.warn('KV cache read error:', cacheError);
+        }
+      }
+      
+      // If not in cache, fetch from Firestore
       const token = await this.auth.getAccessToken();
       
       const response = await fetch(`${this.baseUrl}/${collection}/${id}`, {
@@ -212,6 +231,17 @@ export class FirestoreClient {
       }
 
       const data = await response.json();
+      
+      // Cache the result in KV (Nano Optimization)
+      if (this.kvNamespace) {
+        try {
+          await this.kvNamespace.put(cacheKey, JSON.stringify(data), { expirationTtl: 300 }); // Cache for 5 minutes
+          console.log(`Cached document for ${collection}/${id}`);
+        } catch (cacheError) {
+          console.warn('KV cache write error:', cacheError);
+        }
+      }
+      
       return data;
     } catch (error) {
       console.error('Error getting document:', error);
@@ -247,6 +277,18 @@ export class FirestoreClient {
       }
 
       const result = await response.json();
+      
+      // Invalidate cache for this document
+      if (this.kvNamespace) {
+        try {
+          const cacheKey = `firestore_${collection}_${id}`;
+          await this.kvNamespace.delete(cacheKey);
+          console.log(`Invalidated cache for ${collection}/${id}`);
+        } catch (cacheError) {
+          console.warn('KV cache delete error:', cacheError);
+        }
+      }
+      
       return result;
     } catch (error) {
       console.error('Error setting document:', error);
