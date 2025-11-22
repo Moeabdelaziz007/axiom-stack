@@ -1,7 +1,4 @@
-'use client';
-
 import React from 'react';
-import { useParams } from 'next/navigation';
 import { AgentWallet } from '@/components/agents/AgentWallet';
 import { ChainLogs } from '@/components/terminal/ChainLogs';
 import { ArrowLeft, Bot, TrendingUp } from 'lucide-react';
@@ -36,9 +33,8 @@ export async function generateStaticParams() {
     ];
 }
 
-export default function AgentDetailPage() {
-    const params = useParams();
-    const agentId = params.id as string;
+export default function AgentDetailPage({ params }: { params: { id: string } }) {
+    const agentId = params.id;
 
     // In production, fetch agent data from API
     const agent = MOCK_AGENT;
