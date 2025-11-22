@@ -28,6 +28,14 @@ const MOCK_AGENT: Agent = {
     createdAt: '2025-01-15T00:00:00Z',
 };
 
+// Required for static export with dynamic routes
+export async function generateStaticParams() {
+    // In production, fetch all agent IDs from API
+    return [
+        { id: '1' },
+    ];
+}
+
 export default function AgentDetailPage() {
     const params = useParams();
     const agentId = params.id as string;
