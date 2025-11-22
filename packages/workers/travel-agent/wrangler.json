@@ -10,11 +10,5 @@
       "binding": "AUTH_WORKER",
       "service": "axiom-auth-worker"
     }
-  ],
-  "kv_namespaces": [
-    {
-      "binding": "TRAVEL_CACHE",
-      "id": ""
-    }
   ]
 }

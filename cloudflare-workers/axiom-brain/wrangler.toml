@@ -1,0 +1,36 @@
+name = "axiom-brain"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+account_id = "f4b5d0354439ce71e91063e477b4d60c"
+workers_dev = true
+
+# Custom domain routing (commented out - needs zone permissions in API token)
+# routes = [
+#   { pattern = "brain.axiomid.app/*", zone_name = "axiomid.app" }
+# ]
+
+
+[[kv_namespaces]]
+binding = "GLOBAL_CACHE"
+id = "1cad7e83873843a0be03c028f15867d1"
+
+[[vectorize]]
+binding = "VECTORIZE_INDEX"
+index_name = "axiom-knowledge-base"
+
+[[services]]
+binding = "TOOL_EXECUTOR"
+service = "axiom-tool-executor"
+
+[[services]]
+binding = "AGENT_FACTORY"
+service = "axiom-agent-factory"
+
+[[durable_objects.bindings]]
+name = "CHAT_ROOM"
+class_name = "ChatRoom"
+script_name = "axiom-brain"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChatRoom"]

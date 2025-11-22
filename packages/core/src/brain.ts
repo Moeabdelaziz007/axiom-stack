@@ -12,49 +12,55 @@ export class AxiomBrain {
 
   constructor() {
     // Use AXIOM_BRAIN_URL if available, otherwise fallback to CLOUDFLARE_WORKER_URL, then default
-    this.cloudflareWorkerUrl = process.env.AXIOM_BRAIN_URL || 
-                              process.env.CLOUDFLARE_WORKER_URL || 
-                              'https://axiom-brain.your-subdomain.workers.dev';
+  private workerUrl: string;
+
+  constructor(workerUrl: string = 'https://axiom-brain.amrikyy.workers.dev') {
+    this.workerUrl = workerUrl;
   }
 
   /**
-   * Process a user message and return a standardized response
-   * @param message - The user's text input
-   * @param userId - The user's ID
-   * @returns Standardized response object
+   * Process a message through the Axiom Brain
+   * Supports text, image, and audio inputs
    */
-  async process(message: string, userId: string): Promise<BrainResponse> {
+  async process(request: BrainRequest | string, userId?: string): Promise<BrainResponse> {
     try {
-      console.log(`🧠 AxiomBrain processing message from user ${userId}: ${message}`);
+      // Backward compatibility for (message, userId) signature
+      let payload: any = {};
 
-      // For now, we'll use the chat endpoint directly since that's what's available
-      const response = await axios.post(`${this.cloudflareWorkerUrl}/chat`, {
-        chatId: userId,
-        message: message
-      }, {
-        timeout: 15000
+      if (typeof request === 'string') {
+        if (!userId) throw new Error('userId is required when passing message as string');
+        payload = {
+          chatId: userId,
+          message: request
+        };
+      } else {
+        payload = {
+          chatId: request.userId,
+          message: request.message,
+          image: request.image,
+          audio: request.audio
+        };
+      }
+
+      const response = await fetch(`${this.workerUrl}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       });
 
+      if (!response.ok) {
+        throw new Error(`Brain API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
       return {
-        text: response.data.response || "I'm not sure how to respond to that.",
-        actions: ['processed']
+        text: data.response || 'No response from brain',
+        data: data.data
       };
     } catch (error) {
-      console.error('❌ Error in AxiomBrain.process:', error);
-      return {
-        text: "Sorry, I encountered an error while processing your request. Please try again later.",
-        actions: ['error']
-      };
     }
-  }
-
-  /**
-   * Check Vectorize memory (RAG) for relevant context
-   */
-  private async checkMemory(query: string): Promise<string | null> {
-    // This functionality is now handled by the Cloudflare worker's chat endpoint
-    return null;
-  }
 
   /**
    * Call Cloudflare Workers AI for inference
@@ -79,7 +85,7 @@ export class AxiomBrain {
     // Only check blockchain for specific keywords
     const blockchainKeywords = ['solana', 'wallet', 'transaction', 'balance', 'nft', 'token'];
     const lowerMessage = message.toLowerCase();
-    
+
     if (blockchainKeywords.some(keyword => lowerMessage.includes(keyword))) {
       try {
         // This would connect to your Solana integration
@@ -96,7 +102,7 @@ export class AxiomBrain {
         return { type: 'blockchain_info', relevant: true, error: 'Failed to fetch blockchain data' };
       }
     }
-    
+
     return { type: 'blockchain_info', relevant: false };
   }
 
@@ -104,17 +110,17 @@ export class AxiomBrain {
    * Format the final response
    */
   private formatResponse(
-    aiResponse: string, 
-    memoryContext: string | null, 
+    aiResponse: string,
+    memoryContext: string | null,
     blockchainData: any
   ): BrainResponse {
     let text = aiResponse;
-    
+
     // Add blockchain information if relevant
     if (blockchainData.relevant && blockchainData.data) {
       text += `\n\n[Blockchain Info]: ${blockchainData.data}`;
     }
-    
+
     return {
       text,
       actions: memoryContext ? ['used_memory'] : []

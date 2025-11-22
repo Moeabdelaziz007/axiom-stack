@@ -23,16 +23,16 @@ export interface GenesisRules {
   maxSlippage?: number;           // Maximum acceptable slippage for trades (e.g., 0.005 = 0.5%)
   maxPositionSize?: number;       // Maximum position size in USD
   maxDailyTrades?: number;        // Maximum number of trades per day
-  
+
   // Asset Restrictions
   tokenAllowlist?: string[];      // List of allowed token symbols (e.g., ['SOL', 'USDC'])
   tokenDenylist?: string[];       // List of forbidden token symbols
   exchangeAllowlist?: string[];   // List of allowed exchanges/protocols
-  
+
   // Behavioral Constraints
   maxLeverage?: number;           // Maximum leverage allowed (e.g., 1.0 = no leverage)
   minConfidenceScore?: number;    // Minimum confidence score for trade execution (0.0 - 1.0)
-  
+
   // Security Settings
   requireConfirmation?: boolean;  // Whether manual confirmation is required for trades
   whitelistAddresses?: string[];  // Whitelisted wallet addresses for interactions
@@ -57,15 +57,35 @@ export interface DecisionLog {
 }
 
 /**
+ * Agent Channels Interface
+ * Configuration for communication channels connected to an agent
+ */
+export interface AgentChannels {
+  telegram?: {
+    botToken: string;           // Telegram Bot API token
+    active: boolean;            // Whether this channel is active
+    webhookUrl?: string;        // Registered webhook URL (set after registration)
+  };
+  discord?: {
+    webhookUrl: string;         // Discord webhook URL for notifications
+    active: boolean;            // Whether this channel is active
+  };
+  whatsapp?: {
+    phoneId: string;            // WhatsApp Business Phone Number ID
+    accessToken: string;        // WhatsApp Business API access token
+    active: boolean;            // Whether this channel is active
+    webhookUrl?: string;        // Registered webhook URL (set after registration)
+  };
+}
+
+/**
  * Agent Configuration Interface
  * Complete configuration for an agent
  */
 export interface AgentConfig {
-  name: string;                   // Human-readable name
-  manifest: AgentManifest;        // Agent identity metadata
-  rules: GenesisRules;            // Behavioral rules
-  strategy: any;                  // Strategy-specific configuration
-  credentials?: Record<string, any>; // Encrypted credentials (if any)
+  manifest: AgentManifest;
+  strategy: any;
+  channels?: AgentChannels;     // NEW: Communication channels configuration
 }
 
 /**
@@ -75,5 +95,4 @@ export interface AgentConfig {
 export interface SpawnRequest {
   type: string;                   // Agent type (e.g., 'trader', 'analyst')
   config: AgentConfig;            // Agent configuration
-  strategy: any;                  // Strategy-specific parameters
 }

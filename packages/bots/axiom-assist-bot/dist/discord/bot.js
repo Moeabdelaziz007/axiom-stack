@@ -14,22 +14,20 @@ class DiscordBot {
                 discord_js_1.GatewayIntentBits.GuildMembers
             ]
         });
-        this.brain = new core_1.AxiomBrain();
+        this.brain = new core_1.AxiomBrain('https://axiom-brain.amrikyy.workers.dev');
         this.setupHandlers();
     }
     setupHandlers() {
         // Client Ready Handler
         this.client.once(discord_js_1.Events.ClientReady, (readyClient) => {
-            console.log(`🤖 Discord Bot is online as ${readyClient.user?.tag}!`);
+            console.log(`🤖 Discord Bot is online as ${readyClient.user.tag}!`);
             // Set presence with "Reading" activity
-            if (readyClient.user) {
-                readyClient.user.setActivity('Axiom ID Docs', { type: discord_js_1.ActivityType.Watching });
-            }
+            readyClient.user.setActivity('Axiom ID Docs', { type: discord_js_1.ActivityType.Watching });
         });
         // Message Handler
         this.client.on(discord_js_1.Events.MessageCreate, async (message) => {
             // Ignore bot messages and empty messages
-            if (message.author.bot || !message.content)
+            if (message.author.bot || (!message.content && message.attachments.size === 0))
                 return;
             // Special commands
             if (message.content === '!ping') {
@@ -42,13 +40,43 @@ class DiscordBot {
             }
             try {
                 // Show typing indicator
-                if (message.channel.type !== discord_js_1.ChannelType.DM) {
+                if ('sendTyping' in message.channel) {
                     await message.channel.sendTyping();
                 }
+                // Check for image attachments
+                const imageAttachment = message.attachments.find((att) => att.contentType?.startsWith('image/'));
+                let brainRequest = {
+                    message: message.content || 'What do you see in this image?',
+                    userId: message.author.id
+                };
+                // If image exists, download and encode
+                if (imageAttachment) {
+                    const response = await fetch(imageAttachment.url);
+                    const buffer = await response.arrayBuffer();
+                    brainRequest.image = Buffer.from(buffer).toString('base64');
+                }
                 // Process with Core Brain
-                const response = await this.brain.process(message.content, message.author.id);
-                // Send response
-                await message.reply(response.text);
+                const response = await this.brain.process(brainRequest);
+                // Send as rich embed if structured data exists
+                if (response.data) {
+                    const { EmbedBuilder } = require('discord.js');
+                    const embed = new EmbedBuilder()
+                        .setColor(0x00F0FF) // Axiom Cyan
+                        .setTitle(response.data.title || 'Axiom Brain Response')
+                        .setDescription(response.text)
+                        .setTimestamp();
+                    // Add fields if structured data exists
+                    if (response.data.fields) {
+                        for (const [key, value] of Object.entries(response.data.fields)) {
+                            embed.addFields({ name: key, value: String(value), inline: true });
+                        }
+                    }
+                    await message.reply({ embeds: [embed] });
+                }
+                else {
+                    // Standard text response
+                    await message.reply(response.text);
+                }
             }
             catch (error) {
                 console.error('❌ Error processing Discord message:', error);

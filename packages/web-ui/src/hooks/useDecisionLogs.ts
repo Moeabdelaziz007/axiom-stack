@@ -8,10 +8,11 @@ import { SOCKET_EVENTS, type LogPayload } from '@/lib/socket';
 export interface DecisionLog {
   id: string;
   timestamp: string;
-  level: 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
+  level: 'INFO' | 'WARN' | 'ERROR' | 'DEBUG' | 'THOUGHT';
   message: string;
   agentId?: string;
   metadata?: Record<string, any>;
+  reasoning?: string; // For THOUGHT-level logs
 }
 
 const fetcher = async (url: string): Promise<DecisionLog[]> => {

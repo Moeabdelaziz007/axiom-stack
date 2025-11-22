@@ -5,11 +5,22 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
-  "services": [
+  "routes": [
     {
-      "binding": "AGENT_DO",
-      "service": "axiom-agent-do"
-    },
+      "pattern": "brain.axiomid.app",
+      "custom_domain": true
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "AGENT_DO",
+        "class_name": "AgentDO",
+        "script_name": "axiom-agent-do"
+      }
+    ]
+  },
+  "services": [
     {
       "binding": "GEMINI_ROUTER",
       "service": "axiom-gemini-router"
@@ -21,13 +32,6 @@
     {
       "binding": "AUTH_WORKER",
       "service": "axiom-auth-worker"
-    }
-  ],
-  "d1_databases": [
-    {
-      "binding": "AGENT_REGISTRY",
-      "database_name": "axiom-agent-registry",
-      "database_id": ""
     }
   ]
 }

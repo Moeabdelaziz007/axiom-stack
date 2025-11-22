@@ -13,149 +13,6 @@ app.get('/', async (c: any) => {
   });
 });
 
-// POST /function-call endpoint - Handle Gemini Function Calling requests
-app.post('/function-call', async (c: any) => {
-  try {
-    const { functionName, parameters }: { functionName: string; parameters: any } = await c.req.json();
-    
-    // Validate required fields
-    if (!functionName) {
-      return c.json({ error: 'Missing required field: functionName' }, 400);
-    }
-    
-    console.log(`Routing function call: ${functionName}`, parameters);
-    
-    // Route function calls to appropriate tool executors via Service Bindings
-    switch (functionName) {
-      case 'execute_trade':
-        // Route to trade executor
-        if (c.env.TOOL_EXECUTOR) {
-          try {
-            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/execute-trade', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(parameters)
-            });
-            
-            const result = await response.json();
-            return c.json(result);
-          } catch (error: any) {
-            console.error('Error calling trade executor:', error);
-            return c.json({ error: 'Failed to execute trade' }, 500);
-          }
-        } else {
-          return c.json({ error: 'Trade executor not available' }, 500);
-        }
-        
-      case 'analyze_market':
-        // Route to market analyzer
-        if (c.env.TOOL_EXECUTOR) {
-          try {
-            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/analyze-market', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(parameters)
-            });
-            
-            const result = await response.json();
-            return c.json(result);
-          } catch (error: any) {
-            console.error('Error calling market analyzer:', error);
-            return c.json({ error: 'Failed to analyze market' }, 500);
-          }
-        } else {
-          return c.json({ error: 'Market analyzer not available' }, 500);
-        }
-        
-      case 'get_portfolio':
-        // Route to portfolio manager
-        if (c.env.TOOL_EXECUTOR) {
-          try {
-            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/get-portfolio', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(parameters)
-            });
-            
-            const result = await response.json();
-            return c.json(result);
-          } catch (error: any) {
-            console.error('Error calling portfolio manager:', error);
-            return c.json({ error: 'Failed to get portfolio' }, 500);
-          }
-        } else {
-          return c.json({ error: 'Portfolio manager not available' }, 500);
-        }
-        
-      case 'get_health_recommendations':
-        // Route to health agent
-        if (c.env.TOOL_EXECUTOR) {
-          try {
-            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/get-health-recommendations', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(parameters)
-            });
-            
-            const result = await response.json();
-            return c.json(result);
-          } catch (error: any) {
-            console.error('Error calling health agent:', error);
-            return c.json({ error: 'Failed to get health recommendations' }, 500);
-          }
-        } else {
-          return c.json({ error: 'Health agent not available' }, 500);
-        }
-        
-      case 'compute_route':
-        // Route to travel agent
-        if (c.env.TOOL_EXECUTOR) {
-          try {
-            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/compute-route', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(parameters)
-            });
-            
-            const result = await response.json();
-            return c.json(result);
-          } catch (error: any) {
-            console.error('Error calling travel agent:', error);
-            return c.json({ error: 'Failed to compute route' }, 500);
-          }
-        } else {
-          return c.json({ error: 'Travel agent not available' }, 500);
-        }
-        
-      case 'compute_route_matrix':
-        // Route to travel agent
-        if (c.env.TOOL_EXECUTOR) {
-          try {
-            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/compute-route-matrix', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(parameters)
-            });
-            
-            const result = await response.json();
-            return c.json(result);
-          } catch (error: any) {
-            console.error('Error calling travel agent:', error);
-            return c.json({ error: 'Failed to compute route matrix' }, 500);
-          }
-        } else {
-          return c.json({ error: 'Travel agent not available' }, 500);
-        }
-        
-      default:
-        return c.json({ error: `Unknown function: ${functionName}` }, 400);
-    }
-  } catch (error: any) {
-    console.error('Error routing function call:', error);
-    return c.json({ error: 'Failed to route function call' }, 500);
-  }
-});
-
 // POST /chat endpoint - Handle chat requests with Gemini
 app.post('/chat', async (c: any) => {
   try {
@@ -291,6 +148,50 @@ app.post('/chat', async (c: any) => {
               },
               required: ['origins', 'destinations']
             }
+          },
+          {
+            name: 'analyze_sentiment',
+            description: 'Analyze the sentiment of a given text',
+            parameters: {
+              type: 'object',
+              properties: {
+                text: { type: 'string', description: 'Text to analyze for sentiment' }
+              },
+              required: ['text']
+            }
+          },
+          {
+            name: 'extract_entities',
+            description: 'Extract entities (people, places, organizations, etc.) from text',
+            parameters: {
+              type: 'object',
+              properties: {
+                text: { type: 'string', description: 'Text to extract entities from' }
+              },
+              required: ['text']
+            }
+          },
+          {
+            name: 'classify_text',
+            description: 'Classify text into predefined categories',
+            parameters: {
+              type: 'object',
+              properties: {
+                text: { type: 'string', description: 'Text to classify' }
+              },
+              required: ['text']
+            }
+          },
+          {
+            name: 'query_market_history',
+            description: 'Query historical market data using SQL',
+            parameters: {
+              type: 'object',
+              properties: {
+                sql_query: { type: 'string', description: 'SQL query to execute on market history data' }
+              },
+              required: ['sql_query']
+            }
           }
         ]
       }]
@@ -317,6 +218,230 @@ app.post('/chat', async (c: any) => {
   } catch (error: any) {
     console.error('Error in chat endpoint:', error);
     return c.json({ error: 'Failed to process chat request' }, 500);
+  }
+});
+
+// Add new routing cases for NLP functions
+// POST /function-call endpoint - Handle Gemini Function Calling requests
+app.post('/function-call', async (c: any) => {
+  try {
+    const { functionName, parameters }: { functionName: string; parameters: any } = await c.req.json();
+    
+    // Validate required fields
+    if (!functionName) {
+      return c.json({ error: 'Missing required field: functionName' }, 400);
+    }
+    
+    console.log(`Routing function call: ${functionName}`, parameters);
+    
+    // Route function calls to appropriate tool executors via Service Bindings
+    switch (functionName) {
+      case 'execute_trade':
+        // Route to trade executor
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/execute-trade', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling trade executor:', error);
+            return c.json({ error: 'Failed to execute trade' }, 500);
+          }
+        } else {
+          return c.json({ error: 'Trade executor not available' }, 500);
+        }
+        
+      case 'analyze_market':
+        // Route to market analyzer
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/analyze-market', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling market analyzer:', error);
+            return c.json({ error: 'Failed to analyze market' }, 500);
+          }
+        } else {
+          return c.json({ error: 'Market analyzer not available' }, 500);
+        }
+        
+      case 'get_portfolio':
+        // Route to portfolio manager
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/get-portfolio', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling portfolio manager:', error);
+            return c.json({ error: 'Failed to get portfolio' }, 500);
+          }
+        } else {
+          return c.json({ error: 'Portfolio manager not available' }, 500);
+        }
+        
+      case 'get_health_recommendations':
+        // Route to health agent
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/get-health-recommendations', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling health agent:', error);
+            return c.json({ error: 'Failed to get health recommendations' }, 500);
+          }
+        } else {
+          return c.json({ error: 'Health agent not available' }, 500);
+        }
+        
+      case 'compute_route':
+        // Route to travel agent
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/compute-route', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling travel agent:', error);
+            return c.json({ error: 'Failed to compute route' }, 500);
+          }
+        } else {
+          return c.json({ error: 'Travel agent not available' }, 500);
+        }
+        
+      case 'compute_route_matrix':
+        // Route to travel agent
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/compute-route-matrix', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling travel agent:', error);
+            return c.json({ error: 'Failed to compute route matrix' }, 500);
+          }
+        } else {
+          return c.json({ error: 'Travel agent not available' }, 500);
+        }
+        
+      case 'analyze_sentiment':
+        // Route to NLP agent
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/analyze-sentiment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling NLP agent:', error);
+            return c.json({ error: 'Failed to analyze sentiment' }, 500);
+          }
+        } else {
+          return c.json({ error: 'NLP agent not available' }, 500);
+        }
+        
+      case 'extract_entities':
+        // Route to NLP agent
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/extract-entities', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling NLP agent:', error);
+            return c.json({ error: 'Failed to extract entities' }, 500);
+          }
+        } else {
+          return c.json({ error: 'NLP agent not available' }, 500);
+        }
+        
+      case 'classify_text':
+        // Route to NLP agent
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/classify-text', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling NLP agent:', error);
+            return c.json({ error: 'Failed to classify text' }, 500);
+          }
+        } else {
+          return c.json({ error: 'NLP agent not available' }, 500);
+        }
+        
+      case 'query_market_history':
+        // Route to BigQuery agent via tool executor
+        if (c.env.TOOL_EXECUTOR) {
+          try {
+            const response = await c.env.TOOL_EXECUTOR.fetch('http://tool-executor/run-analysis', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(parameters)
+            });
+            
+            const result = await response.json();
+            return c.json(result);
+          } catch (error: any) {
+            console.error('Error calling BigQuery agent:', error);
+            return c.json({ error: 'Failed to query market history' }, 500);
+          }
+        } else {
+          return c.json({ error: 'BigQuery agent not available' }, 500);
+        }
+        
+      default:
+        return c.json({ error: `Unknown function: ${functionName}` }, 400);
+    }
+  } catch (error: any) {
+    console.error('Error routing function call:', error);
+    return c.json({ error: 'Failed to route function call' }, 500);
   }
 });
 

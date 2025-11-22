@@ -17,11 +17,20 @@ const config: Config = {
         'axiom-red': '#FF003C',
         'axiom-success': '#00FF94',
         'axiom-warning': '#FCEE0A',
+        // Cyberpunk Palette
+        'cyber-cyan': '#00FFFF',
+        'neon-purple': '#9D4EDD',
+        'dark-void': '#0A0E27',
+        'holo-blue': '#4FACFE',
+        'axiom-glow': '#00F0FF',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'sans-serif'],
         mono: ['var(--font-mono)', 'monospace'],
         display: ['var(--font-space)', 'sans-serif'],
+        // Cyberpunk Fonts
+        orbitron: ['Orbitron', 'sans-serif'],
+        rajdhani: ['Rajdhani', 'sans-serif'],
       },
       backdropBlur: {
         'glass': '20px',

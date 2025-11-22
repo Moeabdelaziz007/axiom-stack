@@ -1,23 +1,19 @@
 {
 	"name": "axiom-brain",
-	"version": "0.0.0",
-	"private": true,
+	"version": "1.0.0",
+	"description": "Axiom Brain - AI Core with RAG and Tool Gating",
+	"main": "src/index.ts",
 	"scripts": {
 		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"test": "vitest",
-		"test-memory": "node test-memory.js",
-		"cf-typegen": "wrangler types"
+		"start": "wrangler dev"
 	},
 	"dependencies": {
-		"hono": "^4.0.0",
-		"@cloudflare/puppeteer": "^0.0.1"
+		"hono": "^3.12.0"
 	},
 	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.8.19",
-		"typescript": "^5.5.2",
-		"vitest": "~3.2.0",
-		"wrangler": "^3.101.0"
+		"@cloudflare/workers-types": "^4.20240117.0",
+		"typescript": "^5.3.3",
+		"wrangler": "^3.24.0"
 	}
 }

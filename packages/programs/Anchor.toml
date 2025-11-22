@@ -1,45 +1,46 @@
+[toolchain]
+anchor_version = "0.32.1"
+
 [features]
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-axiom_id = "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
-agent_soul_factory = "6sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-axiom_attestations = "4sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-axiom_staking = "3sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-axiom_token = "7sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-axiom_governance = "8sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-axiom_pohw = "9sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-axiom_staking_dynamic = "AsKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-
 [programs.devnet]
-axiom_id = "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
 agent_soul_factory = "6sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_attestations = "4sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-axiom_staking = "3sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-axiom_token = "7sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_governance = "8sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_id = "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
+axiom_marketplace = "HWoiLuSHq5KMiQNjyrBaGvUrwP8jgSpayLpbMgvXhekz"
 axiom_pohw = "9sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_staking = "3sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_staking_dynamic = "AsKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_token = "7sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+
+[programs.localnet]
+agent_soul_factory = "6sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_attestations = "4sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_governance = "8sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_id = "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
+axiom_pohw = "9sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_staking = "3sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_staking_dynamic = "AsKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_token = "7sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 
 [programs.mainnet]
-axiom_id = "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
 agent_soul_factory = "6sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_attestations = "4sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-axiom_staking = "3sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
-axiom_token = "7sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_governance = "8sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_id = "5E7eosX9X34CWCeGpw2C4ua2JRYTZqZ8MsFkxj3y6T7C"
 axiom_pohw = "9sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_staking = "3sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 axiom_staking_dynamic = "AsKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
+axiom_token = "7sKxhfHdQgjWBuoztEYonKepba2zGcN2QtWowCmAfWzD"
 
 [registry]
 url = "https://api.apr.dev"
 
-[toolchain]
-anchor_version = "0.32.1"
-
 [provider]
-cluster = "Devnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

@@ -3,7 +3,17 @@ import json
 import logging
 import io
 import contextlib
+import asyncio
+import os
 from flask import Flask, request, jsonify
+from video_engine import VideoEngine
+
+# Import media modules
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+from media.images import ImageFactory
+from media.thumbnail import ThumbnailMaker
+from media.voice import VoiceSynthesizer
 
 
 # Configure logging
@@ -258,6 +268,239 @@ def execute():
         
     except Exception as e:
         logger.error("Error executing Python code: {}".format(str(e)))
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/render-video', methods=['POST'])
+def render_video():
+    """
+    Render bilingual video (English Hook + Arabic Body)
+    
+    Expected JSON payload:
+    {
+        "script_en": "BITCOIN HITS SEVENTY THOUSAND!",
+        "script_ar": "البيتكوين يتجاوز السبعين ألف دولار",
+        "pillar": "wins",  # or "tech" or "vision"
+        "video_id": "optional_custom_id"
+    }
+    
+    Returns:
+    {
+        "success": true,
+        "video_path": "/tmp/axiom-videos/wins_1234567890_final.mp4",
+        "video_id": "wins_1234567890"
+    }
+    """
+    try:
+        payload = request.json
+        
+        script_en = payload.get('script_en')
+        script_ar = payload.get('script_ar')
+        pillar = payload.get('pillar', 'wins')
+        video_id = payload.get('video_id')
+        
+        if not script_en or not script_ar:
+            return jsonify({'error': 'Both script_en and script_ar are required'}), 400
+        
+        logger.info(f"🎬 Video render request: pillar={pillar}")
+        logger.info(f"   EN: {script_en[:50]}...")
+        logger.info(f"   AR: {script_ar[:50]}...")
+        
+        # Initialize video engine
+        engine = VideoEngine()
+        
+        # Run async video creation in sync context
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            video_path = loop.run_until_complete(
+                engine.create_reel(script_en, script_ar, pillar, video_id)
+            )
+        finally:
+            loop.close()
+        
+        logger.info(f"✅ Video rendered successfully: {video_path}")
+        
+        # Extract video_id from path
+        import os
+        actual_video_id = os.path.basename(video_path).replace('_final.mp4', '')
+        
+        return jsonify({
+            'success': True,
+            'video_path': video_path,
+            'video_id': actual_video_id,
+            'size_bytes': os.path.getsize(video_path) if os.path.exists(video_path) else 0
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"❌ Error rendering video: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/media/image', methods=['POST'])
+def generate_image():
+    """
+    Generate AI image using Pollinations.AI
+    
+    Request body:
+    {
+        "prompt": "futuristic cryptocurrency chart",
+        "width": 1280,
+        "height": 720,
+        "style": "photorealistic"
+    }
+    """
+    try:
+        payload = request.json
+        
+        prompt = payload.get('prompt')
+        width = payload.get('width', 1280)
+        height = payload.get('height', 720)
+        style = payload.get('style', 'photorealistic')
+        
+        if not prompt:
+            return jsonify({'error': 'prompt is required'}), 400
+        
+        logger.info(f"🎨 Image generation: {prompt[:50]}...")
+        
+        # Generate image
+        factory = ImageFactory()
+        image_path = factory.generate_image(
+            prompt=prompt,
+            width=width,
+            height=height,
+            style=style
+        )
+        
+        # Get file size
+        file_size = os.path.getsize(image_path)
+        
+        return jsonify({
+            'success': True,
+            'path': image_path,
+            'size_bytes': file_size,
+            'dimensions': f"{width}x{height}"
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"❌ Image generation failed: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/media/voice', methods=['POST'])
+def generate_voice():
+    """
+    Generate voice audio from text
+    
+    Request body:
+    {
+        "text": "Bitcoin hits seventy thousand!",
+        "voice": "en_male",
+        "rate": "+0%",
+        "pitch": "+0Hz"
+    }
+    """
+    try:
+        payload = request.json
+        
+        text = payload.get('text')
+        voice = payload.get('voice', 'en_male')
+        rate = payload.get('rate', '+0%')
+        pitch = payload.get('pitch', '+0Hz')
+        
+        if not text:
+            return jsonify({'error': 'text is required'}), 400
+        
+        logger.info(f"🎤 Voice synthesis: {text[:30]}...")
+        
+        # Generate voice
+        synthesizer = VoiceSynthesizer()
+        audio_path = synthesizer.generate(
+            text=text,
+            voice=voice,
+            rate=rate,
+            pitch=pitch
+        )
+        
+        # Get duration
+        duration = synthesizer.get_audio_duration(audio_path)
+        file_size = os.path.getsize(audio_path)
+        
+        return jsonify({
+            'success': True,
+            'path': audio_path,
+            'duration_seconds': round(duration, 2),
+            'size_bytes': file_size,
+            'voice': voice
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"❌ Voice generation failed: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/media/thumbnail', methods=['POST'])
+def create_thumbnail():
+    """
+    Create thumbnail with text overlay
+    
+    Request body:
+    {
+        "title": "BITCOIN BREAKS $70K!",
+        "background_prompt": "cryptocurrency explosion green candles",
+        "platform": "youtube",
+        "subtitle": "Market Analysis"
+    }
+    """
+    try:
+        payload = request.json
+        
+        title = payload.get('title')
+        background_prompt = payload.get('background_prompt')
+        platform = payload.get('platform', 'youtube')
+        subtitle = payload.get('subtitle')
+        
+        if not title:
+            return jsonify({'error': 'title is required'}), 400
+        
+        logger.info(f"🖼️ Thumbnail creation: {title[:30]}...")
+        
+        # Generate or use existing background
+        if background_prompt:
+            factory = ImageFactory()
+            bg_path = factory.generate_background(background_prompt, aspect_ratio="16:9")
+        else:
+            return jsonify({'error': 'background_prompt is required'}), 400
+        
+        # Create thumbnail
+        maker = ThumbnailMaker()
+        
+        if subtitle:
+            thumb_path = maker.create_youtube_thumbnail(
+                background_path=bg_path,
+                title=title,
+                subtitle=subtitle
+            )
+        else:
+            thumb_path = maker.create_thumbnail(
+                background_path=bg_path,
+                title=title,
+                platform=platform
+            )
+        
+        file_size = os.path.getsize(thumb_path)
+        
+        return jsonify({
+            'success': True,
+            'path': thumb_path,
+            'size_bytes': file_size,
+            'platform': platform
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"❌ Thumbnail creation failed: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 

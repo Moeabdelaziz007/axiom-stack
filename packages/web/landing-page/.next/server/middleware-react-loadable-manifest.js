@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}"
+self.__REACT_LOADABLE_MANIFEST="{\"../components/HoloCoreWidget.tsx -> ./HoloCoreVisual\":{\"id\":\"../components/HoloCoreWidget.tsx -> ./HoloCoreVisual\",\"files\":[\"static/chunks/components_HoloCoreVisual_tsx.js\"]}}"

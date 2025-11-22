@@ -1,0 +1,30 @@
+{
+    "name": "webhook-router",
+    "main": "src/index.ts",
+    "compatibility_date": "2024-01-01",
+    "durable_objects": {
+        "bindings": [
+            {
+                "name": "AGENT_DO",
+                "class_name": "AgentDO",
+                "script_name": "axiom-agent-do"
+            }
+        ]
+    },
+    "services": [
+        {
+            "binding": "AGENT_FACTORY",
+            "service": "axiom-agent-factory"
+        }
+    ],
+    "vars": {
+        "TELEGRAM_SECRET_TOKEN": "TEST_SECRET",
+        "WHATSAPP_APP_SECRET": ""
+    },
+    "routes": [
+        {
+            "pattern": "webhook-router.axiomid.app",
+            "custom_domain": true
+        }
+    ]
+}

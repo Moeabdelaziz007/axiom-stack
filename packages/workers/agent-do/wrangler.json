@@ -2,9 +2,10 @@
   "name": "axiom-agent-do",
   "main": "src/index.ts",
   "compatibility_date": "2023-10-01",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "workers_dev": true,
-  "account_id": "",
   "route": "",
   "routes": [],
   "triggers": {
@@ -24,10 +25,23 @@
       }
     ]
   },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "AgentDO"
+      ]
+    }
+  ],
   "kv_namespaces": [],
   "r2_buckets": [],
   "d1_databases": [],
-  "services": [],
+  "services": [
+    {
+      "binding": "AUDIT_SYSTEM",
+      "service": "audit-system"
+    }
+  ],
   "analytics_engine_datasets": [],
   "queues": {
     "producers": [],

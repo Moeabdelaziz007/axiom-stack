@@ -55,7 +55,7 @@ services:
         value: CcrbGS99N45XPZBLRxeN6q76P93iog6qGdLAiK839d6g
       - key: ORCHESTRATOR_PUBLIC_URL
         value: https://app.axiomid.app
-      - key: AXIOM_BRAIN_URL
+      - key: NEXT_PUBLIC_BRAIN_URL
         value: https://axiom-brain.amrikyy.workers.dev
 
   # Socket Server Service

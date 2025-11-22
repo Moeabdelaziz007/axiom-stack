@@ -1,118 +1,74 @@
-// cloudflare-workers/axiom-brain/src/services/vector.ts - Vector Memory Service
-// Uses Cloudflare Vectorize + Workers AI for native memory storage
+import { Ai } from '@cloudflare/ai';
 
-export interface VectorMemory {
-    text: string;
-    metadata: {
-        timestamp: number;
-        type: 'decision' | 'trade' | 'conversation' | 'insight';
-        agentId?: string;
-        userId?: string;
-        [key: string]: any;
-    };
-}
+export class VectorMemory {
+    private ai: Ai;
+    private index: VectorizeIndex;
 
-export interface VectorMatch {
-    id: string;
-    score: number;
-    metadata: any;
-}
-
-export class VectorMemoryService {
-    private vectorizeIndex: any;
-    private ai: any;
-
-    constructor(vectorizeIndex: any, ai: any) {
-        this.vectorizeIndex = vectorizeIndex;
+    constructor(ai: Ai, index: VectorizeIndex) {
         this.ai = ai;
+        this.index = index;
     }
 
-    /**
-     * Store a memory with its embedding
-     * Uses Cloudflare Workers AI for embedding generation (Nano Banana optimization)
-     */
-    async storeMemory(text: string, metadata: VectorMemory['metadata']): Promise<void> {
+    async storeMemory(text: string, metadata: Record<string, any> = {}): Promise<void> {
         try {
-            // Generate embedding using Cloudflare Workers AI
-            const embeddingResponse: any = await this.ai.run('@cf/baai/bge-base-en-v1.5', {
-                text: text,
+            // Generate embedding using BGE-Base (Nano Banana Model)
+            const { data } = await this.ai.run('@cf/baai/bge-base-en-v1.5', {
+                text: [text]
             });
 
-            const embedding = embeddingResponse.data[0];
+            const values = data[0];
 
-            if (!embedding || !Array.isArray(embedding)) {
+            if (!values) {
                 throw new Error('Failed to generate embedding');
             }
 
-            // Create unique ID for this memory
-            const memoryId = `mem_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-
-            // Insert into Vectorize
-            await this.vectorizeIndex.insert([
+            // Insert into Vectorize Index
+            await this.index.insert([
                 {
-                    id: memoryId,
-                    values: embedding,
+                    id: crypto.randomUUID(),
+                    values,
                     metadata: {
-                        text: text,
                         ...metadata,
-                    },
-                },
+                        text,
+                        timestamp: Date.now()
+                    }
+                }
             ]);
 
-            console.log(`Stored memory: ${memoryId}`);
-        } catch (error: any) {
+            console.log(`Stored memory: "${text.substring(0, 50)}..."`);
+        } catch (error) {
             console.error('Error storing memory:', error);
-            throw new Error(`Failed to store memory: ${error.message}`);
+            throw error;
         }
     }
 
-    /**
-     * Recall memories similar to a query
-     * Returns top matching memories with their scores
-     */
-    async recallMemory(query: string, topK: number = 3): Promise<VectorMatch[]> {
+    async recallMemory(query: string, topK: number = 3): Promise<any[]> {
         try {
             // Generate query embedding
-            const embeddingResponse: any = await this.ai.run('@cf/baai/bge-base-en-v1.5', {
-                text: query,
+            const { data } = await this.ai.run('@cf/baai/bge-base-en-v1.5', {
+                text: [query]
             });
 
-            const queryEmbedding = embeddingResponse.data[0];
+            const values = data[0];
 
-            if (!queryEmbedding || !Array.isArray(queryEmbedding)) {
+            if (!values) {
                 throw new Error('Failed to generate query embedding');
             }
 
-            // Query Vectorize for similar memories
-            const results = await this.vectorizeIndex.query(queryEmbedding, {
-                topK: topK,
-                returnMetadata: true,
+            // Query Vectorize
+            const results = await this.index.query(values, {
+                topK,
+                returnMetadata: true
             });
 
-            // Format results
-            const matches: VectorMatch[] = results.matches.map((match: any) => ({
-                id: match.id,
+            return results.matches.map(match => ({
                 score: match.score,
-                metadata: match.metadata,
+                text: match.metadata?.text,
+                metadata: match.metadata
             }));
-
-            console.log(`Recalled ${matches.length} memories for query: "${query}"`);
-            return matches;
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error recalling memory:', error);
-            throw new Error(`Failed to recall memory: ${error.message}`);
+            return [];
         }
-    }
-
-    /**
-     * Store a decision log (for Chain of Thought reasoning)
-     */
-    async storeDecisionLog(reasoning: string, decision: string, metadata: any): Promise<void> {
-        const logText = `Reasoning: ${reasoning}\nDecision: ${decision}`;
-        await this.storeMemory(logText, {
-            ...metadata,
-            type: 'decision',
-            timestamp: Date.now(),
-        });
     }
 }

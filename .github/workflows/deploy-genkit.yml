@@ -1,0 +1,71 @@
+name: Deploy Genkit Runtime to Cloud Run
+
+on:
+    push:
+        branches: [main]
+        paths:
+            - "packages/genkit-runtime/**"
+            - ".github/workflows/deploy-genkit.yml"
+    workflow_dispatch:
+
+env:
+    PROJECT_ID: geminiquanpologycodex
+    REGION: us-central1
+    SERVICE_NAME: genkit-runtime
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Authenticate to Google Cloud
+              uses: google-github-actions/auth@v2
+              with:
+                  workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+                  service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+            - name: Set up Cloud SDK
+              uses: google-github-actions/setup-gcloud@v2
+
+            - name: Configure Docker for Artifact Registry
+              run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+            - name: Build Docker image
+              run: |
+                  cd packages/genkit-runtime
+                  docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/axiom-services/${{ env.SERVICE_NAME }}:${{ github.sha }} .
+                  docker tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/axiom-services/${{ env.SERVICE_NAME }}:${{ github.sha }} \
+                             ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/axiom-services/${{ env.SERVICE_NAME }}:latest
+
+            - name: Push Docker image
+              run: |
+                  docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/axiom-services/${{ env.SERVICE_NAME }}:${{ github.sha }}
+                  docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/axiom-services/${{ env.SERVICE_NAME }}:latest
+
+            - name: Deploy to Cloud Run
+              run: |
+                  gcloud run deploy ${{ env.SERVICE_NAME }} \
+                    --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/axiom-services/${{ env.SERVICE_NAME }}:${{ github.sha }} \
+                    --region ${{ env.REGION }} \
+                    --platform managed \
+                    --allow-unauthenticated \
+                    --min-instances 0 \
+                    --max-instances 10 \
+                    --memory 1Gi \
+                    --cpu 1 \
+                    --timeout 60 \
+                    --concurrency 80 \
+                    --set-env-vars "GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }}"
+
+            - name: Get service URL
+              run: |
+                  SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} --region ${{ env.REGION }} --format 'value(status.url)')
+                  echo "Genkit Runtime deployed at: $SERVICE_URL"
+                  echo "GENKIT_ENDPOINT=$SERVICE_URL" >> $GITHUB_ENV

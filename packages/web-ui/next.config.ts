@@ -1,17 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export', // Static export for Cloudflare Pages
+  output: 'export', // Enabled for Cloudflare Pages static export
 
   images: {
     unoptimized: true, // Disable Next.js image optimization for static export
   },
 
-  transpilePackages: ['@solana/web3.js', '@noble/curves', '@noble/hashes'],
+  transpilePackages: ['@solana/web3.js', '@noble/curves', '@noble/hashes', '@metaplex-foundation/js'],
 
   // Environment variables
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api.axiomid.app',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://brain.axiomid.app',
     NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL || 'wss://ws.axiomid.app',
   },
 

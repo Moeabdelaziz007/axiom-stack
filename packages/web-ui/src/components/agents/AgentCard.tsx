@@ -1,147 +1,121 @@
-'use client';
-
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Activity, Bot } from 'lucide-react';
-import { MockAgent } from '@/lib/solana';
 import { AixAgent } from '@/lib/aixLoader';
-import { StatusDot } from './StatusDot';
+import { Activity, Cpu, Hash, Shield, Zap } from 'lucide-react';
 
 interface AgentCardProps {
-  agent: AixAgent;
-  onClick?: () => void;
+    agent: AixAgent;
+    onClick: () => void;
 }
 
-export function AgentCard({ agent, onClick }: AgentCardProps) {
-  // Truncate agent ID to first 8 characters
-  const truncatedId = agent.id.length > 8 ? `${agent.id.substring(0, 8)}...` : agent.id;
+export const AgentCard: React.FC<AgentCardProps> = ({ agent, onClick }) => {
+    const { id, name, description, status, reputation, loadFactor, capabilities } = agent;
 
-  // Use the reputation from AIX data instead of calculating it
-  const reputation = agent.reputation || 50;
+    // Truncate agent ID to first 8 characters
+    const truncatedId = id.length > 8 ? `${id.substring(0, 8)}...` : id;
 
-  // Determine reputation ring color
-  const getReputationRingColor = () => {
-    if (reputation > 90) return '#00FF88'; // axiom-success
-    if (reputation > 50) return '#FFB800'; // axiom-warning
-    return '#FF4444'; // axiom-error
-  };
+    // Determine status dot class
+    const getStatusDotClass = () => {
+        switch (status) {
+            case 'active': return 'bg-axiom-cyan';
+            case 'paused': return 'bg-axiom-warning';
+            case 'inactive': return 'bg-gray-400';
+            default: return 'bg-gray-400';
+        }
+    };
 
-  // Calculate stroke dasharray for circular progress
-  const radius = 20;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDasharray = circumference;
-  const strokeDashoffset = circumference - (reputation / 100) * circumference;
+    // Determine reputation ring color
+    const getReputationRingColor = () => {
+        if (reputation >= 90) return 'text-axiom-cyan';
+        if (reputation >= 70) return 'text-axiom-success';
+        return 'text-axiom-warning';
+    };
 
-  return (
-    <motion.div
-      className="glass-panel-premium p-6 h-full hover:border-axiom-cyan/30 transition-all duration-300 cursor-pointer group relative overflow-hidden hover:-translate-y-1 hover:shadow-axiom-cyan/20"
-      whileHover={{ y: -5, scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      onClick={onClick}
-    >
-      {/* Hover Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-axiom-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    return (
+        <motion.div
+            whileHover={{ scale: 1.02, borderColor: 'rgba(6, 182, 212, 0.5)' }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onClick}
+            className="bg-axiom-dark border border-gray-800 rounded-xl p-5 cursor-pointer transition-colors relative overflow-hidden group"
+        >
+            {/* Background glow effect */}
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-axiom-cyan/5 rounded-full blur-3xl group-hover:bg-axiom-cyan/10 transition-all duration-500" />
 
-      {/* Header */}
-      <div className="flex justify-between items-start mb-6 relative z-10">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-axiom-cyan/10 text-axiom-cyan group-hover:scale-110 transition-transform duration-300">
-              <Bot className="w-6 h-6" />
+            {/* Header */}
+            <div className="flex justify-between items-start mb-4 relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className="relative">
+                        <div className={`w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center border border-gray-700`}>
+                            <Cpu className="w-5 h-5 text-gray-300" />
+                        </div>
+                        <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-axiom-dark ${getStatusDotClass()}`} />
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-white leading-tight">{name}</h3>
+                        <div className="flex items-center gap-1 text-xs text-gray-500 font-mono mt-0.5">
+                            <Hash className="w-3 h-3" />
+                            <span>{truncatedId}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Reputation Ring */}
+                <div className="flex flex-col items-center">
+                    <div className={`text-lg font-bold font-mono ${getReputationRingColor()}`}>
+                        {reputation}
+                    </div>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wider">REP</span>
+                </div>
             </div>
-            <div>
-              <h3 className="font-display text-lg font-bold text-white tracking-wide group-hover:text-axiom-cyan transition-colors">
-                {agent.name || truncatedId}
-              </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <StatusDot status={agent.status} />
-                <span className="text-xs font-mono text-gray-400 uppercase tracking-wider">{agent.status}</span>
-              </div>
+
+            {/* Description */}
+            <p className="text-sm text-gray-400 mb-4 line-clamp-2 h-10 relative z-10">
+                {description}
+            </p>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 gap-2 mb-4 relative z-10">
+                <div className="bg-gray-900/50 rounded-lg p-2 border border-gray-800">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+                        <Activity className="w-3 h-3" />
+                        <span>Load</span>
+                    </div>
+                    <div className="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
+                        <div
+                            className="h-full bg-axiom-cyan"
+                            style={{ width: `${loadFactor}%` }}
+                        />
+                    </div>
+                </div>
+
+                <div className="bg-gray-900/50 rounded-lg p-2 border border-gray-800">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+                        <Shield className="w-3 h-3" />
+                        <span>Tasks</span>
+                    </div>
+                    <p className="font-mono text-sm text-white">0</p>
+                </div>
             </div>
-          </div>
-        </div>
 
-        {/* Reputation Score Ring */}
-        <div className="relative w-14 h-14 group-hover:scale-110 transition-transform duration-300">
-          <svg className="w-14 h-14 drop-shadow-[0_0_10px_rgba(0,0,0,0.5)]" viewBox="0 0 50 50">
-            <circle
-              cx="25"
-              cy="25"
-              r={radius}
-              fill="none"
-              stroke="rgba(255, 255, 255, 0.05)"
-              strokeWidth="3"
-            />
-            <circle
-              cx="25"
-              cy="25"
-              r={radius}
-              fill="none"
-              stroke={getReputationRingColor()}
-              strokeWidth="3"
-              strokeDasharray={strokeDasharray}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-              transform="rotate(-90 25 25)"
-              className="drop-shadow-[0_0_8px_currentColor]"
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-sm font-mono font-bold text-white text-glow">{Math.round(reputation)}</span>
-            <span className="text-[8px] text-gray-500 uppercase">REP</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Description */}
-      <p className="text-gray-400 text-sm mb-6 line-clamp-2 font-light relative z-10 group-hover:text-gray-300 transition-colors">
-        {agent.description}
-      </p>
-
-      {/* Metrics */}
-      <div className="grid grid-cols-3 gap-2 mb-6 relative z-10">
-        <div className="bg-black/20 rounded-lg p-2 border border-white/5 backdrop-blur-sm">
-          <div className="flex items-center text-gray-500 mb-1">
-            <Activity className="w-3 h-3 mr-1" />
-            <span className="text-[10px] uppercase tracking-wider">Caps</span>
-          </div>
-          <p className="font-mono text-sm text-white text-glow">{agent.capabilities.length}</p>
-        </div>
-
-        <div className="bg-black/20 rounded-lg p-2 border border-white/5 backdrop-blur-sm">
-          <div className="flex items-center text-axiom-cyan/80 mb-1">
-            <Activity className="w-3 h-3 mr-1" />
-            <span className="text-[10px] uppercase tracking-wider">Load</span>
-          </div>
-          <p className="font-mono text-sm text-axiom-cyan text-glow">{agent.loadFactor || 0}%</p>
-        </div>
-
-        <div className="bg-black/20 rounded-lg p-2 border border-white/5 backdrop-blur-sm">
-          <div className="flex items-center text-axiom-purple/80 mb-1">
-            <Activity className="w-3 h-3 mr-1" />
-            <span className="text-[10px] uppercase tracking-wider">Cost</span>
-          </div>
-          <p className="font-mono text-sm text-axiom-purple text-glow">{agent.costPerAction || 0}</p>
-        </div>
-      </div>
-
-      {/* Capabilities */}
-      <div className="relative z-10">
-        <div className="flex flex-wrap gap-1.5">
-          {agent.capabilities.slice(0, 3).map((capability, index) => (
-            <span
-              key={index}
-              className="px-2 py-1 rounded text-[10px] font-mono text-axiom-cyan bg-axiom-cyan/5 border border-axiom-cyan/10"
-            >
-              {capability}
-            </span>
-          ))}
-          {agent.capabilities.length > 3 && (
-            <span className="px-2 py-1 rounded text-[10px] font-mono text-gray-500 bg-white/5 border border-white/5">
-              +{agent.capabilities.length - 3}
-            </span>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+            {/* Capabilities */}
+            <div className="relative z-10">
+                <h4 className="text-[10px] text-gray-500 uppercase tracking-wider mb-2">Capabilities</h4>
+                <div className="flex flex-wrap gap-1.5">
+                    {capabilities.slice(0, 3).map((capability, index) => (
+                        <span
+                            key={index}
+                            className="px-2 py-1 bg-gray-800/80 border border-gray-700 rounded text-[10px] text-gray-300 font-mono"
+                        >
+                            {capability}
+                        </span>
+                    ))}
+                    {capabilities.length > 3 && (
+                        <span className="px-2 py-1 bg-gray-800/50 border border-gray-700 rounded text-[10px] text-gray-500 font-mono">
+                            +{capabilities.length - 3}
+                        </span>
+                    )}
+                </div>
+            </div>
+        </motion.div>
+    );
+};

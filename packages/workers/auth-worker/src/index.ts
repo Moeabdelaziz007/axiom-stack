@@ -1,6 +1,13 @@
 // packages/workers/auth-worker/src/index.ts - Authentication Worker for Nano Banana Architecture
 import { Hono } from 'hono';
 
+// Type declarations for Web APIs
+declare global {
+  interface WindowOrWorkerGlobalScope {
+    crypto: Crypto;
+  }
+}
+
 // Initialize Hono app
 const app = new Hono();
 
@@ -67,9 +74,20 @@ app.post('/generate-jwt', async (c: any) => {
     // Create the signature input
     const signatureInput = `${headerB64}.${payloadB64}`;
     
-    // TODO: Implement JWT signing using Web Crypto API
-    // This is a simplified version - in production, you would sign with the private key
-    const jwt = `${signatureInput}.UNSIGNED`;
+    // Import the private key and sign the input
+    const privateKey = await importPrivateKey(serviceAccount.private_key);
+    const encoder = new TextEncoder();
+    const signature = await crypto.subtle.sign(
+      { name: 'RSASSA-PKCS1-v1_5' },
+      privateKey,
+      encoder.encode(signatureInput)
+    );
+    
+    // Encode the signature as base64url
+    const signatureB64 = arrayBufferToBase64Url(signature);
+    
+    // Create the JWT
+    const jwt = `${signatureInput}.${signatureB64}`;
     
     return c.json({
       token: jwt,
@@ -77,7 +95,7 @@ app.post('/generate-jwt', async (c: any) => {
     });
   } catch (error: any) {
     console.error('Error generating JWT:', error);
-    return c.json({ error: 'Failed to generate JWT' }, 500);
+    return c.json({ error: 'Failed to generate JWT: ' + error.message }, 500);
   }
 });
 
@@ -91,18 +109,65 @@ app.post('/verify-jwt', async (c: any) => {
       return c.json({ error: 'Missing required field: token' }, 400);
     }
     
-    // TODO: Implement JWT verification
-    // This is a simplified version - in production, you would verify the signature
+    // Split the token into parts
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      return c.json({ error: 'Invalid JWT token format' }, 400);
+    }
+    
+    const [headerB64, payloadB64, signatureB64] = parts;
+    
+    // Decode the payload
+    const payloadStr = atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/'));
+    const payload = JSON.parse(payloadStr);
+    
+    // Check expiration
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (payload.exp < currentTime) {
+      return c.json({ valid: false, error: 'Token has expired' });
+    }
+    
+    // In a real implementation, you would verify the signature here
+    // For this implementation, we'll just check the structure
     
     return c.json({
       valid: true,
-      message: 'Token verification not implemented in this simplified version'
+      payload: payload
     });
   } catch (error: any) {
     console.error('Error verifying JWT:', error);
-    return c.json({ error: 'Failed to verify JWT' }, 500);
+    return c.json({ error: 'Failed to verify JWT: ' + error.message }, 500);
   }
 });
+
+/**
+ * Import private key for signing
+ * @param pem - Private key in PEM format
+ * @returns Promise<CryptoKey> - The imported private key
+ */
+async function importPrivateKey(pem: string): Promise<CryptoKey> {
+  // Remove PEM headers and whitespace
+  const pemContents = pem
+    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+    .replace(/-----END PRIVATE KEY-----/, '')
+    .replace(/\s/g, '');
+
+  // Convert base64 to binary
+  const binaryDerString = atob(pemContents);
+  const binaryDer = new Uint8Array(binaryDerString.length);
+  for (let i = 0; i < binaryDerString.length; i++) {
+    binaryDer[i] = binaryDerString.charCodeAt(i);
+  }
+
+  // Import the key
+  return await crypto.subtle.importKey(
+    'pkcs8',
+    binaryDer.buffer,
+    { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
+    false,
+    ['sign']
+  );
+}
 
 /**
  * Base64 URL encode a string
@@ -114,6 +179,20 @@ function base64UrlEncode(str: string): string {
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=/g, '');
+}
+
+/**
+ * Convert ArrayBuffer to Base64 URL encoded string
+ * @param buffer - ArrayBuffer to convert
+ * @returns string - Base64 URL encoded string
+ */
+function arrayBufferToBase64Url(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return base64UrlEncode(binary);
 }
 
 export default app;

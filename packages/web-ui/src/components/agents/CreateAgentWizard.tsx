@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 
 interface WizardState {
     step: number;
+    archetype: 'TRADER' | 'ANALYST' | 'TRAVELER';
     identity: {
         name: string;
         ticker: string;
@@ -24,11 +25,11 @@ interface WizardState {
     knowledge: string[];
     isSpawning: boolean;
     error: string | null;
-
 }
 
 const INITIAL_STATE: WizardState = {
     step: 1,
+    archetype: 'TRADER',
     identity: {
         name: '',
         ticker: '',
@@ -39,10 +40,38 @@ const INITIAL_STATE: WizardState = {
         stopLoss: 10,
         maxSlippage: 1,
     },
+    channels: {},
     knowledge: [],
     isSpawning: false,
     error: null,
 };
+
+const ARCHETYPES = [
+    {
+        id: 'TRADER',
+        title: 'Quantum Trader',
+        icon: '📈',
+        description: 'Specialized in DeFi operations, risk management, and portfolio growth.',
+        gradient: 'from-green-400 to-emerald-600',
+        color: 'text-emerald-400'
+    },
+    {
+        id: 'ANALYST',
+        title: 'Nexus Analyst',
+        icon: '🔍',
+        description: 'Deep research, data analysis, and fact-checking capabilities.',
+        gradient: 'from-blue-400 to-indigo-600',
+        color: 'text-blue-400'
+    },
+    {
+        id: 'TRAVELER',
+        title: 'Nomad Voyager',
+        icon: '✈️',
+        description: 'Logistics planning, route optimization, and travel coordination.',
+        gradient: 'from-orange-400 to-pink-600',
+        color: 'text-orange-400'
+    }
+] as const;
 
 export function CreateAgentWizard() {
     const [state, setState] = useState<WizardState>(INITIAL_STATE);
@@ -72,6 +101,7 @@ export function CreateAgentWizard() {
             // Construct SpawnRequest payload matching Backend Schema
             const spawnRequest = {
                 type: 'TradingAgent', // Default type for now
+                archetype: state.archetype,
                 config: {
                     manifest: {
                         persona: {
@@ -181,16 +211,61 @@ export function CreateAgentWizard() {
                     <motion.div
                         className="h-full bg-gradient-to-r from-axiom-blue to-axiom-purple"
                         initial={{ width: '0%' }}
-                        animate={{ width: `${(state.step / 4) * 100}%` }}
+                        animate={{ width: `${(state.step / 5) * 100}%` }}
                         transition={{ duration: 0.3 }}
                     />
                 </div>
 
                 <div className="p-8">
                     <AnimatePresence mode="wait">
+                        {/* STEP 1: ARCHETYPE SELECTION */}
                         {state.step === 1 && (
                             <motion.div
                                 key="step1"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-6"
+                            >
+                                <h2 className="text-2xl font-bold text-white mb-2">Select Agent Archetype</h2>
+                                <p className="text-gray-400 mb-6">Choose the specialized core for your agent.</p>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    {ARCHETYPES.map((arch) => (
+                                        <div
+                                            key={arch.id}
+                                            onClick={() => setState(prev => ({ ...prev, archetype: arch.id as any }))}
+                                            className={`cursor-pointer relative p-6 rounded-xl border transition-all duration-300 ${state.archetype === arch.id
+                                                ? 'bg-white/10 border-axiom-blue shadow-[0_0_20px_rgba(56,189,248,0.2)]'
+                                                : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                                                }`}
+                                        >
+                                            <div className="text-4xl mb-4">{arch.icon}</div>
+                                            <h3 className={`text-lg font-bold mb-2 ${arch.color}`}>{arch.title}</h3>
+                                            <p className="text-sm text-gray-400">{arch.description}</p>
+
+                                            {state.archetype === arch.id && (
+                                                <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-axiom-blue shadow-[0_0_10px_#38bdf8]" />
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex justify-end pt-6">
+                                    <button
+                                        onClick={nextStep}
+                                        className="bg-axiom-blue hover:bg-axiom-blue/80 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                                    >
+                                        Configure Identity &rarr;
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* STEP 2: IDENTITY */}
+                        {state.step === 2 && (
+                            <motion.div
+                                key="step2"
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
@@ -255,20 +330,27 @@ export function CreateAgentWizard() {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-end pt-6">
+                                <div className="flex justify-between pt-6">
+                                    <button
+                                        onClick={prevStep}
+                                        className="text-gray-400 hover:text-white px-6 py-2 font-medium transition-colors"
+                                    >
+                                        &larr; Back
+                                    </button>
                                     <button
                                         onClick={nextStep}
                                         className="bg-axiom-blue hover:bg-axiom-blue/80 text-white px-6 py-2 rounded-lg font-medium transition-colors"
                                     >
-                                        Initialize Protocol &rarr;
+                                        Configure Constitution &rarr;
                                     </button>
                                 </div>
                             </motion.div>
                         )}
 
-                        {state.step === 2 && (
+                        {/* STEP 3: CONSTITUTION */}
+                        {state.step === 3 && (
                             <motion.div
-                                key="step2"
+                                key="step3"
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
@@ -321,15 +403,16 @@ export function CreateAgentWizard() {
                                         onClick={nextStep}
                                         className="bg-axiom-blue hover:bg-axiom-blue/80 text-white px-6 py-2 rounded-lg font-medium transition-colors"
                                     >
-                                        Configure Knowledge &rarr;
+                                        Configure Channels &rarr;
                                     </button>
                                 </div>
                             </motion.div>
                         )}
 
-                        {state.step === 3 && (
+                        {/* STEP 4: CHANNELS */}
+                        {state.step === 4 && (
                             <motion.div
-                                key="step3"
+                                key="step4"
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
@@ -358,7 +441,7 @@ export function CreateAgentWizard() {
                                         value={state.channels.whatsapp?.phoneId || ''}
                                         onChange={e => setState(prev => ({
                                             ...prev,
-                                            channels: { ...prev.channels, whatsapp: { ...prev.channels.whatsapp, phoneId: e.target.value, active: !!e.target.value } }
+                                            channels: { ...prev.channels, whatsapp: { phoneId: e.target.value, accessToken: prev.channels.whatsapp?.accessToken || '', active: !!e.target.value } }
                                         }))}
                                         className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-axiom-blue"
                                         placeholder="Phone ID"
@@ -369,7 +452,7 @@ export function CreateAgentWizard() {
                                         value={state.channels.whatsapp?.accessToken || ''}
                                         onChange={e => setState(prev => ({
                                             ...prev,
-                                            channels: { ...prev.channels, whatsapp: { ...prev.channels.whatsapp, accessToken: e.target.value, active: !!e.target.value } }
+                                            channels: { ...prev.channels, whatsapp: { phoneId: prev.channels.whatsapp?.phoneId || '', accessToken: e.target.value, active: !!e.target.value } }
                                         }))}
                                         className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-axiom-blue"
                                         placeholder="Access Token"
@@ -391,9 +474,11 @@ export function CreateAgentWizard() {
                                 </div>
                             </motion.div>
                         )}
-                        {state.step === 4 && (
+
+                        {/* STEP 5: REVIEW */}
+                        {state.step === 5 && (
                             <motion.div
-                                key="step4"
+                                key="step5"
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
@@ -404,6 +489,7 @@ export function CreateAgentWizard() {
                                 <div className="bg-black/50 rounded-lg p-6 font-mono text-sm border border-white/10 overflow-auto max-h-96">
                                     <pre className="text-axiom-blue">
                                         {JSON.stringify({
+                                            archetype: state.archetype,
                                             identity: state.identity,
                                             constitution: state.constitution,
                                             knowledge: state.knowledge

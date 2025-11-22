@@ -92,19 +92,19 @@ export default function AgentsPage() {
       <div className="mb-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Agent Fleet</h1>
+            <h1 className="text-3xl font-display font-bold mb-2 text-glow">Agent Fleet</h1>
             <p className="text-gray-400">Manage and monitor your AI agents</p>
           </div>
           <div className="flex space-x-4">
-            <div className="glass-panel px-4 py-2">
+            <div className="glass-panel-premium px-4 py-2 rounded-lg">
               <div className="text-xs text-gray-400">Total Agents</div>
               <div className="text-xl font-mono font-bold">24</div>
             </div>
-            <div className="glass-panel px-4 py-2">
+            <div className="glass-panel-premium px-4 py-2 rounded-lg">
               <div className="text-xs text-gray-400">Active</div>
               <div className="text-xl font-mono font-bold text-axiom-cyan">12</div>
             </div>
-            <div className="glass-panel px-4 py-2">
+            <div className="glass-panel-premium px-4 py-2 rounded-lg">
               <div className="text-xs text-gray-400">Flagged</div>
               <div className="text-xl font-mono font-bold text-axiom-red">3</div>
             </div>
@@ -114,15 +114,22 @@ export default function AgentsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {agents.map((agent, index) => (
-          <AgentCard
+          <div
             key={index}
-            id={agent.id}
-            status={agent.status}
-            reputation={agent.reputation}
-            loadFactor={agent.loadFactor}
-            tasksCompleted={agent.tasksCompleted}
-            capabilities={agent.capabilities}
-          />
+            className="animate-fade-in-up"
+            style={{
+              animationDelay: `${index * 50}ms`
+            }}
+          >
+            <AgentCard
+              id={agent.id}
+              status={agent.status}
+              reputation={agent.reputation}
+              loadFactor={agent.loadFactor}
+              tasksCompleted={agent.tasksCompleted}
+              capabilities={agent.capabilities}
+            />
+          </div>
         ))}
       </div>
     </DashboardLayout>

@@ -1,0 +1,24 @@
+{
+    "name": "@axiom-stack/solana-sdk",
+    "version": "0.1.0",
+    "description": "TypeScript SDK for Axiom ID Solana Programs",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsup src/index.ts --format cjs,esm --dts",
+        "lint": "tsc --noEmit"
+    },
+    "peerDependencies": {
+        "@coral-xyz/anchor": "^0.29.0",
+        "@solana/web3.js": "^1.87.0"
+    },
+    "devDependencies": {
+        "tsup": "^8.0.1",
+        "typescript": "^5.3.3",
+        "@types/node": "^20.11.0"
+    },
+    "dependencies": {
+        "bn.js": "^5.2.1"
+    }
+}

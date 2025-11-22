@@ -1,28 +1,17 @@
 {
-  "name": "@axiom-stack/tool-executor",
+  "name": "axiom-tool-executor",
   "version": "1.0.0",
-  "description": "Tool Executor for Axiom ID Agent Factory (Nano Banana Architecture)",
+  "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "wrangler dev src/index.ts",
-    "deploy": "wrangler deploy --minify src/index.ts"
-  },
-  "keywords": [
-    "axiom",
-    "cloudflare",
-    "worker",
-    "tool",
-    "executor",
-    "nano-banana"
-  ],
-  "author": "Axiom ID Team",
-  "license": "MIT",
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250404.0",
-    "typescript": "^5.0.0",
-    "wrangler": "^3.0.0"
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "hono": "^4.0.0"
+    "hono": "^4.0.0",
+    "@cloudflare/workers-types": "^4.20240117.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "wrangler": "^3.0.0"
   }
 }

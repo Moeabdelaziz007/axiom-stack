@@ -1,0 +1,29 @@
+
+> axiom-brain@0.0.0 deploy
+> wrangler deploy
+
+
+ ⛅️ wrangler 3.114.15 (update available 4.49.1)
+-----------------------------------------------
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mThe version of Wrangler you are using is now out-of-date.[0m
+
+  Please update to the latest version to prevent critical errors.
+  Run `npm install --save-dev wrangler@4` to update to the latest version.
+  After installation, run Wrangler with `npx wrangler`.
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProcessing wrangler.jsonc configuration:[0m
+
+    - Unexpected fields found in top-level field: "custom_domain"
+
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mInvalid Routes:[0m
+
+  brain.axiomid.app/*:
+  Wildcard operators (*) are not allowed in Custom Domains
+  Paths are not allowed in Custom Domains
+
+
+🪵  Logs were written to "/Users/cryptojoker710/.wrangler/logs/wrangler-2025-11-20_16-36-32_379.log"

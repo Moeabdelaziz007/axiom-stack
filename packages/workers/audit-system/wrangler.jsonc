@@ -1,0 +1,12 @@
+{
+    "name": "audit-system",
+    "main": "src/index.ts",
+    "compatibility_date": "2025-02-14",
+    "d1_databases": [
+        {
+            "binding": "DB",
+            "database_name": "axiom-audit-db",
+            "database_id": "343f6d4e-8c97-45dd-97fb-107817ddbc58"
+        }
+    ]
+}

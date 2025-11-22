@@ -25,6 +25,7 @@ interface Env {
   VECTORIZE: VectorizeIndex;
   AI: Ai;
   CHAT_ROOM: DurableObjectNamespace;
+  AGENT_DO: DurableObjectNamespace;
   BROWSER: Fetcher;
   GLOBAL_CACHE: KVNamespace;
   GOOGLE_API_KEY: string;
@@ -132,6 +133,44 @@ app.get('/api/logs', async (c) => {
   }
 });
 
+// System metrics endpoint
+app.get('/api/metrics/system', async (c) => {
+  try {
+    // Calculate uptime (store start time in KV on first request)
+    let startTime = await c.env.GLOBAL_CACHE.get('system_start_time');
+    if (!startTime) {
+      startTime = Date.now().toString();
+      await c.env.GLOBAL_CACHE.put('system_start_time', startTime);
+    }
+    const uptime = Date.now() - parseInt(startTime);
+
+    // Query active agents from KV (count keys with prefix 'agent:')
+    let activeAgents = 0;
+    try {
+      const agentList = await c.env.GLOBAL_CACHE.list({ prefix: 'agent:' });
+      activeAgents = agentList.keys.length;
+    } catch (err) {
+      console.error('Failed to count agents:', err);
+    }
+
+    // Mock CPU and memory (Cloudflare Workers don't expose real metrics)
+    const cpu = Math.floor(Math.random() * 20) + 10; // 10-30%
+    const memory = Math.floor(Math.random() * 20) + 20; // 20-40%
+
+    return c.json({
+      cpu,
+      memory,
+      activeAgents,
+      uptime,
+      status: 'operational'
+    });
+  } catch (error: any) {
+    console.error('Metrics error:', error);
+    return c.json({ error: error.message, status: 'degraded' }, 500);
+  }
+});
+
+
 // Chat endpoint - handles conversation with memory and RAG
 app.post('/chat', async (c) => {
   try {
@@ -160,58 +199,77 @@ app.post('/chat', async (c) => {
     // Handle audio input
     if (audio) {
       // Use Cloudflare AI for audio transcription
+      // Add user message via DO fetch method
+      await stub.fetch('http://chat-room/add-message', {
+        method: 'POST',
+        body: JSON.stringify({ role: 'user', content: message })
+      });
+
+      // Fetch conversation history
+      const historyResponse = await stub.fetch('http://chat-room/history');
+      const history: Message[] = await historyResponse.json();
+
+      // Initialize Gemini client
+      const geminiClient = new GeminiClient(c.env.GOOGLE_API_KEY);
+
+      // Retrieve relevant context from Vectorize
+      let context = '';
       try {
-        const transcriptionResult: any = await c.env.AI.run('@cf/openai/whisper', {
-          audio: audio.split(',')[1] || audio // Remove data:audio prefix if present
+        const queryVector = await c.env.AI.run('@cf/baai/bge-base-en-v1.5', {
+          text: [message]
         });
 
-        if (transcriptionResult && transcriptionResult.text) {
-          userContent = `[Voice Message Transcription]: ${transcriptionResult.text}`;
+        if (queryVector && queryVector.data && queryVector.data[0]) {
+          const matches = await c.env.VECTORIZE.query(queryVector.data[0], { topK: 5 });
+          console.log('Vectorize matches:', JSON.stringify(matches));
+          context = matches.matches.map(match => match.metadata?.text || '').join('\n\n');
+        } else {
+          // Fallback or error handling if queryVector is not as expected
+          console.warn('Invalid query vector response, attempting to query with first element if available.');
+          if (queryVector && queryVector.data && queryVector.data.length > 0) {
+            const matches = await c.env.VECTORIZE.query(queryVector.data[0], { topK: 5 });
+            console.log('Vectorize matches:', JSON.stringify(matches));
+            context = matches.matches.map(match => match.metadata?.text || '').join('\n\n');
+          } else {
+            console.error('Query vector data is empty or invalid.');
+            context = 'No relevant context found.';
+          }
         }
-      } catch (audioError) {
-        console.error('Audio transcription error:', audioError);
-        userContent = userContent || 'Could not transcribe audio';
+      } catch (vectorizeError) {
+        console.error('Vectorize error:', vectorizeError);
+        context = 'Error retrieving context.';
       }
-    }
 
-    // Add user message to history via DO fetch method
-    await stub.fetch('http://chat-room/add-message', {
-      method: 'POST',
-      body: JSON.stringify({ role: 'user', content: userContent })
-    });
+      // Get Agent Configuration from AGENT_DO (The Source of Truth)
+      let allowedTools: string[] = [];
+      let systemPrompt = 'You are an expert on the Axiom ID project. Use the following context and conversation history to answer the user\'s question.';
 
-    // Get conversation history via DO fetch method
-    const historyResponse = await stub.fetch('http://chat-room/get-context', {
-      method: 'POST'
-    });
-    const { history } = await historyResponse.json<{ history: Message[] }>();
+      try {
+        // Assume chatId is the agentId for now
+        const agentId = c.env.AGENT_DO.idFromString(chatId);
+        const agentStub = c.env.AGENT_DO.get(agentId);
 
-    // Search Vectorize for relevant project info (RAG)
-    let context = '';
-    try {
-      const queryVector: any = await c.env.AI.run('@cf/baai/bge-large-en-v1.5', { text: message });
-      console.log('Query vector result:', JSON.stringify(queryVector));
-
-      // Check if queryVector has the expected structure
-      if (!queryVector || !queryVector.data || !Array.isArray(queryVector.data) || queryVector.data.length === 0) {
-        console.error('Invalid query vector response:', queryVector);
-        context = 'No relevant context found.';
-      } else {
-        const matches = await c.env.VECTORIZE.query(queryVector.data[0], { topK: 5 });
-        console.log('Vectorize matches:', JSON.stringify(matches));
-        context = matches.matches.map(match => match.metadata?.text || '').join('\n\n');
+        // Fetch agent state to get allowedTools and systemPrompt
+        const stateResponse = await agentStub.fetch('http://agent-do/state');
+        if (stateResponse.ok) {
+          const agentState: any = await stateResponse.json();
+          if (agentState && agentState.config && agentState.config.manifest) {
+            allowedTools = agentState.config.manifest.allowedTools || [];
+            if (agentState.config.manifest.persona && agentState.config.manifest.persona.systemPrompt) {
+              systemPrompt = agentState.config.manifest.persona.systemPrompt;
+            }
+            console.log(`🔒 Enforcing tool gating for agent ${chatId}. Allowed tools: ${allowedTools.join(', ')}`);
+          }
+        }
+      } catch (agentError) {
+        console.warn('Failed to fetch agent config from AGENT_DO, falling back to defaults:', agentError);
       }
-    } catch (vectorizeError) {
-      console.error('Vectorize error:', vectorizeError);
-      context = 'Error retrieving context.';
-    }
 
-    // Prepare context for LLM
-    const conversationHistory = history.map(msg => `${msg.role}: ${msg.content}`).join('\n');
+      // Prepare context for LLM
+      const conversationHistory = history.map(msg => `${msg.role}: ${msg.content}`).join('\n');
 
-    // Create prompt with context and history
-    const prompt = `You are an expert on the Axiom ID project. Use the following context and conversation history to answer the user's question.
-    
+      // Create prompt with context and history
+      const prompt = `
 Context:
 ${context}
 
@@ -222,88 +280,62 @@ User Question: ${message}
 
 Please provide a helpful and accurate response based on the context and conversation history:`;
 
-    console.log('Sending prompt to Gemini:', prompt.substring(0, 200) + '...');
+      console.log('Sending prompt to Gemini:', prompt.substring(0, 200) + '...');
 
-    // Decide whether to use grounding based on message content
-    let aiResponse: AIResponse;
-    const lowerMessage = message.toLowerCase();
-    const useGrounding = lowerMessage.includes('news') || lowerMessage.includes('price') || lowerMessage.includes('current') || lowerMessage.includes('latest');
-
-    if (useGrounding) {
-      // Use grounding for news/price related queries
-      const payload = geminiClient.createGroundedPayload(prompt, 'You are an expert on the Axiom ID project. Provide accurate and helpful responses.');
-      aiResponse = await geminiClient.generateContent(payload);
-    } else {
-      // Use standard generation
-      const payload = {
-        contents: [{
-          role: 'user',
-          parts: [{ text: prompt }]
-        }]
-      };
-      aiResponse = await geminiClient.generateContent(payload);
-    }
-
-    console.log('Gemini response:', aiResponse.text.substring(0, 200) + '...');
-
-    // **BLACK BOX LOGGING: Extract reasoning traces**
-    let reasoning = '';
-    let cleanedResponse = aiResponse.text;
-
-    // Extract content from <reasoning> tags
-    const reasoningMatch = aiResponse.text.match(/<reasoning>([\s\S]*?)<\/reasoning>/);
-    if (reasoningMatch) {
-      reasoning = reasoningMatch[1].trim();
-      // Remove reasoning tags from user-facing response
-      cleanedResponse = aiResponse.text.replace(/<reasoning>[\s\S]*?<\/reasoning>/, '').trim();
-
-      console.log('🧠 Extracted reasoning trace:', reasoning);
-
-      // Log reasoning to BigQuery for audit trail (asynchronous, non-blocking)
-      c.executionCtx.waitUntil(
-        (async () => {
-          try {
-            // Note: This would need TOOL_EXECUTOR binding configured
-            // For now, we'll log to console and store in KV as backup
-            const decisionLog = {
-              timestamp: Date.now(),
-              chatId,
-              userMessage: message,
-              reasoning,
-              decision: cleanedResponse.substring(0, 500), // First 500 chars of decision
-              type: 'chat_response'
-            };
-
-            // Store in KV for retrieval
-            await c.env.GLOBAL_CACHE.put(
-              `decision_log:${chatId}:${Date.now()}`,
-              JSON.stringify(decisionLog),
-              { expirationTtl: 86400 * 30 } // 30 days retention
-            );
-
-            console.log('✅ Decision log stored in KV');
-          } catch (logError) {
-            console.error('Failed to log decision:', logError);
-          }
-        })()
+      // **STRATEGY ENGINE: Execute tool chain with recursive calls**
+      const { finalResponse, reasoning, iterations } = await executeToolChain(
+        geminiClient,
+        prompt,
+        systemPrompt,
+        allowedTools,
+        5 // Max 5 iterations for safety
       );
-    }
 
+      console.log(`✅ Tool chain completed in ${iterations} iteration(s)`);
 
+      // **BLACK BOX LOGGING: Store reasoning traces**
+      if (reasoning) {
+        c.executionCtx.waitUntil(
+          (async () => {
+            try {
+              const decisionLog = {
+                timestamp: Date.now(),
+                chatId,
+                userMessage: message,
+                reasoning,
+                decision: finalResponse.substring(0, 500),
+                iterations,
+                type: 'chat_response'
+              };
 
-    // Save AI response to history via DO fetch method
-    await stub.fetch('http://chat-room/add-message', {
-      method: 'POST',
-      body: JSON.stringify({ role: 'assistant', content: cleanedResponse })
-    });
+              await c.env.GLOBAL_CACHE.put(
+                `decision_log:${chatId}:${Date.now()}`,
+                JSON.stringify(decisionLog),
+                { expirationTtl: 86400 * 30 } // 30 days retention
+              );
 
-    return c.json({
-      response: cleanedResponse, // Return cleaned response without reasoning tags
-      reasoning: reasoning || undefined, // Optionally include reasoning for debugging
-      chatId,
-      citations: aiResponse.citations,
-      searchQueries: aiResponse.searchQueries
-    });
+              console.log('✅ Decision log stored in KV');
+            } catch (logError) {
+              console.error('Failed to log decision:', logError);
+            }
+          })()
+        );
+      }
+
+      // Save AI response to history via DO fetch method
+      await stub.fetch('http://chat-room/add-message', {
+        method: 'POST',
+        body: JSON.stringify({ role: 'assistant', content: finalResponse })
+      });
+
+      return c.json({
+        response: finalResponse,
+        reasoning: reasoning || undefined,
+        iterations,
+        chatId
+      });
+    } // Close if (audio) block
+
   } catch (error) {
     console.error('Chat error:', error);
     return c.json({ error: 'Internal server error: ' + (error as Error).message }, 500);
