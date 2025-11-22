@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Shield, AlertTriangle, Terminal, Brain, Users, Activity } from 'lucide-react';
+import { Shield, AlertTriangle, Terminal, Brain, Users, Activity, Play } from 'lucide-react';
+import ConstitutionCheckModal from '@/components/common/ConstitutionCheckModal';
 
 interface ConstitutionStepProps {
     onNext: () => void;
@@ -9,6 +10,9 @@ interface ConstitutionStepProps {
 }
 
 const ConstitutionStep: React.FC<ConstitutionStepProps> = ({ onNext, onBack, setAgentData, agentData }) => {
+    const [showConstitutionCheck, setShowConstitutionCheck] = useState(false);
+    const [isConstitutionChecked, setIsConstitutionChecked] = useState(false);
+    
     // AIX DNA: Reasoning Protocol (formerly System Prompt)
     const [reasoningProtocol, setReasoningProtocol] = useState(agentData.reasoningProtocol ||
         `// Define your agent's decision-making flow here.
@@ -83,9 +87,18 @@ const ConstitutionStep: React.FC<ConstitutionStepProps> = ({ onNext, onBack, set
                             {reasoningProtocol.length} chars
                         </div>
                     </div>
-                    <p className="text-xs text-white/50 mt-2 font-rajdhani">
-                        * This protocol defines how the agent processes information and makes decisions.
-                    </p>
+                    <div className="flex items-center justify-between mt-4">
+                        <p className="text-xs text-white/50 font-rajdhani">
+                            * This protocol defines how the agent processes information and makes decisions.
+                        </p>
+                        <button
+                            onClick={() => setShowConstitutionCheck(true)}
+                            className="plasma-button px-4 py-2 text-xs flex items-center gap-2"
+                        >
+                            <Play className="w-3 h-3" />
+                            Run Constitution Check
+                        </button>
+                    </div>
                 </div>
 
                 {/* Right Column: Traits & Collaboration */}
@@ -181,18 +194,40 @@ const ConstitutionStep: React.FC<ConstitutionStepProps> = ({ onNext, onBack, set
                         </div>
                     </div>
 
-                    {/* Warning Box */}
-                    <div className="bg-axiom-red/10 border border-axiom-red/30 rounded-xl p-4 flex gap-3 items-start">
-                        <AlertTriangle className="w-6 h-6 text-axiom-red shrink-0" />
-                        <div>
-                            <h4 className="text-axiom-red font-bold font-orbitron text-sm mb-1">Governance Check</h4>
-                            <p className="text-xs text-white/70 font-rajdhani">
-                                Your AIX DNA configuration will be validated against the Zentix Governance Protocol v1.2 before minting.
-                            </p>
-                        </div>
+                    {/* Success/Warning Box */}
+                    <div className={`${isConstitutionChecked ? 'bg-axiom-success/10 border-axiom-success/30' : 'bg-axiom-red/10 border-axiom-red/30'} border rounded-xl p-4 flex gap-3 items-start`}>
+                        {isConstitutionChecked ? (
+                            <>
+                                <Shield className="w-6 h-6 text-axiom-success shrink-0" />
+                                <div>
+                                    <h4 className="text-axiom-success font-bold font-orbitron text-sm mb-1">Secured DNA ✓</h4>
+                                    <p className="text-xs text-white/70 font-rajdhani">
+                                        Your AIX DNA passed Zentix Governance Protocol v1.2 validation.
+                                    </p>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <AlertTriangle className="w-6 h-6 text-axiom-red shrink-0" />
+                                <div>
+                                    <h4 className="text-axiom-red font-bold font-orbitron text-sm mb-1">Governance Check</h4>
+                                    <p className="text-xs text-white/70 font-rajdhani">
+                                        Your AIX DNA configuration will be validated against the Zentix Governance Protocol v1.2 before minting.
+                                    </p>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
+
+            {/* Constitution Check Modal */}
+            <ConstitutionCheckModal
+                isOpen={showConstitutionCheck}
+                onClose={() => setShowConstitutionCheck(false)}
+                onSuccess={() => setIsConstitutionChecked(true)}
+                agentData={{ reasoningProtocol, traits: { riskTolerance, tone, postingFrequency }, collaborationLayer: collaborators }}
+            />
 
             {/* Navigation */}
             <div className="flex justify-between border-t border-white/10 pt-6 mt-8">

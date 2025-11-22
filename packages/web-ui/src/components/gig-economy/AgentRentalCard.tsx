@@ -38,7 +38,7 @@ const AgentRentalCard: React.FC<{ agent: RentalAgent }> = ({ agent }) => {
                 onSuccess={handlePaymentSuccess}
             />
 
-            <div className="glass-card p-5 rounded-2xl w-full transition-all duration-300 hover:shadow-[0_0_40px_rgba(157,78,221,0.3)] border-neon-purple/20 group relative overflow-hidden">
+            <div className="holographic-panel p-5 rounded-2xl w-full transition-all duration-300 hover:shadow-[0_0_40px_rgba(157,78,221,0.3)] border-neon-purple/20 group relative overflow-hidden">
 
                 {/* Hover Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
@@ -93,7 +93,7 @@ const AgentRentalCard: React.FC<{ agent: RentalAgent }> = ({ agent }) => {
                     <div className="flex justify-between items-center border-t border-white/10 pt-4">
                         <div className="flex flex-col">
                             <span className="text-[10px] text-white/40 font-rajdhani uppercase">Monthly Rate</span>
-                            <span className="text-xl font-orbitron text-cyber-cyan">
+                            <span className="text-xl font-orbitron text-cyber-cyan animate-pulse-slow">
                                 {agent.price} <span className="text-sm text-white/50">{agent.currency}</span>
                             </span>
                         </div>

@@ -15,11 +15,11 @@ const ExampleAgentCard: React.FC<{ agent: AgentData }> = ({ agent }) => {
     const isOnline = agent.status === 'ONLINE';
 
     return (
-        <div className={`glass-card p-6 w-full max-w-sm rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${isOnline ? 'border-cyber-cyan/50 hover:shadow-[0_0_35px_rgba(0,255,255,0.7)]' : ''}`}>
+        <div className={`holographic-panel p-6 w-full max-w-sm rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${isOnline ? 'border-cyber-cyan/50 hover:shadow-[0_0_35px_rgba(0,255,255,0.7)]' : ''}`}>
 
             {/* 3D Holographic Avatar Placeholder */}
-            <div className="h-24 bg-holo-blue/20 rounded-lg mb-4 flex items-center justify-center border border-holo-blue/50">
-                <span className="text-xl font-orbitron text-holo-blue">3D {agent.name.split(' ')[0]}</span>
+            <div className="h-24 mb-4 flex items-center justify-center">
+                <img src={`/agents/${agent.name.toLowerCase().replace(/\s+/g, '_')}_avatar.png`} alt={`${agent.name} avatar`} className="h-full object-cover rounded-lg" />
             </div>
 
             <div className="flex justify-between items-start mb-3">
@@ -47,7 +47,7 @@ const ExampleAgentCard: React.FC<{ agent: AgentData }> = ({ agent }) => {
                 ))}
             </div>
 
-            <button className="w-full py-3 bg-axiom-glow/10 text-axiom-glow font-orbitron border border-axiom-glow/50 rounded-lg hover:bg-axiom-glow/20 transition duration-200">
+            <button className="plasma-button w-full">
                 View Details &gt;
             </button>
 

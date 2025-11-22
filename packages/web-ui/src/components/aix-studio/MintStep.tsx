@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Dna, CheckCircle, Share2, Wallet, Code } from 'lucide-react';
+import { Dna, CheckCircle, Share2, Wallet, Code, Shield } from 'lucide-react';
 import { useWallet } from '@/contexts/WalletContext';
 import PaymentModal from '@/components/payments/PaymentModal';
+import DNATreePreview from '@/components/common/DNATreePreview';
 
 interface MintStepProps {
     agentData: any;
@@ -147,7 +148,10 @@ const MintStep: React.FC<MintStepProps> = ({ agentData, onBack }) => {
                 </div>
 
                 {/* Right: Minting Configuration */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="lg:col-span-2 space-y-6">
+
+                    {/* DNA Structure Preview */}
+                    <DNATreePreview agentData={agentData} />
                     {/* Royalty Settings */}
                     <div className="glass-card p-6">
                         <h3 className="text-xl font-orbitron text-white mb-4">Ownership & Royalties</h3>

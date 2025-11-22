@@ -48,7 +48,7 @@ export default function AgentCard({
   
   return (
     <motion.div
-      className="glass-panel p-6 h-full hover:border-primary/50 transition-all duration-300"
+      className="holographic-panel p-6 h-full hover:border-primary/50 transition-all duration-300"
       whileHover={{ y: -5 }}
       transition={{ type: "spring", stiffness: 300 }}
     >

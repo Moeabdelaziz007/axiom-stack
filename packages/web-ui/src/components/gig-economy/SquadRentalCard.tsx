@@ -35,7 +35,7 @@ const SquadRentalCard: React.FC<{ squad: SquadData }> = ({ squad }) => {
                 onSuccess={handlePaymentSuccess}
             />
 
-            <div className="glass-card p-6 rounded-2xl w-full transition-all duration-300 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] border-cyber-cyan/20 group relative overflow-hidden">
+            <div className="holographic-panel p-6 rounded-2xl w-full transition-all duration-300 hover:shadow-[0_0_40px_rgba(0,255,255,0.2)] border-cyber-cyan/20 group relative overflow-hidden">
 
                 {/* Hover Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-cyber-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>

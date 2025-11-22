@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, CreditCard, Wallet, Smartphone, ArrowRight, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useWallet } from '@/contexts/WalletContext';
+import DataTicker from '@/components/common/DataTicker';
 
 interface PaymentModalProps {
     isOpen: boolean;
@@ -74,6 +75,16 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, cu
 
                 {/* Content */}
                 <div className="p-6">
+
+                    {/* Data Ticker - Live Exchange Rate */}
+                    {currency !== 'USD' && (
+                        <DataTicker 
+                            fromCurrency="USD" 
+                            toCurrency="AXM" 
+                            baseAmount={1} 
+                            className="mb-6"
+                        />
+                    )}
 
                     {/* Order Summary */}
                     <div className="mb-8 p-4 bg-white/5 rounded-xl border border-white/10">

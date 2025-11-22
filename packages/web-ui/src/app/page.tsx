@@ -49,7 +49,7 @@ export default function CommandCenterDashboard() {
 
         {/* Stats Bar */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
-          <div className="glass-card p-6 text-center">
+          <div className="holographic-panel p-6 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Users className="w-5 h-5 text-cyber-cyan" />
               <span className="text-sm font-rajdhani text-gray-400">Total Agents</span>
@@ -57,7 +57,7 @@ export default function CommandCenterDashboard() {
             <p className="text-3xl font-orbitron font-bold text-white">12,405</p>
           </div>
 
-          <div className="glass-card p-6 text-center">
+          <div className="holographic-panel p-6 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <TrendingUp className="w-5 h-5 text-neon-purple" />
               <span className="text-sm font-rajdhani text-gray-400">Total Value</span>

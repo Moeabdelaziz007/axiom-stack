@@ -69,7 +69,7 @@ export default function HeliosChatPanel() {
 
             {/* Chat Window */}
             {isOpen && (
-                <div className="mb-4 w-80 md:w-96 glass-card border border-neon-purple/50 rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(189,0,255,0.2)] animate-fade-in-up flex flex-col">
+                <div className="mb-4 w-80 md:w-96 holographic-panel border border-neon-purple/50 overflow-hidden shadow-[0_0_50px_rgba(189,0,255,0.2)] animate-fade-in-up flex flex-col">
 
                     {/* Header */}
                     <div className="bg-neon-purple/10 p-4 border-b border-neon-purple/20 flex justify-between items-center">
@@ -136,7 +136,7 @@ export default function HeliosChatPanel() {
                             onChange={(e) => setInput(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                             placeholder="State your objective..."
-                            className="flex-grow bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-neon-purple focus:outline-none font-rajdhani placeholder:text-white/20"
+                            className="hud-input flex-grow text-white text-sm font-rajdhani placeholder:text-white/20"
                         />
                         <button
                             onClick={handleSend}
