@@ -15,11 +15,21 @@ import { BirdeyeClient } from './tools/birdeye';
 import { DexScreenerClient } from './tools/dexscreener';
 import { HeliusClient } from './tools/helius';
 import { ProductScraperClient, AffiliateClient } from './tools/affiliate';
+import { WhatsAppClient } from './tools/whatsapp';
+import { RagLiteTool, RagLiteEnv } from './tools/rag-lite';
 import { ShopifyClient } from './tools/shopify';
 import { StripeClient } from './tools/stripe';
+import { quantumTool } from './tools/quantum';
+
+// Environment interface
+interface Env extends RagLiteEnv {
+  // ... existing env vars
+  OPENAI_API_KEY: string;
+  // ...
+}
 
 // Initialize Hono app
-const app = new Hono();
+const app = new Hono<{ Bindings: Env }>();
 
 // Health check endpoint
 app.get('/', async (c: any) => {
@@ -1183,6 +1193,70 @@ app.post('/get-health-condition', async (c: any) => {
   } catch (error: any) {
     console.error('Error getting health condition data:', error);
     return c.json({ error: 'Failed to get health condition data: ' + error.message }, 500);
+  }
+});
+
+// --- RAG LITE ENDPOINTS ---
+
+/**
+ * Ingest text chunks for RAG
+ * Body: { chunks: string[], metadata: { businessId: string, ... } }
+ */
+app.post('/rag-ingest', async (c) => {
+  try {
+    const { chunks, metadata } = await c.req.json();
+
+    if (!chunks || !Array.isArray(chunks) || !metadata || !metadata.businessId) {
+      return c.json({ error: 'Invalid input. Requires chunks array and metadata.businessId' }, 400);
+    }
+
+    const ragTool = new RagLiteTool(c.env);
+    const result = await ragTool.ingest(chunks, metadata);
+
+    return c.json(result);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+/**
+ * Query RAG index
+ * Body: { query: string, businessId: string }
+ */
+app.post('/rag-query', async (c) => {
+  try {
+    const { query, businessId } = await c.req.json();
+
+    if (!query || !businessId) {
+      return c.json({ error: 'Invalid input. Requires query and businessId' }, 400);
+    }
+
+    const ragTool = new RagLiteTool(c.env);
+    const result = await ragTool.query(query, businessId);
+
+    return c.json(result);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// --- QUANTUM ENTROPY ENDPOINT ---
+app.post('/get-quantum-seed', async (c: any) => {
+  try {
+    const { length }: { length?: number } = await c.req.json();
+
+    console.log(`Generating quantum seed with length ${length || 16}`);
+
+    // Execute quantum tool
+    const result = await quantumTool.execute({ length: length || 16 });
+
+    return c.json(result);
+  } catch (error: any) {
+    console.error('Error generating quantum seed:', error);
+    return c.json({
+      error: 'Failed to generate quantum seed: ' + error.message,
+      fallback: true
+    }, 500);
   }
 });
 

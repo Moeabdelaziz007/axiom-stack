@@ -28,47 +28,58 @@ export const ConstitutionCheckModal: React.FC<ConstitutionCheckModalProps> = ({
       setStatus('scanning');
       setProgress(0);
 
-      // Simulate scanning progress
-      const interval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
+      const validateDNA = async () => {
+        try {
+          // Simulate scanning visual progress
+          for (let i = 0; i <= 80; i += 10) {
+            setProgress(i);
+            await new Promise(r => setTimeout(r, 100));
+          }
+
+          // Real Validation
+          const { validateAixDNA } = await import('@/lib/validators/AixValidator');
+          const result = await validateAixDNA(agentData);
+
+          setProgress(100);
+
+          if (result.isValid) {
             setStatus('success');
             setTimeout(() => {
               onSuccess();
               onClose();
             }, 2000);
-            return 100;
+          } else {
+            setStatus('error');
           }
-          return prev + 10;
-        });
-      }, 150);
+        } catch (e) {
+          console.error("Validation error", e);
+          setStatus('error');
+        }
+      };
 
-      return () => clearInterval(interval);
+      validateDNA();
     }
-  }, [isOpen, onSuccess, onClose]);
+  }, [isOpen, onSuccess, onClose, agentData]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-void/90 backdrop-blur-sm animate-fade-in">
       <div className="relative w-full max-w-lg holographic-panel p-8 border-2 border-cyber-cyan/50 overflow-hidden">
-        
+
         {/* Animated Background Grid */}
         <div className="absolute inset-0 grid-hud-overlay opacity-30 pointer-events-none"></div>
 
         {/* Content */}
         <div className="relative z-10">
           <div className="flex items-center justify-center mb-6">
-            <div className={`w-20 h-20 rounded-full flex items-center justify-center ${
-              status === 'scanning' ? 'bg-cyber-cyan/20 animate-pulse' :
+            <div className={`w-20 h-20 rounded-full flex items-center justify-center ${status === 'scanning' ? 'bg-cyber-cyan/20 animate-pulse' :
               status === 'success' ? 'bg-axiom-success/20' :
-              'bg-axiom-red/20'
-            } border-2 ${
-              status === 'scanning' ? 'border-cyber-cyan' :
-              status === 'success' ? 'border-axiom-success' :
-              'border-axiom-red'
-            } shadow-[0_0_30px_rgba(0,255,255,0.4)]`}>
+                'bg-axiom-red/20'
+              } border-2 ${status === 'scanning' ? 'border-cyber-cyan' :
+                status === 'success' ? 'border-axiom-success' :
+                  'border-axiom-red'
+              } shadow-[0_0_30px_rgba(0,255,255,0.4)]`}>
               {status === 'scanning' && <Loader2 className="w-10 h-10 text-cyber-cyan animate-spin" />}
               {status === 'success' && <CheckCircle className="w-10 h-10 text-axiom-success" />}
               {status === 'error' && <AlertTriangle className="w-10 h-10 text-axiom-red" />}
@@ -90,7 +101,7 @@ export const ConstitutionCheckModal: React.FC<ConstitutionCheckModalProps> = ({
           {/* Glow Progress Bar */}
           <div className="mb-6">
             <div className="h-3 bg-dark-void/50 rounded-full overflow-hidden border border-cyber-cyan/30">
-              <div 
+              <div
                 className="h-full bg-gradient-to-r from-cyber-cyan to-holo-blue transition-all duration-300 relative"
                 style={{ width: `${progress}%` }}
               >

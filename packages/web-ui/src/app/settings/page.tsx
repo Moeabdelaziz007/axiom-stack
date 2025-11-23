@@ -1,11 +1,10 @@
 'use client';
 
-import DashboardLayout from '@/components/DashboardLayout';
 import { Settings, Bell, Shield, Database, User, Palette } from 'lucide-react';
 
 export default function SettingsPage() {
   return (
-    <DashboardLayout>
+    <div className="p-6 space-y-6 min-h-screen animate-fade-in-up">
       <div className="mb-6">
         <h1 className="text-3xl font-display font-bold mb-2 text-glow">System Settings</h1>
         <p className="text-gray-400">Configure your Axiom Command Center</p>
@@ -29,8 +28,8 @@ export default function SettingsPage() {
                   <a
                     href="#"
                     className={`flex items-center p-3 rounded-lg transition-all duration-200 group ${item.active
-                        ? 'bg-axiom-cyan/10 text-axiom-cyan border border-axiom-cyan/30'
-                        : 'hover:bg-white/5 hover:border-white/20 border border-transparent'
+                      ? 'bg-axiom-cyan/10 text-axiom-cyan border border-axiom-cyan/30'
+                      : 'hover:bg-white/5 hover:border-white/20 border border-transparent'
                       }`}
                   >
                     <item.icon className={`w-5 h-5 mr-3 ${item.active ? 'text-axiom-cyan' : 'group-hover:text-axiom-cyan transition-colors'}`} />
@@ -144,6 +143,6 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

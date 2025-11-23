@@ -1,6 +1,5 @@
 'use client';
 
-import DashboardLayout from '@/components/DashboardLayout';
 import { BarChart, Activity, TrendingUp, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -23,12 +22,12 @@ export default function AnalyticsPage() {
   ];
 
   return (
-    <DashboardLayout>
+    <div className="p-6 space-y-6 min-h-screen animate-fade-in-up">
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">System Analytics</h1>
         <p className="text-gray-400">Performance metrics and system insights</p>
       </div>
-      
+
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {metrics.map((metric, index) => (
@@ -54,7 +53,7 @@ export default function AnalyticsPage() {
           </motion.div>
         ))}
       </div>
-      
+
       {/* Performance Chart */}
       <div className="glass-panel p-6 mb-6">
         <div className="flex justify-between items-center mb-6">
@@ -66,12 +65,12 @@ export default function AnalyticsPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="h-64 flex items-end space-x-2">
           {performanceData.map((data, index) => (
             <div key={index} className="flex flex-col items-center flex-1">
               <div className="text-xs text-gray-400 mb-2">{data.hour}</div>
-              <div 
+              <div
                 className="w-full bg-gradient-to-t from-axiom-cyan to-axiom-purple rounded-t-lg min-h-0"
                 style={{ height: `${(data.tasks / 350) * 100}%` }}
               ></div>
@@ -80,7 +79,7 @@ export default function AnalyticsPage() {
           ))}
         </div>
       </div>
-      
+
       {/* System Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="glass-panel p-6">
@@ -93,7 +92,7 @@ export default function AnalyticsPage() {
             <div className="bg-axiom-cyan h-2 rounded-full" style={{ width: '72%' }}></div>
           </div>
         </div>
-        
+
         <div className="glass-panel p-6">
           <div className="flex items-center mb-4">
             <CheckCircle className="w-8 h-8 text-axiom-purple mr-3" />
@@ -104,7 +103,7 @@ export default function AnalyticsPage() {
             <div className="bg-axiom-purple h-2 rounded-full" style={{ width: '96.8%' }}></div>
           </div>
         </div>
-        
+
         <div className="glass-panel p-6">
           <div className="flex items-center mb-4">
             <Activity className="w-8 h-8 text-axiom-red mr-3" />
@@ -114,6 +113,6 @@ export default function AnalyticsPage() {
           <div className="text-sm text-gray-400">50% utilization</div>
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

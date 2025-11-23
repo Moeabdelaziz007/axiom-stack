@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import TemplateSelector from '@/components/aix-studio/TemplateSelector';
 import IdentityStep from '@/components/aix-studio/IdentityStep';
-import ToolboxStep from '@/components/aix-studio/ToolboxStep';
+import SkillsStep from '@/components/aix-studio/SkillsStep';
 import ConstitutionStep from '@/components/aix-studio/ConstitutionStep';
 import MintStep from '@/components/aix-studio/MintStep';
 
 const steps = [
-    "Template", "Identity", "Toolbox", "Constitution", "Mint & Deploy"
+    "Template", "Identity", "Skills", "Constitution", "Mint & Deploy"
 ];
 
 export default function AIXStudioPage() {
@@ -22,7 +22,7 @@ export default function AIXStudioPage() {
             case 2:
                 return <IdentityStep onNext={() => setCurrentStep(3)} onBack={() => setCurrentStep(1)} setAgentData={setAgentData} agentData={agentData} />;
             case 3:
-                return <ToolboxStep onNext={() => setCurrentStep(4)} onBack={() => setCurrentStep(2)} setAgentData={setAgentData} agentData={agentData} />;
+                return <SkillsStep onNext={() => setCurrentStep(4)} onBack={() => setCurrentStep(2)} setAgentData={setAgentData} agentData={agentData} />;
             case 4:
                 return <ConstitutionStep onNext={() => setCurrentStep(5)} onBack={() => setCurrentStep(3)} setAgentData={setAgentData} agentData={agentData} />;
             case 5:

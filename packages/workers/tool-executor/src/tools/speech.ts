@@ -26,49 +26,45 @@ export class SpeechClient {
    * @returns Promise<string> - Transcribed text
    */
   async transcribe(audioBase64: string): Promise<string> {
-    {
-      method: 'POST',
+    try {
+      const response = await fetch(`https://speech.googleapis.com/v1/speech:recognize?key=${this.apiKey}`, {
+        method: 'POST',
         headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        config: {
-          encoding: 'LINEAR16',
-          sampleRateHertz: 16000,
-          languageCode: 'en-US',
-          alternativeLanguageCodes: ['es-ES', 'fr-FR'],
-          maxAlternatives: 1,
-          profanityFilter: false,
-          speechContexts: [],
-          enableWordTimeOffsets: false,
-          enableWordConfidence: false,
-          enableAutomaticPunctuation: true,
-          enableSpeakerDiarization: false,
-          model: 'command_and_search', // Optimized for short commands
-          useEnhanced: true
+          'Content-Type': 'application/json'
         },
-        audio: {
-          content: audioData
-        }
-      })
+        body: JSON.stringify({
+          config: {
+            encoding: 'LINEAR16',
+            sampleRateHertz: 16000,
+            languageCode: 'en-US',
+            alternativeLanguageCodes: ['es-ES', 'fr-FR'],
+            maxAlternatives: 1,
+            profanityFilter: false,
+            enableAutomaticPunctuation: true,
+            model: 'command_and_search',
+            useEnhanced: true
+          },
+          audio: {
+            content: audioBase64
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Speech API error: ${errorText}`);
+      }
+
+      const result: SpeechRecognitionResponse = await response.json();
+
+      if (result.results && result.results.length > 0 && result.results[0].alternatives && result.results[0].alternatives.length > 0) {
+        return result.results[0].alternatives[0].transcript;
+      }
+
+      return '';
+    } catch (error) {
+      console.error('Error transcribing audio:', error);
+      throw error;
     }
-      );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Speech API error: ${errorText}`);
-    }
-
-    const result: SpeechRecognitionResponse = await response.json();
-
-    if (result.results && result.results.length > 0 && result.results[0].alternatives && result.results[0].alternatives.length > 0) {
-      return result.results[0].alternatives[0].transcript;
-    }
-
-    return ''; // Return empty string if no transcription
-  } catch(error) {
-    console.error('Error transcribing audio:', error);
-    throw error;
   }
-}
 }

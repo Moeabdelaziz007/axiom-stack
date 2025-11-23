@@ -26,7 +26,7 @@
 /* Global Dark Background with Circuit Pattern */
 body {
   background: var(--dark-void);
-  background-image: 
+  background-image:
     radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(157, 78, 221, 0.03) 0%, transparent 50%),
     repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 255, 0.03) 2px, rgba(0, 255, 255, 0.03) 4px),
@@ -45,7 +45,7 @@ body {
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid var(--neon-purple-fade);
-  box-shadow: 
+  box-shadow:
     0 4px 60px rgba(0, 255, 255, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -71,7 +71,7 @@ body {
 
 .holographic-panel:hover {
   transform: translateZ(8px) translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 8px 80px rgba(0, 255, 255, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
   border-color: rgba(0, 255, 255, 0.4);
@@ -87,7 +87,7 @@ body {
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid var(--neon-purple-fade);
-  box-shadow: 
+  box-shadow:
     0 4px 60px rgba(0, 255, 255, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -110,7 +110,7 @@ body {
 
 .neon-text {
   color: var(--cyber-cyan);
-  text-shadow: 
+  text-shadow:
     0 0 5px var(--cyber-cyan),
     0 0 10px var(--cyber-cyan),
     0 0 20px var(--cyber-cyan),
@@ -119,7 +119,7 @@ body {
 
 .neon-purple-text {
   color: var(--neon-purple);
-  text-shadow: 
+  text-shadow:
     0 0 5px var(--neon-purple),
     0 0 10px var(--neon-purple),
     0 0 20px rgba(157, 78, 221, 0.6);
@@ -127,7 +127,7 @@ body {
 
 .glow-border {
   border: 2px solid var(--cyber-cyan);
-  box-shadow: 
+  box-shadow:
     0 0 15px var(--cyber-cyan),
     inset 0 0 15px rgba(0, 255, 255, 0.2);
 }
@@ -137,19 +137,24 @@ body {
    ============================================ */
 
 .holographic-gradient {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 255, 255, 0.15) 0%,
-    rgba(157, 78, 221, 0.15) 50%,
-    rgba(79, 172, 254, 0.15) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(0, 255, 255, 0.15) 0%,
+      rgba(157, 78, 221, 0.15) 50%,
+      rgba(79, 172, 254, 0.15) 100%);
   background-size: 200% 200%;
   animation: holo-shift 4s ease-in-out infinite;
 }
 
 @keyframes holo-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .holographic-border {
@@ -165,13 +170,11 @@ body {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(
-    45deg,
-    var(--cyber-cyan),
-    var(--neon-purple),
-    var(--holo-blue),
-    var(--cyber-cyan)
-  );
+  background: linear-gradient(45deg,
+      var(--cyber-cyan),
+      var(--neon-purple),
+      var(--holo-blue),
+      var(--cyber-cyan));
   border-radius: inherit;
   z-index: -1;
   animation: border-rotate 4s linear infinite;
@@ -179,9 +182,17 @@ body {
 }
 
 @keyframes border-rotate {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* ============================================
@@ -215,7 +226,7 @@ body {
 
 .plasma-button:hover {
   border-color: var(--holo-cyan-pulse);
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(0, 240, 255, 0.4),
     inset 0 0 30px rgba(0, 240, 255, 0.2);
   transform: translateY(-2px);
@@ -284,11 +295,32 @@ body {
 }
 
 @keyframes glitch-entry {
-  0%, 100% { transform: translateX(0); opacity: 1; }
-  20% { transform: translateX(-3px); opacity: 0.8; }
-  40% { transform: translateX(3px); opacity: 0.9; }
-  60% { transform: translateX(-2px); opacity: 0.95; }
-  80% { transform: translateX(1px); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  20% {
+    transform: translateX(-3px);
+    opacity: 0.8;
+  }
+
+  40% {
+    transform: translateX(3px);
+    opacity: 0.9;
+  }
+
+  60% {
+    transform: translateX(-2px);
+    opacity: 0.95;
+  }
+
+  80% {
+    transform: translateX(1px);
+    opacity: 1;
+  }
 }
 
 /* ============================================
@@ -301,17 +333,22 @@ body {
 }
 
 @keyframes float-rotate {
-  0%, 100% { 
-    transform: translateY(0) rotate(0deg); 
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
   }
-  25% { 
-    transform: translateY(-8px) rotate(2deg); 
+
+  25% {
+    transform: translateY(-8px) rotate(2deg);
   }
-  50% { 
-    transform: translateY(-12px) rotate(0deg); 
+
+  50% {
+    transform: translateY(-12px) rotate(0deg);
   }
-  75% { 
-    transform: translateY(-8px) rotate(-2deg); 
+
+  75% {
+    transform: translateY(-8px) rotate(-2deg);
   }
 }
 
@@ -328,11 +365,14 @@ body {
 }
 
 @keyframes ring-pulse {
-  0%, 100% { 
+
+  0%,
+  100% {
     opacity: 0.6;
     transform: translateX(-50%) scale(1);
   }
-  50% { 
+
+  50% {
     opacity: 1;
     transform: translateX(-50%) scale(1.1);
   }
@@ -353,11 +393,14 @@ body {
 }
 
 @keyframes pulse-online {
-  0%, 100% { 
+
+  0%,
+  100% {
     opacity: 1;
     box-shadow: 0 0 12px #00FF94;
   }
-  50% { 
+
+  50% {
     opacity: 0.6;
     box-shadow: 0 0 20px #00FF94;
   }
@@ -413,7 +456,7 @@ body {
 }
 
 .grid-hud-overlay {
-  background-image: 
+  background-image:
     repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0, 255, 255, 0.05) 20px, rgba(0, 255, 255, 0.05) 21px),
     repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(0, 255, 255, 0.05) 20px, rgba(0, 255, 255, 0.05) 21px);
 }
@@ -430,12 +473,140 @@ body {
 }
 
 @keyframes pulse-fast {
-  0%, 100% { 
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
-  50% { 
+
+  50% {
     opacity: 0.4;
     transform: scale(1.3);
   }
+}
+
+/* ============================================
+   BENTO GRID & ADVANCED DASHBOARD STYLES
+   ============================================ */
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto;
+  gap: 1.5rem;
+}
+
+.bento-card {
+  background: rgba(18, 25, 30, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.bento-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(0, 255, 255, 0.1);
+  border-color: rgba(0, 255, 255, 0.3);
+}
+
+.bento-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.06),
+      transparent 40%);
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.bento-card:hover::after {
+  opacity: 1;
+}
+
+/* Span Utilities */
+.col-span-1 {
+  grid-column: span 1;
+}
+
+.col-span-2 {
+  grid-column: span 2;
+}
+
+.col-span-3 {
+  grid-column: span 3;
+}
+
+.col-span-4 {
+  grid-column: span 4;
+}
+
+.row-span-2 {
+  grid-row: span 2;
+}
+
+/* Text Gradients */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-silver {
+  background: linear-gradient(135deg, #E0E0E0 0%, #A0A0A0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 6s ease-in-out 3s infinite;
+}
+
+/* Background Effects */
+.holographic-grid-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
 }

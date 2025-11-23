@@ -58,8 +58,26 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, cu
         }
     };
 
-    const cryptoAmount = currency === 'AXM' ? amount : (amount / 150).toFixed(4); // Mock conversion
+    const [cryptoAmount, setCryptoAmount] = useState<string>('0');
     const cryptoSymbol = currency === 'AXM' ? 'AXM' : 'SOL';
+
+    useEffect(() => {
+        const fetchRate = async () => {
+            if (currency === 'AXM') {
+                setCryptoAmount(amount.toString());
+                return;
+            }
+            try {
+                const { convertFromUSD } = await import('@/lib/api/exchangeApi');
+                const result = await convertFromUSD(amount, cryptoSymbol);
+                setCryptoAmount(result.amount.toFixed(4));
+            } catch (e) {
+                console.error("Conversion failed", e);
+                setCryptoAmount((amount / 150).toFixed(4)); // Fallback
+            }
+        };
+        fetchRate();
+    }, [amount, currency, cryptoSymbol]);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-void/80 backdrop-blur-sm animate-fade-in">
@@ -78,10 +96,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, cu
 
                     {/* Data Ticker - Live Exchange Rate */}
                     {currency !== 'USD' && (
-                        <DataTicker 
-                            fromCurrency="USD" 
-                            toCurrency="AXM" 
-                            baseAmount={1} 
+                        <DataTicker
+                            fromCurrency="USD"
+                            toCurrency="AXM"
+                            baseAmount={1}
                             className="mb-6"
                         />
                     )}
@@ -104,8 +122,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, cu
                             <button
                                 onClick={() => setMethod('CRYPTO')}
                                 className={`w-full p-4 rounded-xl border flex items-center gap-4 transition-all ${method === 'CRYPTO'
-                                        ? 'bg-cyber-cyan/10 border-cyber-cyan shadow-glow-cyan'
-                                        : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                    ? 'bg-cyber-cyan/10 border-cyber-cyan shadow-glow-cyan'
+                                    : 'bg-white/5 border-white/10 hover:bg-white/10'
                                     }`}
                             >
                                 <div className={`p-2 rounded-lg ${method === 'CRYPTO' ? 'bg-cyber-cyan text-dark-void' : 'bg-white/10 text-white'}`}>
@@ -121,8 +139,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, cu
                             <button
                                 onClick={() => setMethod('CARD')}
                                 className={`w-full p-4 rounded-xl border flex items-center gap-4 transition-all ${method === 'CARD'
-                                        ? 'bg-neon-purple/10 border-neon-purple shadow-glow-purple'
-                                        : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                    ? 'bg-neon-purple/10 border-neon-purple shadow-glow-purple'
+                                    : 'bg-white/5 border-white/10 hover:bg-white/10'
                                     }`}
                             >
                                 <div className={`p-2 rounded-lg ${method === 'CARD' ? 'bg-neon-purple text-white' : 'bg-white/10 text-white'}`}>
@@ -139,8 +157,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, cu
                                 <button
                                     onClick={() => setMethod('PAYPAL')}
                                     className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${method === 'PAYPAL'
-                                            ? 'bg-holo-blue/10 border-holo-blue shadow-glow-blue'
-                                            : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                        ? 'bg-holo-blue/10 border-holo-blue shadow-glow-blue'
+                                        : 'bg-white/5 border-white/10 hover:bg-white/10'
                                         }`}
                                 >
                                     <span className="font-bold text-white font-orbitron">PayPal</span>
@@ -148,8 +166,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, amount, cu
                                 <button
                                     onClick={() => setMethod('GOOGLE_PAY')}
                                     className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${method === 'GOOGLE_PAY'
-                                            ? 'bg-white/20 border-white shadow-glow-white'
-                                            : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                        ? 'bg-white/20 border-white shadow-glow-white'
+                                        : 'bg-white/5 border-white/10 hover:bg-white/10'
                                         }`}
                                 >
                                     <span className="font-bold text-white font-orbitron">GPay</span>

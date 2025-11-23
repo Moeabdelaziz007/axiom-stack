@@ -59,11 +59,21 @@ const MintStep: React.FC<MintStepProps> = ({ agentData, onBack }) => {
         console.log("🧬 GENERATED AIX DNA:", JSON.stringify(finalAIXDNA, null, 2));
         setMintedDNA(finalAIXDNA);
 
-        // Simulate minting process (IPFS upload + Blockchain interaction)
-        setTimeout(() => {
+        // Upload to IPFS
+        try {
+            const { uploadToIPFS } = await import('@/lib/ipfs');
+            const result = await uploadToIPFS(finalAIXDNA);
+            console.log('IPFS Upload Result:', result);
+
+            // In a real app, we would now call the Solana contract with result.url
+
             setIsMinting(false);
             setIsMinted(true);
-        }, 3000);
+        } catch (error) {
+            console.error('Minting failed:', error);
+            setIsMinting(false);
+            // Handle error state
+        }
     };
 
     if (isMinted) {

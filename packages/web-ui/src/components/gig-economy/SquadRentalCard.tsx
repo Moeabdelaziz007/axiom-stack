@@ -57,24 +57,65 @@ const SquadRentalCard: React.FC<{ squad: SquadData }> = ({ squad }) => {
 
                     <p className="text-sm text-white/60 mb-6 font-rajdhani min-h-[40px]">{squad.objective}</p>
 
-                    {/* Squad Members */}
-                    <div className="mb-6 bg-dark-void/30 p-4 rounded-xl border border-white/5">
-                        <h4 className="text-xs text-white/40 font-bold mb-3 uppercase tracking-wider font-orbitron">Active Agents</h4>
-                        <div className="space-y-2">
-                            {squad.members.map((member, index) => (
-                                <div key={index} className="flex items-center gap-3 text-sm">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-axiom-success shadow-[0_0_5px_#00ff94]"></div>
-                                    <span className="text-white font-rajdhani">{member.name}</span>
-                                    <span className="text-white/30 text-xs ml-auto">{member.role}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    {/* HCAN Orbit Visualization */}
+                    <div className="mb-6 bg-dark-void/30 h-64 rounded-xl border border-white/5 relative overflow-hidden flex items-center justify-center group/orbit">
+                        <div className="absolute inset-0 grid-background opacity-10"></div>
 
-                    {/* Quantum Sync Indicator */}
-                    <div className="flex items-center gap-2 text-xs text-holo-blue mb-6 bg-holo-blue/5 p-2 rounded-lg border border-holo-blue/20">
-                        <Activity className="w-4 h-4 animate-pulse" />
-                        <span className="font-mono">Quantum Synchronizer Active</span>
+                        {/* Security Badge */}
+                        <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2 py-1 rounded bg-axiom-success/10 border border-axiom-success/30 backdrop-blur-sm">
+                            <Shield className="w-3 h-3 text-axiom-success" />
+                            <span className="text-[10px] font-orbitron text-axiom-success tracking-wider">TOPOLOGICALLY SECURED</span>
+                        </div>
+
+                        {/* Orbital Rings */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="w-48 h-48 rounded-full border border-white/5 animate-[spin_10s_linear_infinite]"></div>
+                            <div className="w-32 h-32 rounded-full border border-cyber-cyan/10 animate-[spin_15s_linear_infinite_reverse]"></div>
+                        </div>
+
+                        {/* Layer 1: Coordinator (Center) */}
+                        <div className="relative z-10 flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-neon-purple/20 border-2 border-neon-purple shadow-[0_0_20px_rgba(188,19,254,0.4)] flex items-center justify-center mb-2 relative">
+                                <div className="absolute inset-0 rounded-full bg-neon-purple/10 animate-pulse"></div>
+                                <Users className="w-8 h-8 text-neon-purple" />
+                                {/* Coordinator Badge */}
+                                <div className="absolute -bottom-2 px-2 py-0.5 bg-neon-purple text-black text-[9px] font-bold rounded-full font-orbitron">
+                                    NEXUS
+                                </div>
+                            </div>
+                            <span className="text-xs font-rajdhani text-white font-bold">
+                                {squad.members.find(m => m.role.includes('Lead') || m.role.includes('Manager'))?.name || 'Coordinator'}
+                            </span>
+                            <span className="text-[9px] text-neon-purple/80 font-mono">Layer 1</span>
+                        </div>
+
+                        {/* Layer 0: Workers (Orbiting) */}
+                        {squad.members.filter(m => !m.role.includes('Lead') && !m.role.includes('Manager')).map((member, idx, arr) => {
+                            const angle = (idx / arr.length) * 2 * Math.PI;
+                            const radius = 80; // Distance from center
+                            const x = Math.cos(angle) * radius;
+                            const y = Math.sin(angle) * radius;
+
+                            return (
+                                <div
+                                    key={idx}
+                                    className="absolute w-10 h-10 flex items-center justify-center transition-all duration-500 hover:scale-110 z-10"
+                                    style={{
+                                        transform: `translate(${x}px, ${y}px)`,
+                                    }}
+                                >
+                                    <div className="relative group/worker">
+                                        <div className="w-8 h-8 rounded-full bg-axiom-success/20 border border-axiom-success shadow-[0_0_10px_rgba(0,255,148,0.3)] flex items-center justify-center">
+                                            <div className="w-2 h-2 rounded-full bg-axiom-success"></div>
+                                        </div>
+                                        {/* Tooltip */}
+                                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/80 border border-white/10 px-2 py-1 rounded text-[9px] text-white opacity-0 group-hover/worker:opacity-100 transition-opacity pointer-events-none">
+                                            {member.name}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
 
                     {/* Price and Action */}

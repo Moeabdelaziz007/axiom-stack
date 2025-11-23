@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
-const availableTools = {
-    'Finance & Trading': ['Binance', 'Bybit', 'Phantom', 'Aave', 'Uniswap'],
-    'Social Media': ['Twitter/X', 'Instagram', 'LinkedIn', 'TikTok'],
-    'Content Generation': ['GPT-4', 'DALL-E', 'Midjourney', 'Video APIs'],
-    'Travel & Booking': ['Booking.com', 'Google Flights', 'Maps', 'TripAdvisor'],
-    'Communication': ['Email', 'SMS', 'Slack', 'Discord'],
-};
+// Dynamically generate available tools from the ADK ToolRegistry
+import { ToolRegistry } from '@/lib/ToolRegistry';
+
+// Convert the registry into a category -> tool name map
+const availableTools = ToolRegistry.reduce((acc, entry) => {
+    const cat = entry.category;
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(entry.toolName);
+    return acc;
+}, {} as Record<string, string[]>);
+
 
 interface ToolboxStepProps {
     onNext: () => void;

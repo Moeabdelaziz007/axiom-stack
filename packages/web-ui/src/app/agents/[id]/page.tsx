@@ -3,6 +3,8 @@ import { AgentWallet } from '@/components/agents/AgentWallet';
 import { ChainLogs } from '@/components/terminal/ChainLogs';
 import { ArrowLeft, Bot, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import VoiceInteraction from '@/components/voice/VoiceInteraction';
+import { useAgentLogic } from '@/hooks/useAgentLogic';
 
 // Mock agent data - would come from API
 interface Agent {
@@ -38,6 +40,13 @@ export default function AgentDetailPage({ params }: { params: { id: string } }) 
 
     // In production, fetch agent data from API
     const agent = MOCK_AGENT;
+
+    // Voice Engine Logic
+    const { sendMessage, lastResponse, isThinking } = useAgentLogic();
+
+    const handleVoiceInput = async (text: string) => {
+        await sendMessage(text);
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-6">
@@ -83,79 +92,46 @@ export default function AgentDetailPage({ params }: { params: { id: string } }) 
                 </div>
             </div>
 
+            {/* Voice Interaction Section (The "Natik" Engine) */}
+            <div className="mb-8 flex flex-col items-center justify-center py-12 glass-panel rounded-2xl border-axiom-cyan/20 bg-gradient-to-b from-gray-900/80 to-black/80">
+                <h2 className="text-3xl font-bold text-white mb-2 font-rajdhani">
+                    وكيل "موعد"
+                </h2>
+                <p className="text-gray-400 mb-8 font-rajdhani">
+                    اضغط الزر وتحدث لحجز موعدك
+                </p>
+
+                <div className="scale-125 transform transition-transform hover:scale-130">
+                    <VoiceInteraction
+                        onTranscript={handleVoiceInput}
+                        isProcessing={isThinking}
+                        isArabic={true}
+                        responseToSpeak={lastResponse}
+                    />
+                </div>
+
+                {/* Text Response Display */}
+                {lastResponse && (
+                    <div className="mt-12 p-6 bg-white/5 rounded-xl border border-white/10 max-w-lg text-center backdrop-blur-md animate-in fade-in slide-in-from-bottom-4">
+                        <p className="text-xl text-axiom-cyan leading-relaxed font-rajdhani" dir="rtl">
+                            {lastResponse}
+                        </p>
+                    </div>
+                )}
+            </div>
+
             {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 opacity-50 hover:opacity-100 transition-opacity duration-500">
                 {/* Left Column: Activity & Stats */}
                 <div className="lg:col-span-8 space-y-6">
                     {/* On-Chain Logs */}
                     <ChainLogs agentAddress={agent.walletAddress} />
-
-                    {/* Agent Stats */}
-                    <div className="glass-panel rounded-xl p-6">
-                        <h3 className="text-lg font-display text-white mb-4">Performance Stats</h3>
-                        <div className="grid grid-cols-3 gap-4">
-                            <div className="text-center p-4 rounded-lg bg-gray-900/30">
-                                <p className="text-2xl font-mono font-bold text-axiom-cyan">$0.00</p>
-                                <p className="text-xs text-gray-500 mt-1">Total PnL</p>
-                            </div>
-                            <div className="text-center p-4 rounded-lg bg-gray-900/30">
-                                <p className="text-2xl font-mono font-bold text-white">0</p>
-                                <p className="text-xs text-gray-500 mt-1">Trades</p>
-                            </div>
-                            <div className="text-center p-4 rounded-lg bg-gray-900/30">
-                                <p className="text-2xl font-mono font-bold text-axiom-purple">0%</p>
-                                <p className="text-xs text-gray-500 mt-1">Win Rate</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Right Column: Wallet & Controls */}
                 <div className="lg:col-span-4 space-y-6">
                     {/* Agent Wallet */}
                     <AgentWallet agentAddress={agent.walletAddress} />
-
-                    {/* Agent Controls */}
-                    <div className="glass-panel rounded-xl p-6">
-                        <h3 className="text-lg font-display text-white mb-4">Controls</h3>
-                        <div className="space-y-3">
-                            <button className="w-full px-4 py-2 rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 transition-colors font-semibold">
-                                Start Trading
-                            </button>
-                            <button className="w-full px-4 py-2 rounded-lg bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 transition-colors">
-                                Pause Agent
-                            </button>
-                            <button className="w-full px-4 py-2 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors">
-                                Emergency Stop
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Agent Metadata */}
-                    <div className="glass-panel rounded-xl p-6">
-                        <h3 className="text-lg font-display text-white mb-4">Details</h3>
-                        <div className="space-y-3">
-                            <div>
-                                <p className="text-xs text-gray-500 mb-1">Created</p>
-                                <p className="text-sm text-gray-300 font-mono">
-                                    {new Date(agent.createdAt).toLocaleDateString()}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-500 mb-1">Agent ID</p>
-                                <p className="text-sm text-gray-300 font-mono truncate">
-                                    {agent.id}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-500 mb-1">Status</p>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-axiom-success animate-pulse" />
-                                    <span className="text-sm text-axiom-success">Active</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

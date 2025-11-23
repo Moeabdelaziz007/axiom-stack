@@ -10,21 +10,21 @@ const templates = [
     {
         id: 'content-creator',
         name: 'Content Creator AI',
-        role: 'Social Media & Content Strategist',
+        role: 'Content Strategy & Social Media',
         description: 'Generates engaging content for social media, blogs, and video scripts',
         icon: Sparkles,
         color: 'cyber-cyan',
-        tools: ['Twitter', 'Instagram', 'GPT-4', 'DALL-E'],
+        tools: ['YouTube API', 'NotebookLLM', 'Imagen 3', 'Gemini 1.5 Pro'],
         riskLevel: 30
     },
     {
         id: 'defi-trader',
         name: 'DeFi Trader AI',
-        role: 'Crypto Trading + Flash Loans',
+        role: 'Crypto Trading & Flash Loans',
         description: 'Executes crypto trades and flash loan arbitrage strategies',
         icon: Zap,
         color: 'neon-purple',
-        tools: ['Binance', 'Phantom', 'Aave', 'Uniswap'],
+        tools: ['Binance', 'Phantom', 'Aave'],
         riskLevel: 80
     },
     {
@@ -34,7 +34,7 @@ const templates = [
         description: 'Plans itineraries, books flights, and manages travel logistics',
         icon: Globe,
         color: 'holo-blue',
-        tools: ['Booking.com', 'Google Flights', 'Maps'],
+        tools: ['Open-Meteo', 'ExchangeRate-API', 'Google Flights', 'Maps'],
         riskLevel: 20
     }
 ];

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Search, Filter, TrendingUp, Users, DollarSign, Layers } from 'lucide-react';
 import AgentRentalCard from '@/components/gig-economy/AgentRentalCard';
 import SquadRentalCard from '@/components/gig-economy/SquadRentalCard';
+import SkillsStore from '@/components/gig-economy/SkillsStore';
 
 // Sample Data for the marketplace
 const rentalAgents = [
@@ -168,45 +169,6 @@ export default function GigEconomyPage() {
                 <h1 className="text-4xl font-orbitron font-bold text-gradient-cyber mb-2">
                     GIG ECONOMY
                 </h1>
-                <p className="text-white/60 font-rajdhani max-w-2xl">
-                    Rent specialized AI agents or synchronized squads to execute tasks and generate passive income.
-                </p>
-            </div>
-
-            {/* Market Stats Header */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <StatItem label="Market Cap" value="$8.7 B" icon={TrendingUp} color="cyber-cyan" />
-                <StatItem label="Active Agents" value="12,405" icon={Users} color="neon-purple" />
-                <StatItem label="Total Value Locked" value="$2.1 B" icon={DollarSign} color="holo-blue" />
-            </div>
-
-            {/* View Mode Tabs (Agents vs Squads) */}
-            <div className="flex gap-6 mb-6 border-b border-white/10">
-                <button
-                    onClick={() => setViewMode('agents')}
-                    className={`pb-4 px-2 text-lg font-orbitron transition-all relative ${viewMode === 'agents' ? 'text-cyber-cyan' : 'text-white/40 hover:text-white'}`}
-                >
-                    <div className="flex items-center gap-2">
-                        <Users className="w-5 h-5" />
-                        Individual Agents
-                    </div>
-                    {viewMode === 'agents' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-cyber-cyan shadow-[0_0_10px_#00f0ff]"></div>}
-                </button>
-                <button
-                    onClick={() => setViewMode('squads')}
-                    className={`pb-4 px-2 text-lg font-orbitron transition-all relative ${viewMode === 'squads' ? 'text-holo-blue' : 'text-white/40 hover:text-white'}`}
-                >
-                    <div className="flex items-center gap-2">
-                        <Layers className="w-5 h-5" />
-                        Squad Mode (Quantum Sync)
-                    </div>
-                    {viewMode === 'squads' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-holo-blue shadow-[0_0_10px_#00f0ff]"></div>}
-                </button>
-            </div>
-
-            {/* Search and Filter Bar */}
-            <div className="glass-panel p-4 rounded-xl mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
-
                 {/* Search Input */}
                 <div className="relative w-full md:w-96">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />

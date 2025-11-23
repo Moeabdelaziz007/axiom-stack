@@ -33,10 +33,10 @@ export const AgentCard: React.FC<AgentCardProps> = ({ agent, onClick }) => {
 
     return (
         <motion.div
-            whileHover={{ scale: 1.02, borderColor: 'rgba(6, 182, 212, 0.5)' }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onClick}
-            className="bg-axiom-dark border border-gray-800 rounded-xl p-5 cursor-pointer transition-colors relative overflow-hidden group"
+            className="holographic-panel p-5 cursor-pointer group"
         >
             {/* Background glow effect */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-axiom-cyan/5 rounded-full blur-3xl group-hover:bg-axiom-cyan/10 transition-all duration-500" />

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Shield, AlertTriangle, Terminal, Brain, Users, Activity, Play } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Shield, AlertTriangle, Terminal, Brain, Users, Activity, Play, Sparkles } from 'lucide-react';
 import ConstitutionCheckModal from '@/components/common/ConstitutionCheckModal';
+import { AxiomSkills } from '@/lib/SkillsRegistry';
 
 interface ConstitutionStepProps {
     onNext: () => void;
@@ -12,14 +13,27 @@ interface ConstitutionStepProps {
 const ConstitutionStep: React.FC<ConstitutionStepProps> = ({ onNext, onBack, setAgentData, agentData }) => {
     const [showConstitutionCheck, setShowConstitutionCheck] = useState(false);
     const [isConstitutionChecked, setIsConstitutionChecked] = useState(false);
-    
+
+    // Get selected skills from previous step
+    const selectedSkills = useMemo(() => {
+        const skillIds = agentData.skills || [];
+        return AxiomSkills.filter(skill => skillIds.includes(skill.skill_id));
+    }, [agentData.skills]);
+
     // AIX DNA: Reasoning Protocol (formerly System Prompt)
-    const [reasoningProtocol, setReasoningProtocol] = useState(agentData.reasoningProtocol ||
-        `// Define your agent's decision-making flow here.
-// Example:
-// 1. Analyze market structure
-// 2. Verify liquidity
-// 3. Execute if Risk/Reward > 3.0`);
+    // Auto-generate initial protocol based on selected skills
+    const [reasoningProtocol, setReasoningProtocol] = useState(() => {
+        if (agentData.reasoningProtocol) return agentData.reasoningProtocol;
+
+        if (selectedSkills.length > 0) {
+            // Generate initial protocol from skills
+            return selectedSkills.map((skill, idx) =>
+                `// ${idx + 1}. ${skill.skill_name}\n${skill.reasoning_protocol}`
+            ).join('\n\n');
+        }
+
+        return `// Define your agent's decision-making flow here.\n// Example:\n// 1. Analyze market structure\n// 2. Verify liquidity\n// 3. Execute if Risk/Reward > 3.0`;
+    });
 
     // AIX DNA: Traits
     const [riskTolerance, setRiskTolerance] = useState(agentData.traits?.riskTolerance || 0.5);
@@ -71,6 +85,22 @@ const ConstitutionStep: React.FC<ConstitutionStepProps> = ({ onNext, onBack, set
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Column: Reasoning Protocol */}
                 <div>
+                    {/* Selected Skills Badge */}
+                    {selectedSkills.length > 0 && (
+                        <div className="mb-4 p-3 rounded-lg bg-cyan-950/30 border border-cyan-700">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Sparkles className="w-4 h-4 text-cyan-400" />
+                                <span className="text-sm font-semibold text-cyan-400">Skills Equipped ({selectedSkills.length})</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {selectedSkills.map(skill => (
+                                    <span key={skill.skill_id} className="text-xs px-2 py-1 rounded bg-cyan-900/50 text-cyan-200 border border-cyan-700">
+                                        {skill.skill_name}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     <div className="flex items-center gap-2 mb-4">
                         <Brain className="w-5 h-5 text-cyber-cyan" />
                         <h3 className="text-xl font-orbitron text-white">Reasoning Protocol</h3>
@@ -183,8 +213,8 @@ const ConstitutionStep: React.FC<ConstitutionStepProps> = ({ onNext, onBack, set
                                     key={collab.id}
                                     onClick={() => toggleCollaborator(collab.id)}
                                     className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${collaborators.includes(collab.id)
-                                            ? 'bg-holo-blue/20 border-holo-blue text-white'
-                                            : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                                        ? 'bg-holo-blue/20 border-holo-blue text-white'
+                                        : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
                                         }`}
                                 >
                                     <span className="font-rajdhani">{collab.name}</span>
@@ -235,7 +265,7 @@ const ConstitutionStep: React.FC<ConstitutionStepProps> = ({ onNext, onBack, set
                     onClick={onBack}
                     className="px-6 py-3 border border-white/30 text-white/70 rounded-lg hover:bg-white/10 transition-all font-rajdhani"
                 >
-                    &lt; Back: Toolbox
+                    &lt; Back: Skills
                 </button>
                 <button
                     onClick={handleNext}

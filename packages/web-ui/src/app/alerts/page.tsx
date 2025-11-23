@@ -1,6 +1,5 @@
 'use client';
 
-import DashboardLayout from '@/components/DashboardLayout';
 import { AlertTriangle, Shield, Clock, User } from 'lucide-react';
 
 export default function AlertsPage() {
@@ -55,12 +54,12 @@ export default function AlertsPage() {
   };
 
   return (
-    <DashboardLayout>
+    <div className="p-6 space-y-6 min-h-screen animate-fade-in-up">
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Security Alerts</h1>
         <p className="text-gray-400">Monitor and respond to system alerts</p>
       </div>
-      
+
       <div className="glass-panel p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="glass-panel p-4">
@@ -72,7 +71,7 @@ export default function AlertsPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="glass-panel p-4">
             <div className="flex items-center">
               <Shield className="w-8 h-8 text-axiom-purple mr-3" />
@@ -82,7 +81,7 @@ export default function AlertsPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="glass-panel p-4">
             <div className="flex items-center">
               <Clock className="w-8 h-8 text-axiom-cyan mr-3" />
@@ -92,7 +91,7 @@ export default function AlertsPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="glass-panel p-4">
             <div className="flex items-center">
               <User className="w-8 h-8 text-axiom-cyan mr-3" />
@@ -104,7 +103,7 @@ export default function AlertsPage() {
           </div>
         </div>
       </div>
-      
+
       <div className="glass-panel overflow-hidden">
         <table className="w-full">
           <thead>
@@ -147,6 +146,6 @@ export default function AlertsPage() {
           </tbody>
         </table>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

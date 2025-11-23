@@ -3,8 +3,11 @@ import { Inter, JetBrains_Mono, Space_Grotesk, Orbitron, Rajdhani } from "next/f
 import "./globals.css";
 import "../styles/cyberpunk-theme.css";
 import { WalletContextProvider } from "@/contexts/WalletContext";
+import { SocketProvider } from "@/contexts/SocketContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastProvider } from "@/components/common/Toast";
 import CommandSidebar from "@/components/layout/CommandSidebar";
+import QuantumBackground from "@/components/layout/QuantumBackground";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -50,43 +53,28 @@ export default function RootLayout({
         className={`${inter.variable} ${jetBrainsMono.variable} ${spaceGrotesk.variable} ${orbitron.variable} ${rajdhani.variable} antialiased bg-dark-void text-white overflow-x-hidden font-rajdhani`}
       >
         {/* Holographic Gradient Mesh Background */}
-        <div className="fixed inset-0 -z-10">
-          <div className="absolute inset-0 bg-dark-void" />
-          <div
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage: `
-                radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.15), transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1), transparent 50%),
-                radial-gradient(circle at 40% 70%, rgba(79, 172, 254, 0.08), transparent 50%)
-              `,
-              animation: 'float 20s ease-in-out infinite'
-            }}
-          />
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px)
-              `,
-              backgroundSize: '50px 50px'
-            }}
-          />
-        </div>
+        {/* Background handled by QuantumBackground component */}
 
         <ToastProvider>
-          <WalletContextProvider>
-            <div className="flex min-h-screen">
-              {/* Command Sidebar */}
-              <CommandSidebar />
+          <ThemeProvider>
+            <WalletContextProvider>
+              <SocketProvider>
+                <div className="flex min-h-screen relative">
+                  <QuantumBackground />
 
-              {/* Main Content Area */}
-              <main className="flex-1 ml-64">
-                {children}
-              </main>
-            </div>
-          </WalletContextProvider>
+                  {/* Command Sidebar (Desktop) */}
+                  <div className="hidden md:block fixed h-full z-20">
+                    <CommandSidebar />
+                  </div>
+
+                  {/* Main Content Area */}
+                  <main className="flex-1 md:ml-64 relative z-10 min-h-screen">
+                    {children}
+                  </main>
+                </div>
+              </SocketProvider>
+            </WalletContextProvider>
+          </ThemeProvider>
         </ToastProvider>
       </body>
     </html>

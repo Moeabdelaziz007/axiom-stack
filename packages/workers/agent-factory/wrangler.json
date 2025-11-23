@@ -20,6 +20,13 @@
       }
     ]
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "axiom-brain-db",
+      "database_id": "44eab8d6-1201-4414-9626-effdefb05eae"
+    }
+  ],
   "services": [
     {
       "binding": "GEMINI_ROUTER",

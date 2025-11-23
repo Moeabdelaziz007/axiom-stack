@@ -1,6 +1,5 @@
 'use client';
 
-import DashboardLayout from '@/components/DashboardLayout';
 import AgentCard from '@/components/AgentCard';
 
 export default function AgentsPage() {
@@ -88,7 +87,7 @@ export default function AgentsPage() {
     ];
 
   return (
-    <DashboardLayout>
+    <div className="p-6 space-y-6 min-h-screen animate-fade-in-up">
       <div className="mb-6">
         <div className="flex justify-between items-center">
           <div>
@@ -132,6 +131,6 @@ export default function AgentsPage() {
           </div>
         ))}
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

@@ -3,8 +3,6 @@
 import { FC, ReactNode, useMemo, createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { ConnectionProvider, WalletProvider, useWallet as useSolanaWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
-import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { WalletModalProvider, useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 
@@ -109,10 +107,7 @@ export const WalletContextProvider: FC<{ children: ReactNode }> = ({ children })
   const endpoint = useMemo(() => clusterApiUrl(network as WalletAdapterNetwork), [network]);
 
   const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-    ],
+    () => [],
     [network]
   );
 
